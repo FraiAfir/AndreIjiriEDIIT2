@@ -18,15 +18,16 @@ typedef struct parametro Param;
 
 /*                                       FUNÇÕES AUXILIARES                                      */
 /**
- * Esta é uma função auxiliar de processarParametros() que trata os parâmetros/argumentos lidos da linha de comando 
- * e monta os caminhos completos dos arquivos e diretórios de entrada e saída, conforme as regras estabelecidas:
- * - Os parâmetros -f e -o são obrigatórios, enquanto os parâmetros -e, -q e -pm são opcionais;
+ * Esta é uma função auxiliar de processarParametros() que trata e monta os caminhos completos dos 
+ * arquivos e diretórios de entrada e saída, conforme as regras estabelecidas:
  * - Se o parâmetro -e não for fornecido, assume o diretório atual "./";
- * - Para os diretórios de entrada e saída, se o caminho fornecido não terminar com '/', a função adiciona '/' ao final do caminho para garantir que os caminhos completos sejam formados corretamente;
+ * - Se o parâmetro -o não for fornecido, exibe uma mensagem de erro, pois o diretório de saída é obrigatório;
+ * - Para os diretórios de entrada e saída, se o caminho fornecido não terminar com '/', 
+ * a função adiciona '/' ao final do caminho para garantir que os caminhos completos sejam formados corretamente;
  * - A função também imprime os valores dos parâmetros processados para verificação;
  * 
  * @param param Ponteiro para o objeto criado de Parametro
- * @return      0 se sucesso, -1 se erro
+ * @return      0 se sucesso. -1 se erro
  * @note        Esta função é chamada dentro de processarParametros() após a leitura dos argumentos da linha de comando, 
  * e é responsável por montar os caminhos completos dos arquivos e diretórios de entrada e saída,
  */
@@ -41,7 +42,7 @@ int tratarCaminhosCompletos(Param* param);
  * @param param Ponteiro para o objeto criado de Parametro
  * @param argc  Número total de argumentos
  * @param argv  Array dos argumentos
- * @return      0 se sucesso, -1 se erro
+ * @return      0 se sucesso. -1 se erro
  * @note        Esta função é chamada dentro de processarParametros() para ler os argumentos da linha de comando 
  * e preencher os campos do objeto de Parametro,
  */
