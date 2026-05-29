@@ -57,6 +57,9 @@ $(TESTS_NAME): $(TESTS) $(SRCS)
 	@echo "Compilacao dos testes finalizada com sucesso."
 
 	@echo.
+	@echo.
+	@echo.
+	@echo.
 
 
 
