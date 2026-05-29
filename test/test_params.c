@@ -11,7 +11,8 @@ Param* param_teste = NULL;
 /************************************** FUNÇÕES A SEREM TESTADAS ***************************************/
 // Função de configuração (setUp) para inicializar o ambiente de teste antes de cada teste ser executado
 // A função setUp é chamada automaticamente pelo framework de teste Unity antes de cada teste ser executado, 
-// garantindo que cada teste tenha um ambiente limpo e controlado, evitando interferências entre os testes e
+// garantindo que cada teste tenha um ambiente limpo e controlado, 
+// evitando interferências entre os testes e garantindo a confiabilidade dos resultados dos testes.
 void setUp(void){
     freeParametros(param_teste);
     param_teste = NULL;
