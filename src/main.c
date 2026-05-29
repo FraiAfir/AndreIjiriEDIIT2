@@ -14,7 +14,7 @@ int main(int argc, char* argv[]){
 
     // 1: Cria os objetos das estruturas necssárias para a execução do código
     printf("\n\n\n\n\n");
-    Param*      param  = NULL; // Declara o objeto de parâmetros
+    Param *param  = NULL;
 
     // // 1.1: Inicializa os objetos de Parametro e da ED para armazenar os dados do arquivo .geo
     // if(bootProgram(&param, &htq, &q, &htp, &p) == -1){
