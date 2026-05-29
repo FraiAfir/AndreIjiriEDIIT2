@@ -1,8 +1,8 @@
 # Makefile para o projeto TED - Trabalho de Estruturas de Dados
 # Autor: André Felipe Ijiri Ribeiro
 
-PROJ_NAME   = ted 		# Nome do executável a ser gerado para o projeto principal
-TESTS_NAME  = ted_tests	# Nome do executável a ser gerado para os testes
+PROJ_NAME   = ted 			# Nome do executável a ser gerado para o projeto principal
+TESTS_NAME  = ted_runner	# Nome do executável a ser gerado para os testes
 
 ALUNO = Andre_Ijiri # Nome do aluno (sem espaços, para uso em nomes de arquivos)
 
@@ -38,7 +38,7 @@ LDFLAGS =
 
 # Arquivos-fonte e objetos
 OBJETOS = main.o params.o
-TESTS   = /test/test_params.c
+TESTS   = ../test/test_params.c
 SRCS    = params.c
 # =============================================================================================== #
 
@@ -50,7 +50,7 @@ SRCS    = params.c
 # Regra para compilar os arquivos de teste e gerar o executável de testes
 $(TESTS_NAME): $(TESTS) $(SRCS)
 	@echo "Compilando os arquivos de teste $(TESTS_NAME): ..."
-	$(CC) -o $(TESTS_NAME) $(TESTS) $(SRCS) $(LIBS) $(LDFLAGS)
+	$(CC) -o ../test/$(TESTS_NAME) $(TESTS) $(SRCS) $(LIBS) $(LDFLAGS)
 	@echo "Compilacao dos testes finalizada com sucesso."
 
 
@@ -65,6 +65,16 @@ $(PROJ_NAME): $(OBJETOS)
 %.o : %.c
 	@echo "Compilando $< ..."
 	$(CC) -c $(CFLAGS) $< -o $@
+# =============================================================================================== #
+
+
+
+
+
+# =============================== DEPENDÊNCIAS DOS ARQUIVOS TESTE =============================== #
+# Dependências dos arquivos de teste 
+# para garantir que sejam recompilados quando os arquivos de cabeçalho forem modificados
+../test/test_params.c: params.h
 # =============================================================================================== #
 
 

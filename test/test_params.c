@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "params.h"
-#include "unity.h"
+#include "../src/params.h"
+#include "../unity/unity.c"
 
 // Variável global para ser usada nos testes
 Param* param_teste = NULL;
