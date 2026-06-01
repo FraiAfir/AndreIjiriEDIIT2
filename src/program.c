@@ -14,7 +14,7 @@ int bootProgram(Param** param){
         return -1;
     }
 
-    printf("\n");
+    // printf("\n");
 
     // // 2: Cria a estrutura de dados necessária para armazenar os dados do arquivo .geo
     // printf("\tCriando a Tabela Hash para armazenar os dados do arquivo .geo...\n");
