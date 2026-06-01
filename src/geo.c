@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "geo.h"
-// #include "svg.h"
+#include "svg.h"
 
 /*                                       FUNÇÕES AUXILIARES                                      */
 int montarCaminhoGeo(Param* param, char caminhoGeo[512]){
@@ -56,11 +56,11 @@ int readFileGeo(FILE* arquivoGeo, HashBin* dir, Quadras* q, Param* param){
     char* ponto = strchr(geoSVG, '.');
     if(ponto != NULL) *ponto = '\0';
     strcat(geoSVG, ".svg");
-    // FILE* arqSvg = criarSvg(geoSVG, max_x, max_y);
-    // if(arqSvg == NULL) {
-    //     fprintf(stderr, "ERRO: Não foi possível criar o SVG.\n");
-    //     return -1;
-    // }
+    FILE* arqSvg = criarSvg(geoSVG, max_x, max_y);
+    if(arqSvg == NULL) {
+        fprintf(stderr, "ERRO: Não foi possível criar o SVG.\n");
+        return -1;
+    }
 
     // 3: Variáveis temporárias para armazenar os dados lidos de cada linha do arquivo .geo
     char sw[256] = "1.0px";     // Largura da borda padrão
@@ -93,7 +93,7 @@ int readFileGeo(FILE* arquivoGeo, HashBin* dir, Quadras* q, Param* param){
             inserirReg(dir, cep, x, y, w, h, sw, cfill, cstrk);
 
             // 4.2.2: Desenha a quadra no arquivo SVG
-            // desenharFormaSvg(arqSvg, "r", x, y, w, h, sw, cstrk, cfill);
+            desenharFormaSvg(arqSvg, "r", x, y, w, h, sw, cstrk, cfill);
 
             /**
              * Escreve o CEP da quadra no canto superior esquerdo da quadra no arquivo SVG
@@ -101,20 +101,20 @@ int readFileGeo(FILE* arquivoGeo, HashBin* dir, Quadras* q, Param* param){
              * Peso da fonte negrito para destacar o CEP
              */
             // 4.2.3: Se a cor de preenchimento for branca, use preto para o texto do CEP para garantir legibilidade
-            // if(strcmp(cfill, "white") == 0) 
-                // fprintf(arqSvg, "\t<text x=\"%lf\" y=\"%lf\" font-size=\"10\" font-weight=\"bold\" fill=\"%s\">%s</text>\n", x + 1, y + 11, "black", cep);
+            if(strcmp(cfill, "white") == 0) 
+                fprintf(arqSvg, "\t<text x=\"%lf\" y=\"%lf\" font-size=\"10\" font-weight=\"bold\" fill=\"%s\">%s</text>\n", x + 1, y + 11, "black", cep);
 
             // 4.2.4: Se não, use branco para o texto do CEP para garantir legibilidade
-            // else
-            //     fprintf(arqSvg, "\t<text x=\"%lf\" y=\"%lf\" font-size=\"10\" font-weight=\"bold\" fill=\"%s\">%s</text>\n", x + 1, y + 11, "white", cep);
+            else
+                fprintf(arqSvg, "\t<text x=\"%lf\" y=\"%lf\" font-size=\"10\" font-weight=\"bold\" fill=\"%s\">%s</text>\n", x + 1, y + 11, "black", cep);
         }
     }
 
     // 5: Fecha o arquivo .svg após a geração do conteúdo
-    // if(fecharSvg(arqSvg) != 0){
-    //     fprintf(stderr, "ERRO: Fechar o arquivo .svg após a geração do conteúdo.\n");
-    //     return -1;
-    // }
+    if(fecharSvg(arqSvg) != 0){
+        fprintf(stderr, "ERRO: Fechar o arquivo .svg após a geração do conteúdo.\n");
+        return -1;
+    }
     return 0;
 }
 /*###############################################################################################*/
