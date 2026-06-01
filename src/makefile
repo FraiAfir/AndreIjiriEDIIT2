@@ -1,12 +1,9 @@
 # Makefile para o projeto TED - Trabalho de Estruturas de Dados
 # Autor: André Felipe Ijiri Ribeiro
 
-PROJ_NAME   = ted
-TESTS_NAME  = ted_runner
-all: $(TESTS_NAME) $(PROJ_NAME)
-
-ALUNO = Andre_Ijiri # Nome do aluno (sem espaços, para uso em nomes de arquivos)
-
+PROJ_NAME = ted
+ALUNO 	  = Andre_Ijiri	# Nome do aluno (sem espaços, para uso em nomes de arquivos)
+all: $(PROJ_NAME)
 
 
 # =========================  DETECÇÃO AUTOMÁTICA DO SISTEMA OPERACIONAL ========================= #
@@ -36,35 +33,26 @@ CC = gcc
 # Flags
 CFLAGS  = -g -O0 -std=c99 -fstack-protector-all -Werror=implicit-function-declaration -Wall
 LDFLAGS = 
-
-# Arquivos-fonte e objetos
-OBJETOS = main.o params.o
-TESTS   = ../test/test_params.c
-SRCS    = params.c
 # =============================================================================================== #
 
 
 
 
 
-# ==================================== REGRAS DE COMPILAÇÃO ===================================== #
-# Arquivos de teste
-$(TESTS_NAME): $(TESTS) $(SRCS)
-	@echo.
+# ================================= COMPILAÇÃO PROJ. PRINCIPAL ================================== #
+# Arquivos-fonte e objetos
+OBJETOS = main.o params.o program.o
 
-	@echo "Compilando os arquivos de teste $(TESTS_NAME): ..."
-	$(CC) -o ../test/$(TESTS_NAME) $(TESTS) $(SRCS) $(LIBS) $(LDFLAGS)
-	@echo "Compilacao dos testes finalizada com sucesso."
+main.o: main.c params.h
 
-	@echo.
-	@echo.
-	@echo.
-	@echo.
-
-
+params.o:  params.c params.h
+program.o: program.c program.h
 
 # Projeto principal
 $(PROJ_NAME): $(OBJETOS)
+	@echo.
+	@echo.
+	@echo.
 	@echo.
 
 	@echo "Compilando o projeto principal $(PROJ_NAME): ..."
@@ -73,10 +61,9 @@ $(PROJ_NAME): $(OBJETOS)
 
 	@echo.
 
-
-
 # Arquivos .c em .o
 %.o : %.c
+	@echo.
 	@echo "Compilando $< ..."
 	$(CC) -c $(CFLAGS) $< -o $@
 # =============================================================================================== #
@@ -85,18 +72,40 @@ $(PROJ_NAME): $(OBJETOS)
 
 
 
-# ================================== DEPENDÊNCIAS DOS ARQUIVOS ================================== #
-# Arquvios de teste
-# para garantir que sejam recompilados quando os arquivos de cabeçalho forem modificados
-../test/test_params.c: params.c
+# ==================================== COMPILAÇÃO DOS TESTES ==================================== #
+test_params: ../test/test_params.c params.c
+	@echo.
+	@echo "Compilando $< ..."
+	$(CC) ../test/test_params.c params.c -o ../test/test_params $(LIBS) $(LDFLAGS)
+	@echo.
+test_program: ../test/test_program.c program.c params.c
+	@echo "Compilando $< ..."
+	$(CC) ../test/test_program.c program.c params.c -o ../test/test_program $(LIBS) $(LDFLAGS)
+	@echo.
 
+compila_tests: test_params test_program
+	@echo.
+	@echo.
+	@echo "Compilando os testes de unidade para PARAMS..."
+	@echo "Compilando os testes de unidade para PROGRAM..."
+	@echo.
+	@echo "Compilacao dos testes de unidade finalizada com sucesso."
+	@echo.
 
+ted_tests: compila_tests
+	@echo.
+	@echo.
 
-# Arquivos do projeto principal 
-# para garantir que sejam recompilados quando os arquivos de cabeçalho forem modificados
-main.o: main.c params.h
+	@echo "Executando os testes de unidade para os parametros..."
+	../test/test_params$(EXEC)
 
-params.o: params.c params.h
+	@echo.
+	@echo.
+	@echo.
+	../test/test_program$(EXEC)
+	@echo "Testes de unidade para os parametros executados com sucesso."
+
+	@echo.
 # =============================================================================================== #
 
 
@@ -109,7 +118,8 @@ clean:
 	@echo.
 
 	@echo Limpando os arquivos de teste...
-	$(RM) "../test/$(TESTS_NAME)$(EXEC)"
+	$(RM) "../test/test_params$(EXEC)"
+	$(RM) "../test/test_program$(EXEC)"
 	@echo Arquivos de teste limpos com sucesso!
 
 	@echo.
@@ -120,6 +130,9 @@ clean:
 
 	@echo.
 
-# phony para evitar conflitos com arquivos chamados "clean" ou "all" no diretório
+.PHONY: all
 .PHONY: clean
+.PHONY: ted_tests
+.PHONY: test_params
+.PHONY: compila_tests
 # =============================================================================================== #
