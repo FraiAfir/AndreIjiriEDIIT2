@@ -4,6 +4,9 @@
 
 #include "../src/params.h"
 #include "../src/program.h"
+#include "../src/hashBin.h"
+#include "../src/geo.h"
+#include "../src/svg.h"
 #include "../unity/unity.c"
 
 /************************************** FUNÇÕES A SEREM TESTADAS ***************************************/
@@ -25,28 +28,32 @@ void tearDown(void){
 void test_IniciarObjetosProjeto_DeveRetornarZero(void){
     // 1.1: Declara os ponteiros para os objetos a serem inicializados
     Param* param   = NULL;
+    HashBin* htq   = NULL;
+    Quadras* q     = NULL;
 
     // 1.2: Chama a função bootProgram para inicializar os objetos do projeto
-    int resultado = bootProgram(&param);
+    int resultado = bootProgram(&param, &htq, &q);
 
     // 1.3: Verifica se a função retornou 0, indicando que os objetos foram inicializados corretamente
     TEST_ASSERT_EQUAL_INT(0, resultado);
 
     // 1.4: Libera os recursos alocados durante o teste
-    shutProgram(&param);
+    shutProgram(&param, &htq, &q);
 }
 
 // 2: Testa se a função shutProgram libera os recursos alocados durante a execução do programa, retornando 0 em caso de sucesso
 void test_LiberarRecursos_DeveRetornarZero(void){
     // 2.1: Declara os ponteiros para os objetos a serem inicializados
     Param* param   = NULL;
+    HashBin* htq   = NULL;
+    Quadras* q     = NULL;
 
     // 2.2: Chama a função bootProgram para inicializar os objetos do projeto
-    int resultadoBoot = bootProgram(&param);
+    int resultadoBoot = bootProgram(&param, &htq, &q);
     TEST_ASSERT_EQUAL_INT(0, resultadoBoot);
 
     // 2.3: Chama a função shutProgram para liberar os recursos alocados durante a execução do programa
-    int resultadoShut = shutProgram(&param);
+    int resultadoShut = shutProgram(&param, &htq, &q);
 
     // 2.4: Verifica se a função retornou 0, indicando que os recursos foram liberados corretamente
     TEST_ASSERT_EQUAL_INT(0, resultadoShut);

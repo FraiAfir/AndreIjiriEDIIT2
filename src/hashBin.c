@@ -455,9 +455,9 @@ int inserirReg(HashBin* dir, char* cep, double x, double y, double w, double h, 
 
 int salvarDiretorioHFC(HashBin* dir, char* nomeArquivoHFC){
     // 1: Abre o arquivo de diretório para escrita em modo binário
-    FILE* f = fopen("quadras.hfc", "wb");
+    FILE* f = fopen("cidade.hfc", "wb");
     if(f == NULL){
-        printf("ERRO: Nao foi possivel criar o arquivo quadras.hfc\n");
+        printf("ERRO: Nao foi possivel criar o arquivo cidade.hfc\n");
         return -1;
     }
 
