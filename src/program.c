@@ -7,13 +7,12 @@
 /*                                       FUNÇÕES PRINCIPAIS                                      */
 int bootProgram(Param** param){
     // 1: Cria o objeto de parâmetros para armazenar os dados dos argumentos da linha de comando
-    printf("\tCriando o objeto de Parametro para armazenar os dados dos argumentos da linha de comando...\n");
     *param = criarParametro();
     if(*param == NULL){
         printf("ERRO: Falha na alocacao de memoria para o objeto Parametro\n");
         shutProgram(param);
         return -1;
-    }printf("\tObjeto de Parametro criado com sucesso para armazenar os dados dos argumentos da linha de comando\n");
+    }
 
     printf("\n");
 
@@ -67,7 +66,6 @@ int shutProgram(Param** param){
     if(*param != NULL){
         freeParametros(*param);
         *param = NULL;
-        printf("\tMemoria alocada para o objeto de Parametro liberada com sucesso!\n");
     }else printf("\tObjeto de Parametro nao alocado. Nenhuma memoria para liberar.\n");
 
     // // 2: Libera a estrutura de dados utilizada
