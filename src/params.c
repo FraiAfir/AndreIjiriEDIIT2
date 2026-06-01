@@ -108,11 +108,11 @@ int tratarCaminhosCompletos(Param* param){
     }
 
     // 3: Exibe os caminhos completos dos arquivos e diretórios para debugação
-    printf("Geo: \t\t%s\n", param->nomeGeo);
-    printf("Qry: \t\t%s\n", param->nomeQry);
-    printf("PM: \t\t%s\n", param->nomePM);
-    printf("Dir Entrada: \t%s\n", param->dirEntradaCompleto);
-    printf("Dir Saida: \t%s\n", param->dirSaidaCompleto);
+    // printf("Geo: \t\t%s\n", param->nomeGeo);
+    // printf("Qry: \t\t%s\n", param->nomeQry);
+    // printf("PM: \t\t%s\n", param->nomePM);
+    // printf("Dir Entrada: \t%s\n", param->dirEntradaCompleto);
+    // printf("Dir Saida: \t%s\n", param->dirSaidaCompleto);
 
     return 0;
 }
@@ -395,7 +395,7 @@ int processarParametros(Param* param, int argc, char* argv[]){
 
     // 1: Verifica se o número mínimo de argumentos foi fornecido
     if(argc < 5){
-        fprintf(stderr, "ERRO: Numero insuficiente de argumentos.\n");
+        printf("ERRO: Numero insuficiente de argumentos.\n");
         return -1;
     }
 
@@ -420,8 +420,6 @@ int freeParametros(Param* param){
     // antes de tentar liberar a memória alocada para evitar erros de segmentação
     if(param == NULL) return -1;
     
-    printf("\nLiberando parametros...\n");
-
     // 2: Libera a memória alocada para os campos do objeto Parametro, se não forem NULL
     if(param->dirEntrada != NULL) free(param->dirEntrada);
     if(param->nomeGeo    != NULL) free(param->nomeGeo);
@@ -436,7 +434,6 @@ int freeParametros(Param* param){
     free(param);
     param = NULL;
 
-    printf("Parametros liberados com sucesso!\n");
     return 0;
 }
 /*###############################################################################################*/
