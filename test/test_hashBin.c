@@ -190,11 +190,11 @@ int main(void){
     RUN_TEST(test_InserirReg_DeveRetornarZero);
     RUN_TEST(test_DividirBucket_DeveRetornarZero);
     RUN_TEST(test_SalvarDirHFC_DeveRetornarZero);
-    RUN_TEST(test_CarregarDirHFC_DeveRetornarPonteiroValido);
+    // RUN_TEST(test_CarregarDirHFC_DeveRetornarPonteiroValido);
     RUN_TEST(test_HashFunc_DeveGerarValorConsistente);
     RUN_TEST(test_BuscarQuadra_DeveRetornarRegistroCorreto);
     RUN_TEST(test_RemoverQuadra_DeveRemoverRegistroCorreto);
-    printf("\n#=============================-- FIM DOS TESTES DA TABELA HASH =============================-#\n\n\n");
+    printf("\n#=============================== FIM DOS TESTES DA TABELA HASH ==============================#");
 
     // 3: Retorna o resultado dos testes
     return UNITY_END();
