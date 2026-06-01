@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "params.h"
+#include "program.h"
 
 int main(int argc, char* argv[]){
     system("cls");
@@ -16,11 +17,11 @@ int main(int argc, char* argv[]){
     printf("\n\n\n\n\n");
     Param *param  = NULL;
 
-    // // 1.1: Inicializa os objetos de Parametro e da ED para armazenar os dados do arquivo .geo
-    // if(bootProgram(&param, &htq, &q, &htp, &p) == -1){
-    //     printf("ERRO: Inicializacao dos objetos.\n");
-    //     return -1;
-    // }
+    // 1.1: Inicializa os objetos de Parametro e da ED para armazenar os dados do arquivo .geo
+    if(bootProgram(&param) == -1){
+        printf("ERRO: Inicializacao dos objetos.\n");
+        return -1;
+    }
 
     // // 2. PROCESSAR PARÂMETROS DA LINHA DE COMANDOS
     // printf("\n\n\n\n\n#------------ PROCESSANDO OS PARAMETROS DA LINHA DE COMANDO... ----------#\n");
@@ -94,10 +95,10 @@ int main(int argc, char* argv[]){
     //     printf("#------------------------------------------------------------------------#\n\n\n\n\n");
     // }
     
-    // // 5: LIBERAR MEMÓRIA ALOCADA PARA PARÂMETROS E ENCERRAR PROGRAMA
-    // printf("#---------------------- ENCERRANDO O PROGRAMA... ------------------------#\n");
-    // shutProgram(&param, &htq, &q, &htp, &p); // Libera a memória alocada para os objetos de parâmetros e das estruturas de dados utilizadas para armazenar os dados dos arquivos .geo e .pm
-    // printf("#------------------------------------------------------------------------#\n\n\n\n\n");
+    // 5: LIBERAR MEMÓRIA ALOCADA PARA PARÂMETROS E ENCERRAR PROGRAMA
+    printf("#---------------------- ENCERRANDO O PROGRAMA... ------------------------#\n");
+    shutProgram(&param);
+    printf("#------------------------------------------------------------------------#\n\n\n\n\n");
     printf("\n##################### FIM DA EXECUCAO DO PROGRAMA ########################\n\n");
 
     return 0;
