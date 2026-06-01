@@ -36,7 +36,6 @@ void test_CriarParametro_DeveRetornarNaoNULL(void){
     // 1.2: Verifica se o ponteiro retornado pela função criarParametro() é diferente de NULL, 
     // indicando que o objeto de parâmetros foi criado com sucesso
     TEST_ASSERT_NOT_NULL(param_teste);
-    printf("\n");
 }
 
 // 2: Testa se a função processarParametros() retorna 0, 
@@ -54,7 +53,6 @@ void test_ProcessarParametros_DeveRetornarZero(void){
 
     // 2.4: Verifica se o resultado retornado pela função processarParametros() é igual a 0, indicando que os parâmetros foram processados com sucesso
     TEST_ASSERT_EQUAL_INT(0, resultado);
-    printf("\n");
 }
 
 // 3: Testa se a função freeParametros() retorna 0, 
@@ -71,7 +69,6 @@ void test_LiberarMemoria_DeveRetornarZero(void){
     TEST_ASSERT_EQUAL_INT(0, resultado);
 
     param_teste = criarParametro();
-    printf("\n");
 }
 
 // 4: Testa se a função tratarCaminhosCompletos() retorna 0, 
@@ -86,7 +83,6 @@ void test_TratarCaminhosCompletos_DeveRetornarZero(void){
     // 4.3: Verifica se o resultado retornado pela função tratarCaminhosCompletos() é igual a 0, 
     // indicando que os caminhos completos foram tratados com sucesso
     TEST_ASSERT_EQUAL_INT(0, resultado);
-    printf("\n");
 }
 
 // 5: Testa se a função processarArgumentosInternos() retorna 0, 
@@ -105,7 +101,6 @@ void test_ProcessarArgumentosInternos_DeveRetornarZero(void){
     // 5.4: Verifica se o resultado retornado pela função processarArgumentosInternos() é igual a 0, 
     // indicando que os argumentos foram processados com sucesso
     TEST_ASSERT_EQUAL_INT(0, resultado);
-    printf("\n");
 }
 /*******************************************************************************************************/
 
@@ -118,29 +113,13 @@ int main(void){
     UNITY_BEGIN();
 
     // 2: Executa os testes dos parâmetros
-    printf("\n\n\n#===================== INICIO DOS TESTES DOS PARAMETROS ======================#\n\n");
-    
-    printf("|----- Teste 01: Criar um Objeto de Parametros - Deve Retornar Nao NULL ------|\n");
+    printf("#===================== INICIO DOS TESTES DOS PARAMETROS ======================#\n\n");
     RUN_TEST(test_CriarParametro_DeveRetornarNaoNULL);
-    printf("|-----------------------------------------------------------------------------|\n\n\n\n");
-    
-    printf("|----------- Teste 02: Processar os Parametros da Linha de Comando -----------|\n");
     RUN_TEST(test_ProcessarParametros_DeveRetornarZero);
-    printf("|-----------------------------------------------------------------------------|\n\n\n\n");
-
-    printf("|--------------- Teste 03: Liberar a Memoria Alocado ao Objeto ---------------|\n\n");
     RUN_TEST(test_LiberarMemoria_DeveRetornarZero);
-    printf("|-----------------------------------------------------------------------------|\n\n");
-
-    printf("|-------------------- Teste 04: Tratar Caminhos Completos --------------------|\n\n");
     RUN_TEST(test_TratarCaminhosCompletos_DeveRetornarZero);
-    printf("|-----------------------------------------------------------------------------|\n\n");
-
-    printf("|------------------ Teste 05: Processar Argumentos Internos ------------------|\n\n");
     RUN_TEST(test_ProcessarArgumentosInternos_DeveRetornarZero);
-    printf("|-----------------------------------------------------------------------------|\n\n");
-
-    printf("#======================= FIM DOS TESTES DOS PARAMETROS =======================#\n\n\n");
+    printf("\n#======================= FIM DOS TESTES DOS PARAMETROS =======================#");
 
     // 3: Retorna o resultado dos testes
     return UNITY_END();
