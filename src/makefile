@@ -41,13 +41,14 @@ LDFLAGS =
 
 # ================================= COMPILAÇÃO PROJ. PRINCIPAL ================================== #
 # Arquivos-fonte e objetos
-OBJETOS = main.o params.o program.o hashBin.o
+OBJETOS = main.o params.o program.o hashBin.o geo.o
 
 main.o: main.c params.h
 
 params.o:  params.c params.h
 program.o: program.c program.h
 hashBin.o: hashBin.c hashBin.h
+geo.o:     geo.c geo.h
 
 # Projeto principal
 $(PROJ_NAME): $(OBJETOS)
@@ -79,24 +80,36 @@ test_params: ../test/test_params.c params.c
 	@echo "Compilando $< ..."
 	$(CC) ../test/test_params.c params.c -o ../test/test_params $(LIBS) $(LDFLAGS)
 	@echo.
+
 test_program: ../test/test_program.c program.c params.c
 	@echo "Compilando $< ..."
 	$(CC) ../test/test_program.c program.c params.c -o ../test/test_program $(LIBS) $(LDFLAGS)
 	@echo.
+
 test_hashBin: ../test/test_hashBin.c hashBin.c params.c
 	@echo "Compilando $< ..."
 	$(CC) ../test/test_hashBin.c hashBin.c params.c -o ../test/test_hashBin $(LIBS) $(LDFLAGS)
 	@echo.
 
-compila_tests: test_params test_program test_hashBin
+test_geo: ../test/test_geo.c geo.c params.c hashBin.c
+	@echo "Compilando $< ..."
+	$(CC) ../test/test_geo.c geo.c params.c hashBin.c -o ../test/test_geo $(LIBS) $(LDFLAGS)
+	@echo.
+
+
+
+compila_tests: test_params test_program test_hashBin test_geo
 	@echo.
 	@echo.
 	@echo "Compilando os testes de unidade para PARAMS..."
 	@echo "Compilando os testes de unidade para PROGRAM..."
 	@echo "Compilando os testes de unidade para HASHBIN..."
+	@echo "Compilando os testes de unidade para GEO..."
 	@echo.
 	@echo "Compilacao dos testes de unidade finalizada com sucesso."
 	@echo.
+
+
 
 ted_tests: compila_tests
 	@echo.
@@ -114,8 +127,16 @@ ted_tests: compila_tests
 	@echo.
 	@echo.
 	../test/test_hashBin$(EXEC)
+
+	@echo.
+	@echo.
+	@echo.
+	../test/test_geo$(EXEC)
 	@echo "Testes de unidade para os parametros executados com sucesso."
 
+	@echo.
+	@echo.
+	@echo.
 	@echo.
 # =============================================================================================== #
 
@@ -132,6 +153,7 @@ clean:
 	$(RM) "../test/test_params$(EXEC)"
 	$(RM) "../test/test_program$(EXEC)"
 	$(RM) "../test/test_hashBin$(EXEC)"
+	$(RM) "../test/test_geo$(EXEC)"
 	@echo Arquivos de teste limpos com sucesso!
 
 	@echo.
@@ -145,6 +167,6 @@ clean:
 .PHONY: all
 .PHONY: clean
 .PHONY: ted_tests 
-.PHONY: test_params test_program test_hashBin
+.PHONY: test_params test_program test_hashBin test_geo
 .PHONY: compila_tests
 # =============================================================================================== #
