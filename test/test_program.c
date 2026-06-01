@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../src/params.h"
 #include "../src/program.h"
-#include "unity.h"
+#include "../unity/unity.c"
 
 /************************************** FUNÇÕES A SEREM TESTADAS ***************************************/
 // Função de configuração (setUp) para inicializar o ambiente de teste antes de cada teste ser executado
@@ -30,7 +31,6 @@ void test_IniciarObjetosProjeto_DeveRetornarZero(void){
 
     // 1.3: Verifica se a função retornou 0, indicando que os objetos foram inicializados corretamente
     TEST_ASSERT_EQUAL_INT(0, resultado);
-    printf("\n");
 
     // 1.4: Libera os recursos alocados durante o teste
     shutProgram(&param);
@@ -50,7 +50,6 @@ void test_LiberarRecursos_DeveRetornarZero(void){
 
     // 2.4: Verifica se a função retornou 0, indicando que os recursos foram liberados corretamente
     TEST_ASSERT_EQUAL_INT(0, resultadoShut);
-    printf("\n");
 }
 /*******************************************************************************************************/
 
@@ -63,17 +62,10 @@ int main(void){
     UNITY_BEGIN();
 
     // 2: Executa os testes do program
-    printf("\n\n\n#================= INICIO DOS TESTES DO PROGRAM ================#\n\n");
-    
-    printf("|----- Teste 01: Iniciar os Objetos do Projeto - Deve Retornar 0 ------|\n");
+    printf("#================= INICIO DOS TESTES DO PROGRAM ================#\n\n");
     RUN_TEST(test_IniciarObjetosProjeto_DeveRetornarZero);
-    printf("|----------------------------------------------------------------------|\n\n\n\n");
-    
-    printf("|------------ Teste 02: Liberar Recursos - Deve Retornar 0 ------------|\n");
     RUN_TEST(test_LiberarRecursos_DeveRetornarZero);
-    printf("|----------------------------------------------------------------------|\n\n\n\n");
-
-    printf("#================== FIM DOS TESTES DO PROGRAM ==================#\n\n\n");
+    printf("\n#================== FIM DOS TESTES DO PROGRAM ==================#");
 
     // 3: Retorna o resultado dos testes
     return UNITY_END();
