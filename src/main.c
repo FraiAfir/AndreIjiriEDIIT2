@@ -14,7 +14,6 @@ int main(int argc, char* argv[]){
     for(int i = 0; i < argc; i++) {printf("Argumento do argv[%d]: %s\n", i, argv[i]);}
 
     // 1: Cria os objetos das estruturas necssárias para a execução do código
-    printf("\n\n\n\n\n");
     Param *param  = NULL;
 
     // 1.1: Inicializa os objetos de Parametro e da ED para armazenar os dados do arquivo .geo
@@ -23,15 +22,15 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
-    // // 2. PROCESSAR PARÂMETROS DA LINHA DE COMANDOS
-    // printf("\n\n\n\n\n#------------ PROCESSANDO OS PARAMETROS DA LINHA DE COMANDO... ----------#\n");
-    // // 2.1: Processa os parâmetros da linha de comando e armazena as informações necessárias para a execução do programa no objeto de parâmetros criado na etapa anterior
-    // if(processarParametros(param, argc, argv) == -1) {
-    //     printf("ERRO: Processamento dos parametros da linha de comando.\n");
-    //     shutProgram(&param, &htq, &q, &htp, &p);
-    //     return -1;
-    // }
-    // printf("#------------------------------------------------------------------------#\n\n\n\n\n");
+    // 2. PROCESSAR PARÂMETROS DA LINHA DE COMANDOS
+    printf("\n\n\n\n\n#------------ PROCESSANDO OS PARAMETROS DA LINHA DE COMANDO... ----------#\n");
+    // 2.1: Processa os parâmetros da linha de comando e armazena as informações necessárias para a execução do programa no objeto de parâmetros criado na etapa anterior
+    if(processarParametros(param, argc, argv) == -1) {
+        printf("ERRO: Processamento dos parametros da linha de comando.\n");
+        shutProgram(&param);
+        return -1;
+    }
+    printf("#------------------------------------------------------------------------#\n\n\n\n\n");
 
     // // 3. PROCESSAR O GEO
     // printf("\n#-------------------- PROCESSANDO O ARQUIVO .GEO... ---------------------#\n");
