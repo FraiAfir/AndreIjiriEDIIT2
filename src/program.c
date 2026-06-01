@@ -6,8 +6,6 @@
 
 /*                                       FUNÇÕES PRINCIPAIS                                      */
 int bootProgram(Param** param){
-    printf("Inicilizando os objetos e alocando os recursos necessarios:\n");
-
     // 1: Cria o objeto de parâmetros para armazenar os dados dos argumentos da linha de comando
     printf("\tCriando o objeto de Parametro para armazenar os dados dos argumentos da linha de comando...\n");
     *param = criarParametro();
@@ -61,16 +59,13 @@ int bootProgram(Param** param){
     //     return -1;
     // }printf("\tObjeto de Pessoas criado com sucesso para armazenar os dados do arquivo .pm\n");
 
-    printf("Objetos e recursos alocados com sucesso!\n");
     return 0;
 }
 
 int shutProgram(Param** param){
-    printf("Encerrando o programa e liberando os recursos alocados...\n");
-
     // 1: Libera a memória alocada para os objetos de Parametro
     if(*param != NULL){
-        freeParametro(*param);
+        freeParametros(*param);
         *param = NULL;
         printf("\tMemoria alocada para o objeto de Parametro liberada com sucesso!\n");
     }else printf("\tObjeto de Parametro nao alocado. Nenhuma memoria para liberar.\n");
@@ -87,7 +82,6 @@ int shutProgram(Param** param){
     // // 5: Libera a memória alocada para o objeto de Pessoas
     // freePessoa(*p);
 
-    printf("\nPrograma encerrado com sucesso!\n");
     return 0;
 }
 /*###############################################################################################*/
