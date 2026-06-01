@@ -41,12 +41,13 @@ LDFLAGS =
 
 # ================================= COMPILAÇÃO PROJ. PRINCIPAL ================================== #
 # Arquivos-fonte e objetos
-OBJETOS = main.o params.o program.o
+OBJETOS = main.o params.o program.o hashBin.o
 
 main.o: main.c params.h
 
 params.o:  params.c params.h
 program.o: program.c program.h
+hashBin.o: hashBin.c hashBin.h
 
 # Projeto principal
 $(PROJ_NAME): $(OBJETOS)
@@ -82,12 +83,17 @@ test_program: ../test/test_program.c program.c params.c
 	@echo "Compilando $< ..."
 	$(CC) ../test/test_program.c program.c params.c -o ../test/test_program $(LIBS) $(LDFLAGS)
 	@echo.
+test_hashBin: ../test/test_hashBin.c hashBin.c params.c
+	@echo "Compilando $< ..."
+	$(CC) ../test/test_hashBin.c hashBin.c params.c -o ../test/test_hashBin $(LIBS) $(LDFLAGS)
+	@echo.
 
-compila_tests: test_params test_program
+compila_tests: test_params test_program test_hashBin
 	@echo.
 	@echo.
 	@echo "Compilando os testes de unidade para PARAMS..."
 	@echo "Compilando os testes de unidade para PROGRAM..."
+	@echo "Compilando os testes de unidade para HASHBIN..."
 	@echo.
 	@echo "Compilacao dos testes de unidade finalizada com sucesso."
 	@echo.
@@ -103,6 +109,11 @@ ted_tests: compila_tests
 	@echo.
 	@echo.
 	../test/test_program$(EXEC)
+
+	@echo.
+	@echo.
+	@echo.
+	../test/test_hashBin$(EXEC)
 	@echo "Testes de unidade para os parametros executados com sucesso."
 
 	@echo.
@@ -120,6 +131,7 @@ clean:
 	@echo Limpando os arquivos de teste...
 	$(RM) "../test/test_params$(EXEC)"
 	$(RM) "../test/test_program$(EXEC)"
+	$(RM) "../test/test_hashBin$(EXEC)"
 	@echo Arquivos de teste limpos com sucesso!
 
 	@echo.
@@ -132,7 +144,7 @@ clean:
 
 .PHONY: all
 .PHONY: clean
-.PHONY: ted_tests
-.PHONY: test_params
+.PHONY: ted_tests 
+.PHONY: test_params test_program test_hashBin
 .PHONY: compila_tests
 # =============================================================================================== #
