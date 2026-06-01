@@ -108,11 +108,11 @@ int tratarCaminhosCompletos(Param* param){
     }
 
     // 3: Exibe os caminhos completos dos arquivos e diretórios para debugação
-    // printf("Geo: \t\t%s\n", param->nomeGeo);
-    // printf("Qry: \t\t%s\n", param->nomeQry);
-    // printf("PM: \t\t%s\n", param->nomePM);
-    // printf("Dir Entrada: \t%s\n", param->dirEntradaCompleto);
-    // printf("Dir Saida: \t%s\n", param->dirSaidaCompleto);
+    printf("Geo: \t\t%s\n", param->nomeGeo);
+    printf("Qry: \t\t%s\n", param->nomeQry);
+    printf("PM: \t\t%s\n", param->nomePM);
+    printf("Dir Entrada: \t%s\n", param->dirEntradaCompleto);
+    printf("Dir Saida: \t%s\n", param->dirSaidaCompleto);
 
     return 0;
 }
