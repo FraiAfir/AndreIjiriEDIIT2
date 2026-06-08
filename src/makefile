@@ -182,7 +182,7 @@ clean:
 	$(RM) "../test/test_geo$(EXEC)"
 	$(RM) "../test/test_svg$(EXEC)"
 	$(RM) "../test/test_qry$(EXEC)"
-	$(RM) "../test/teste.svg$(EXEC)"
+	$(RM) "../test/teste.svg"
 	$(RM) "./t1.svg"
 	$(RM) "./hashQ_teste.hf"
 	$(RM) "./hashQ_teste.hfc"
