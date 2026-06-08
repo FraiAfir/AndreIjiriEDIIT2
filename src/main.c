@@ -6,6 +6,7 @@
 #include "program.h"
 #include "hashBin.h"
 #include "geo.h"
+#include "qry.h"
 
 int main(int argc, char* argv[]){
     system("cls");
@@ -83,20 +84,20 @@ int main(int argc, char* argv[]){
     // }
     // printf("#------------------------------------------------------------------------#\n\n\n\n\n");
 
-    // // 4. PROCESSAR O QRY (Se fornecido)
-    // // 4.1: Verifica se o arquivo .qry foi fornecido como argumento.
-    // if (getNomeQry(param) == NULL){
-    //     printf("\n#----------- ARQUIVO .QRY NAO FORNECIDO. PULANDO ESTA ETAPA... ----------#\n");
-    // }else{
-    //     printf("\n#-------------------- PROCESSANDO O ARQUIVO .QRY... ---------------------#\n");
-    //     // 4.1: Processa o arquivo .qry utilizando os dados armazenados a partir do processamento do arquivo .geo (e do arquivo .pm, se fornecido)
-    //     if(processarQry(param, htp, htq) != 0){
-    //         printf("ERRO: Processamento do arquivo .qry.\n");
-    //         shutProgram(&param, &htq, &q, &htp, &p);
-    //         return -1;
-    //     }
-    //     printf("#------------------------------------------------------------------------#\n\n\n\n\n");
-    // }
+    // 4. PROCESSAR O QRY (Se fornecido)
+    // 4.1: Verifica se o arquivo .qry foi fornecido como argumento.
+    if (getNomeQry(param) == NULL){
+        printf("\n#----------- ARQUIVO .QRY NAO FORNECIDO. PULANDO ESTA ETAPA... ----------#\n\n");
+    }else{
+        printf("\n#-------------------- PROCESSANDO O ARQUIVO .QRY... ---------------------#\n");
+        // 4.1: Processa o arquivo .qry utilizando os dados armazenados a partir do processamento do arquivo .geo (e do arquivo .pm, se fornecido)
+        if(processarQry(param, htq) != 0){
+            printf("ERRO: Processamento do arquivo .qry.\n");
+            shutProgram(&param, &htq, &q);
+            return -1;
+        }
+        printf("#------------------------------------------------------------------------#\n\n\n\n\n");
+    }
     
     // 5: LIBERAR MEMÓRIA ALOCADA PARA PARÂMETROS E ENCERRAR PROGRAMA
     printf("#---------------------- ENCERRANDO O PROGRAMA... ------------------------#\n");
