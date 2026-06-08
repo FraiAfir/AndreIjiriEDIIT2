@@ -182,6 +182,7 @@ clean:
 	$(RM) "../test/test_geo$(EXEC)"
 	$(RM) "../test/test_svg$(EXEC)"
 	$(RM) "../test/test_qry$(EXEC)"
+	$(RM) "./t1.svg"
 	@echo Arquivos de teste limpos com sucesso!
 
 	@echo.
