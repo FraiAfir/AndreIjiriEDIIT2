@@ -151,7 +151,7 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
              */
             if(strcmp(comando, "@o?") == 0){
                 // Inicializa buffers para os parâmetros do comando @o? (reg, cep, face e num)
-                char *reg, *cep, *face, *num;
+                char *reg = NULL, *cep = NULL, *face = NULL, *num = NULL;
                 // Extrai os parâmetros do comando @o? (reg, cep, face e num)
                 sscanf(linha, "%*s %s %s %s %s", reg, cep, face, num);
 
@@ -172,7 +172,7 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
              */
             if(strcmp(comando, "mvm") == 0){
                 // Inicializa buffers para os parâmetros do comando mvm (v, x, y, w e h)
-                char *v, *x, *y, *w, *h;
+                char *v = NULL, *x = NULL, *y = NULL, *w = NULL, *h = NULL;
                 // Extrai os parâmetros do comando mvm (v, x, y, w, h)
                 sscanf(linha, "%*s %s %s %s %s %s", v, x, y, w, h);
 
@@ -193,7 +193,7 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
              */
             if(strcmp(comando, "regs") == 0){
                 // Inicializa buffer para o parâmetro do comando regs (vl)
-                char *vl;
+                char *vl = NULL;
                 // Extrai o parâmetro do comando regs (velocidade média limite)
                 sscanf(linha, "%*s %s", vl);
 
@@ -215,7 +215,7 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
              */
             if(strcmp(comando, "exp") == 0){
                 // Inicializa buffer para o parâmetro do comando exp (vl)
-                char *vl;
+                char *vl = NULL;
                 // Extrai o parâmetro do comando exp (velocidade média limite)
                 sscanf(linha, "%*s %s", vl);
 
@@ -237,7 +237,7 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
              */
             if(strcmp(comando, "p?") == 0){
                 // Extrai os parâmetros do comando p?
-                char *reg1, *reg2, *cc, *cr;
+                char *reg1 = NULL, *reg2 = NULL, *cc = NULL, *cr = NULL;
                 sscanf(linha, "%*s %s %s %s %s", reg1, reg2, cc, cr);
 
                 // Verifica se os parâmetros do comando p? foram lidos corretamente
