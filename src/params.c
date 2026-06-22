@@ -7,11 +7,11 @@
 /*                           ESTRUTURAS DE DADOS A SEREM IMPLEMENTADAS                           */
 // Estrutura para armazenar os parâmetros/argumentos da linha de comando
 typedef struct parametro{
-    char* dirEntrada;            // Diretório de entrada (opcional)
-    char* dirSaida;              // Diretório de saída   (obrigatório)
-    char* nomeGeo;               // Nome do arquivo .geo (obrigatório)
-    char* nomeQry;               // Nome do arquivo .qry (opcional)
-    char* nomePM;                // Nome do arquivo .pm  (opcional)
+    char* dirEntrada;            // Diretório de entrada (opcional)             Ex: "./entrada/"
+    char* dirSaida;              // Diretório de saída   (obrigatório)          Ex: "./saida/"
+    char* nomeGeo;               // Nome do arquivo .geo (obrigatório)          Ex: "cidade.geo"
+    char* nomeQry;               // Nome do arquivo .qry (opcional)             Ex: "consultas.qry"
+    char* nomePM;                // Nome do arquivo .pm  (opcional)             Ex: "pessoas.pm"
 
     char* dirEntradaCompleto;    // Caminho completo do diretório de entrada
     char* dirSaidaCompleto;      // Caminho completo do diretório de saída
@@ -110,7 +110,7 @@ int tratarCaminhosCompletos(Param* param){
     // 3: Exibe os caminhos completos dos arquivos e diretórios para debugação
     printf("Geo: \t\t%s\n", param->nomeGeo);
     printf("Qry: \t\t%s\n", param->nomeQry);
-    printf("PM: \t\t%s\n", param->nomePM);
+    printf("VIA: \t\t%s\n", param->nomePM);
     printf("Dir Entrada: \t%s\n", param->dirEntradaCompleto);
     printf("Dir Saida: \t%s\n", param->dirSaidaCompleto);
 
@@ -132,7 +132,7 @@ int processarArgumentosInternos(Param* param, int argc, char* argv[]){
                 // Aloca memória para o nome do arquivo .geo
                 param->nomeGeo = malloc(sizeof(char) * (strlen(argv[i + 1]) + 1));
                 if(param->nomeGeo == NULL){
-                    fprintf(stderr, "ERRO: Falha na alocação de memória para o nome do arquivo .geo.\n");
+                    printf("ERRO: Falha na alocação de memória para o nome do arquivo .geo.\n");
                     return -1;
                 }
 
@@ -144,7 +144,7 @@ int processarArgumentosInternos(Param* param, int argc, char* argv[]){
             }
             // 1.1.2: Se o próximo argumento não existir ou for outro parâmetro, exibe uma mensagem de erro, pois o nome do arquivo .geo é obrigatório
             else{
-                fprintf(stderr, "ERRO: Nome do arquivo .geo não fornecido. (-f obrigatório)\n");
+                printf("ERRO: Nome do arquivo .geo não fornecido. (-f obrigatório)\n");
                 return -1;
             }
         }
@@ -156,7 +156,7 @@ int processarArgumentosInternos(Param* param, int argc, char* argv[]){
                 // Aloca memória para o diretório de saída
                 param->dirSaida = malloc(sizeof(char) * (strlen(argv[i + 1]) + 1));
                 if(param->dirSaida == NULL){
-                    fprintf(stderr, "ERRO: Falha na alocação de memória para o diretório de saída.\n");
+                    printf("ERRO: Falha na alocação de memória para o diretório de saída.\n");
                     return -1;
                 }
                 
@@ -168,7 +168,7 @@ int processarArgumentosInternos(Param* param, int argc, char* argv[]){
             }
             // 1.2.2: Se o próximo argumento não existir ou for outro parâmetro, exibe uma mensagem de erro, pois o diretório de saída é obrigatório
             else{
-                fprintf(stderr, "ERRO: Diretório de saída não fornecido. (-o obrigatório)\n");
+                printf("ERRO: Diretório de saída não fornecido. (-o obrigatório)\n");
                 return -1;
             }
         }
@@ -180,7 +180,7 @@ int processarArgumentosInternos(Param* param, int argc, char* argv[]){
                 // Aloca memória para o diretório de entrada
                 param->dirEntrada = malloc(sizeof(char) * (strlen(argv[i + 1]) + 1));
                 if(param->dirEntrada == NULL){
-                    fprintf(stderr, "ERRO: Falha na alocação de memória para o diretório de entrada.\n");
+                    printf("ERRO: Falha na alocação de memória para o diretório de entrada.\n");
                     return -1;
                 }
                 
@@ -192,7 +192,8 @@ int processarArgumentosInternos(Param* param, int argc, char* argv[]){
             }
             // 1.3.2: Se o próximo argumento não existir ou for outro parâmetro, exibe uma mensagem de erro, pois o diretório de entrada é opcional
             else{
-                fprintf(stderr, "ERRO: Diretório de entrada não fornecido. (-e opcional)\n");
+
+                printf("ERRO: Diretório de entrada não fornecido. (-e opcional)\n");
                 return -1;
             }
         }
@@ -204,7 +205,7 @@ int processarArgumentosInternos(Param* param, int argc, char* argv[]){
                 // Aloca memória para o nome do arquivo .qry
                 param->nomeQry = malloc(sizeof(char) * (strlen(argv[i + 1]) + 1));
                 if(param->nomeQry == NULL){
-                    fprintf(stderr, "ERRO: Falha na alocação de memória para o nome do arquivo .qry.\n");
+                    printf("ERRO: Falha na alocação de memória para o nome do arquivo .qry.\n");
                     return -1;
                 }
 
@@ -216,38 +217,38 @@ int processarArgumentosInternos(Param* param, int argc, char* argv[]){
             } 
             // 1.4.2: Se o próximo argumento não existir ou for outro parâmetro, exibe uma mensagem de erro, pois o nome do arquivo .qry é opcional
             else{
-                fprintf(stderr, "ERRO: Nome do arquivo .qry não fornecido. (-q opcional)\n");
+                printf("ERRO: Nome do arquivo .qry não fornecido. (-q opcional)\n");
                 return -1;
             }
         }
 
-        // 1.5: Parâmetro -pm (nome do arquivo .pm)
-        else if(strcmp(argv[i], "-pm") == 0){
-            // 1.5.1: Verifica se o próximo argumento existe e não é outro parâmetro (começa com '-')
-            if(argv[i + 1] != NULL){
-                // Aloca memória para o nome do arquivo .pm
-                param->nomePM = malloc(sizeof(char) * (strlen(argv[i + 1]) + 1));
-                if(param->nomePM == NULL){
-                    fprintf(stderr, "ERRO: Falha na alocação de memória para o nome do arquivo .pm.\n");
-                    return -1;
-                }
+        // 1.5: Parâmetro -via (nome do arquivo .via)
+        // else if(strcmp(argv[i], "-via") == 0){
+        //     // 1.5.1: Verifica se o próximo argumento existe e não é outro parâmetro (começa com '-')
+        //     if(argv[i + 1] != NULL){
+        //         // Aloca memória para o nome do arquivo .via
+        //         param->nomeVIA = malloc(sizeof(char) * (strlen(argv[i + 1]) + 1));
+        //         if(param->nomeVIA == NULL){
+        //             printf("ERRO: Falha na alocação de memória para o nome do arquivo .via.\n");
+        //             return -1;
+        //         }
                 
-                // Copia o nome do arquivo .pm para o campo correspondente na estrutura de parâmetros
-                strcpy(param->nomePM, argv[i + 1]);
+        //         // Copia o nome do arquivo .via para o campo correspondente na estrutura de parâmetros
+        //         strcpy(param->nomeVIA, argv[i + 1]);
 
-                // Incrementa o índice para pular o nome do arquivo .pm e continuar processando os próximos argumentos
-                i += 2;
-            }
-            // 1.5.2: Se o próximo argumento não existir ou for outro parâmetro, exibe uma mensagem de erro, pois o nome do arquivo .pm é opcional
-            else{
-                fprintf(stderr, "ERRO: Nome do arquivo .pm não fornecido. (-pm opcional)\n");
-                return -1;
-            }
-        } 
+        //         // Incrementa o índice para pular o nome do arquivo .via e continuar processando os próximos argumentos
+        //         i += 2;
+        //     }
+        //     // 1.5.2: Se o próximo argumento não existir ou for outro parâmetro, exibe uma mensagem de erro, pois o nome do arquivo .via é opcional
+        //     else{
+        //         printf("ERRO: Nome do arquivo .via não fornecido. (-via opcional)\n");
+        //         return -1;
+        //     }
+        // } 
         
         // 1.6: Se o argumento não for reconhecido como um parâmetro válido, exibe uma mensagem de aviso e ignora o argumento
         else{
-            fprintf(stderr, "AVISO: Argumento desconhecido '%s' ignorado.\n", argv[i]);
+            printf("AVISO: Argumento desconhecido '%s' ignorado.\n", argv[i]);
             i++; // Garante que o loop não fique infinito
         }
     }
@@ -262,6 +263,7 @@ int processarArgumentosInternos(Param* param, int argc, char* argv[]){
  */
 char* getDirEntradaCompleto(Param* param) {return param->dirEntradaCompleto;}
 char* getDirSaidaCompleto  (Param* param) {return param->dirSaidaCompleto;  }
+char* getDirSaida          (Param* param) {return param->dirSaida;          }
 char* getDirEntrada        (Param* param) {return param->dirEntrada;        }
 char* getNomeGeo           (Param* param) {return param->nomeGeo;           }
 char* getNomeQry           (Param* param) {return param->nomeQry;           }

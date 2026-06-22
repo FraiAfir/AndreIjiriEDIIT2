@@ -72,7 +72,7 @@ int readFileGeo(FILE* arquivoGeo, HashBin* dir, Quadras* q, Param* param){
     strcpy(caminhoSvgSaida, getDirSaidaCompleto(param));    // Ex: "./saida/"
     strcat(caminhoSvgSaida, nomeGeoLimpo);                  // Ex: "./saida/"  + "a"    => "./saida/a"
     strcat(caminhoSvgSaida, ".svg");                        // Ex: "./saida/a" + ".svg" => "./saida/a.svg"
-    
+
     // 2.5: Cria o arquivo no local correto
     FILE* arqSvg = criarSvg(caminhoSvgSaida, max_x, max_y);
     if(arqSvg == NULL){
@@ -84,7 +84,7 @@ int readFileGeo(FILE* arquivoGeo, HashBin* dir, Quadras* q, Param* param){
     char sw[256] = "1.0px";     // Largura da borda padrão
     char cfill[256] = "white";  // Cor de preenchimento padrão
     char cstrk[256] = "black";  // Cor da borda padrão
-    
+        
     // 4: Lê o arquivo linha por linha
     while(fgets(linha, sizeof(linha), arquivoGeo) != NULL){
 
@@ -121,18 +121,15 @@ int readFileGeo(FILE* arquivoGeo, HashBin* dir, Quadras* q, Param* param){
             // 4.2.3: Se a cor de preenchimento for branca, use preto para o texto do CEP para garantir legibilidade
             if(strcmp(cfill, "white") == 0) 
                 fprintf(arqSvg, "\t<text x=\"%lf\" y=\"%lf\" font-size=\"10\" font-weight=\"bold\" fill=\"%s\">%s</text>\n", x + 1, y + 11, "black", cep);
-
-            // 4.2.4: Se não, use branco para o texto do CEP para garantir legibilidade
-            else
-                fprintf(arqSvg, "\t<text x=\"%lf\" y=\"%lf\" font-size=\"10\" font-weight=\"bold\" fill=\"%s\">%s</text>\n", x + 1, y + 11, "black", cep);
         }
     }
 
     // 5: Fecha o arquivo .svg após a geração do conteúdo
     if(fecharSvg(arqSvg) != 0){
-        fprintf(stderr, "ERRO: Fechar o arquivo .svg após a geração do conteúdo.\n");
+        printf("ERRO: Fechar o arquivo .svg após a geração do conteúdo.\n");
         return -1;
     }
+
     return 0;
 }
 /*###############################################################################################*/
@@ -157,6 +154,7 @@ int processarGeo(Param* param, HashBin* h, Quadras* q){
         return -1;
     }
 
+    
     // 3: Verifica se a estrutura de dados para armazenar os dados do arquivo .geo foi criada com sucesso
     if(q == NULL){
         fprintf(stderr, "ERRO: Criar a estrutura de dados para armazenar os dados do arquivo .geo.\n");
@@ -164,13 +162,14 @@ int processarGeo(Param* param, HashBin* h, Quadras* q){
         return -1;
     }
 
+    
     // 4: Lê e processa os dados do arquivo .geo
     if(readFileGeo(arquivoGeo, h, q, param) != 0){
         fprintf(stderr, "ERRO: Leitura do arquivo .geo.\n");
         fclose(arquivoGeo);
         return -1;
     }
-
+    
     // 5: Fecha o arquivo .geo após o processamento
     fclose(arquivoGeo);
     return 0;

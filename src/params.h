@@ -56,6 +56,7 @@ int processarArgumentosInternos(Param* param, int argc, char* argv[]);
  */
 char* getDirEntradaCompleto(Param* param);
 char* getDirSaidaCompleto  (Param* param);
+char* getDirSaida          (Param* param);
 char* getDirEntrada        (Param* param);
 char* getNomeGeo           (Param* param);
 char* getNomeQry           (Param* param);
