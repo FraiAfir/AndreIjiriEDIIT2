@@ -15,7 +15,7 @@ mingw32-make ted_tests
 # Compilação
 C:\Users\andre\OneDrive\Documentos\GitHub\AndreIjiriEDIIT2\src
 mingw32-make
-./ted ...
+./ted -e ../entradas/ -f t1.geo -q consultas/t2.qry -o ../saidas/
 
 
 
