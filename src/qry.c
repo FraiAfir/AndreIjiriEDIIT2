@@ -69,58 +69,76 @@ int montarCaminhoQry(Param* param, char* caminhoQry){
 
 int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
     // 1: Prepara os arquivos de saída (SVG e TXT) para o processamento do arquivo .qry
-    // 1.1: Busca diretório de saída e nomes originais
+    // 1.1: Busca diretório de saída
     char* dirSaida = getDirSaidaCompleto(param);    // Ex: "./saida/"
-    char nomeGeoOriginal[256];                      // Ex: "a.geo" (sem o caminho, apenas o nome do arquivo)
-    char nomeQryOriginal[256];                      // Ex: "b.qry" (sem o caminho, apenas o nome do arquivo)
+
+    // 1.2: Buffers para armazenar os nomes dos arquivos .geo e .qry sem os caminhos, 
+    // para montar os nomes dos arquivos de saída corretamente
+    char nomeGeoOriginal[256];  // Ex: "a.geo" (sem o caminho, apenas o nome do arquivo)
+    char nomeQryOriginal[256];  // Ex: "b.qry" (sem o caminho, apenas o nome do arquivo)
     
-    // 1.2: Faz cópias locais dos nomes originais para manipulação (remoção de extensão, concatenação, etc.)
-    strcpy(nomeGeoOriginal, getNomeGeo(param)); 
-    strcpy(nomeQryOriginal, getNomeQry(param));
+    // 1.3: Busca os nomes dos arquivos .geo e .qry com os caminhos completos, 
+    // para extrair apenas os nomes limpos (sem os caminhos) e montar os nomes dos arquivos de saída corretamente
+    char *geoBruto = getNomeGeo(param); // Ex: "./entrada/a.geo" (com o caminho completo, como foi fornecido na linha de comando)
+    char *qryBruto = getNomeQry(param); // Ex: "./entrada/b.qry" (com o caminho completo, como foi fornecido na linha de comando)
 
-    // 1.3: Remove extensões das cópias locais
-    char* p;
-    p = strrchr(nomeGeoOriginal, '.');
-    if(p) *p = '\0';
-    p = strrchr(nomeQryOriginal, '.');
-    if(p) *p = '\0';
+    // 1.4: Extrai apenas o nome do arquivo .geo e do arquivo .qry, ignorando o caminho/pastas que podem existir,
+    char *apenasNomeGeo = strrchr(geoBruto, '/');   // Ex: "./entrada/a.geo" => "/a.geo"
+    if(apenasNomeGeo != NULL) apenasNomeGeo++;      // Pula a barra '/' para obter apenas o nome do arquivo, sem o caminho. Ex: "/a.geo" => "a.geo"
+    else apenasNomeGeo = geoBruto;                  // Se não tiver barra, já é o nome limpo. Ex: "a.geo" => "a.geo"
+    char *apenasNomeQry = strrchr(qryBruto, '/');   // Ex: "./entrada/b.qry" => "/b.qry"
+    if(apenasNomeQry != NULL) apenasNomeQry++;      // Pula a barra '/' para obter apenas o nome do arquivo, sem o caminho. Ex: "/b.qry" => "b.qry"
+    else apenasNomeQry = qryBruto;                  // Se não tiver barra, já é o nome limpo. Ex: "b.qry" => "b.qry"
 
-    // 1.4: Monta Caminho do SVG BASE (O que já existe)
+    // 1.5: Copia os nomes limpos para as variáveis locais
+    strcpy(nomeGeoOriginal, apenasNomeGeo); // nomeGeoOriginal = "a.geo"
+    strcpy(nomeQryOriginal, apenasNomeQry); // nomeQryOriginal = "b.qry"
+
+    // 1.6: Remove extensões das cópias locais
+    char* p;                            // Ponteiro auxiliar para encontrar a posição do ponto '.' que indica o início da extensão do arquivo
+    p = strrchr(nomeGeoOriginal, '.');  // Ex: "a.geo" => ".geo"
+    if(p) *p = '\0';                    // Substitui o ponto pela terminação da string para remover a extensão. Ex: "a.geo" => "a"
+    p = strrchr(nomeQryOriginal, '.');  // Ex: "b.qry" => ".qry"
+    if(p) *p = '\0';                    // Substitui o ponto pela terminação da string para remover a extensão. Ex: "b.qry" => "b"
+
+    // 1.7: Monta Caminho do SVG BASE 
+    // (O arquivo .svg gerado a partir do arquivo .geo, que servirá de base para o clone do SVG QRY)
     // dirSaida + nomeGeo + .svg
     // Ex: "./saida/" + "a" + ".svg" => "./saida/a.svg"
-    char caminhoSvgBase[512];
-    strcpy(caminhoSvgBase, dirSaida);
-    strcat(caminhoSvgBase, nomeGeoOriginal);
-    strcat(caminhoSvgBase, ".svg");
+    char caminhoSvgBase[512];                   // Variável para armazenar o caminho completo do arquivo .svg
+    strcpy(caminhoSvgBase, dirSaida);           // Ex: caminhoSvgBase = "./saida/"
+    strcat(caminhoSvgBase, nomeGeoOriginal);    // Ex: "./saida/" + "a" => "./saida/a"
+    strcat(caminhoSvgBase, ".svg");             // Ex: "./saida/a" + ".svg" => "./saida/a.svg"
 
-    // 1.5: Montar Caminho do SVG QRY (O clone novo)
+    // 1.8: Montar Caminho do SVG QRY
+    // (O arquivo .svg que será gerado a partir do arquivo .qry, clonando o SVG BASE e adicionando os elementos gráficos correspondentes aos comandos do arquivo .qry)
     // dirSaida + nomeGeo + "-" + nomeQry + .svg
     // Ex: "./saida/" + "a" + "-" + "b" + ".svg" => "./saida/a-b.svg"
-    char caminhoSvgQry[512];
-    strcpy(caminhoSvgQry, dirSaida);
-    strcat(caminhoSvgQry, nomeGeoOriginal);
-    strcat(caminhoSvgQry, "-");
-    strcat(caminhoSvgQry, nomeQryOriginal);
-    strcat(caminhoSvgQry, ".svg");
+    char caminhoSvgQry[512];                   // Variável para armazenar o caminho completo do arquivo .svg
+    strcpy(caminhoSvgQry, dirSaida);           // Ex: caminhoSvgQry = "./saida/"
+    strcat(caminhoSvgQry, nomeGeoOriginal);    // Ex: "./saida/" + "a" => "./saida/a"
+    strcat(caminhoSvgQry, "-");                // Ex: "./saida/a" + "-" => "./saida/a-"
+    strcat(caminhoSvgQry, nomeQryOriginal);    // Ex: "./saida/a-" + "b" => "./saida/a-b"
+    strcat(caminhoSvgQry, ".svg");             // Ex: "./saida/a-b" + ".svg" => "./saida/a-b.svg"
 
-    // 1.6: Montar Caminho do TXT (O relatório)
+    // 1.9: Montar Caminho do TXT (arquivo de saída para os resultados das consultas do arquivo .qry)
     // dirSaida + nomeGeo + "-" + nomeQry + .txt
     // Ex: "./saida/" + "a" + "-" + "b" + ".txt" => "./saida/a-b.txt"
-    char caminhoTxtQry[512];
-    strcpy(caminhoTxtQry, dirSaida);
-    strcat(caminhoTxtQry, nomeGeoOriginal);
-    strcat(caminhoTxtQry, "-");
-    strcat(caminhoTxtQry, nomeQryOriginal);
-    strcat(caminhoTxtQry, ".txt");
+    char caminhoTxtQry[512];                    // Variável para armazenar o caminho completo do arquivo .txt
+    strcpy(caminhoTxtQry, dirSaida);            // Ex: caminhoTxtQry = "./saida/"
+    strcat(caminhoTxtQry, nomeGeoOriginal);     // Ex: "./saida/" + "a" => "./saida/a"
+    strcat(caminhoTxtQry, "-");                 // Ex: "./saida/a" + "-" => "./saida/a-"
+    strcat(caminhoTxtQry, nomeQryOriginal);     // Ex: "./saida/a-" + "b" => "./saida/a-b"
+    strcat(caminhoTxtQry, ".txt");              // Ex: "./saida/a-b" + ".txt" => "./saida/a-b.txt"
 
-    // 1.7: Clona o SVG BASE para o SVG QRY
+    // 1.10: Clona o SVG BASE para o SVG QRY
     FILE* qrySVG = clonarSvgBase(caminhoSvgBase, caminhoSvgQry);    
     if(qrySVG == NULL){
         printf("ERRO: Nao foi possivel abrir/clonar o SVG: %s\n", caminhoSvgBase);
         return -1;
     }
-
-    // 1.8: Abre o arquivo de saída .txt para escrita dos resultados das consultas do arquivo .qry
+    
+    // 1.11: Abre o arquivo de saída .txt para escrita dos resultados das consultas do arquivo .qry
     FILE* qryTXT = fopen(caminhoTxtQry, "w");
     if(qryTXT == NULL){
         printf("ERRO: Nao foi possivel criar o arquivo de texto para os resultados do .qry: %s\n", caminhoTxtQry);

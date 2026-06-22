@@ -51,14 +51,32 @@ int readFileGeo(FILE* arquivoGeo, HashBin* dir, Quadras* q, Param* param){
     // 1.4: "Rebobina" o ponteiro de leitura do arquivo .geo de volta para a primeira linha
     rewind(arquivoGeo);
 
-    // 2: Cria o arquivo .svg para escrita do conteúdo do arquivo .geo
-    char* geoSVG = getNomeGeo(param);
-    char* ponto = strchr(geoSVG, '.');
-    if(ponto != NULL) *ponto = '\0';
-    strcat(geoSVG, ".svg");
-    FILE* arqSvg = criarSvg(geoSVG, max_x, max_y);
-    if(arqSvg == NULL) {
-        fprintf(stderr, "ERRO: Não foi possível criar o SVG.\n");
+    // 2: Cria o arquivo .svg no diretório de saída correto
+    char nomeGeoLimpo[256];             // Variável para armazenar o nome do arquivo .geo sem o caminho e a extensão
+    char *geoBruto = getNomeGeo(param); // Obtém o nome do arquivo .geo com o caminho completo (Ex: "./entrada/a.geo")
+    
+    // 2.1: Extrai apenas o nome do arquivo, ignorando as pastas de entrada
+    char* apenasNomeGeo = strrchr(geoBruto, '/');   // Ex: "./entrada/a.geo" => "/a.geo"
+    if(apenasNomeGeo != NULL) apenasNomeGeo++;      // Pula a barra '/' para obter apenas o nome do arquivo, sem o caminho. Ex: "/a.geo" => "a.geo"
+    else apenasNomeGeo = geoBruto;                  // Se não tiver barra, já é o nome limpo. Ex: "a.geo" => "a.geo"
+    
+    // 2.2: Copia o nome limpo para a variável local
+    strcpy(nomeGeoLimpo, apenasNomeGeo);    // Ex: "a.geo"
+    
+    // 2.3: Remove a extensão original (.geo)
+    char* ponto = strrchr(nomeGeoLimpo, '.');   // Ex: "a.geo" => ".geo"
+    if(ponto != NULL) *ponto = '\0';            // Substitui o ponto pela terminação da string para remover a extensão. Ex: "a.geo" => "a"
+    
+    // 2.4: Monta o caminho final correto: diretório_de_saída + nome_limpo + .svg
+    char caminhoSvgSaida[512];                              // Variável para armazenar o caminho completo do arquivo .svg de saída
+    strcpy(caminhoSvgSaida, getDirSaidaCompleto(param));    // Ex: "./saida/"
+    strcat(caminhoSvgSaida, nomeGeoLimpo);                  // Ex: "./saida/"  + "a"    => "./saida/a"
+    strcat(caminhoSvgSaida, ".svg");                        // Ex: "./saida/a" + ".svg" => "./saida/a.svg"
+    
+    // 2.5: Cria o arquivo no local correto
+    FILE* arqSvg = criarSvg(caminhoSvgSaida, max_x, max_y);
+    if(arqSvg == NULL){
+        printf("ERRO: Nao foi possível criar o SVG no diretorio de saida: %s\n", caminhoSvgSaida);
         return -1;
     }
 
