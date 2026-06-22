@@ -183,10 +183,14 @@ clean:
 	$(RM) "../test/test_svg$(EXEC)"
 	$(RM) "../test/test_qry$(EXEC)"
 	$(RM) "../test/teste.svg"
-	$(RM) "./t1.svg"
 	$(RM) "./hashQ_teste.hf"
 	$(RM) "./hashQ_teste.hfc"
 	$(RM) "./teste.hf"
+	$(RM) "../saidas/cidade.hf"
+	$(RM) "../saidas/cidade.hfc"
+	$(RM) "../saidas/t1.svg"
+	$(RM) "../saidas/t1-t2.svg"
+	$(RM) "../saidas/t1-t2.txt"
 	@echo Arquivos de teste limpos com sucesso!
 
 	@echo.
