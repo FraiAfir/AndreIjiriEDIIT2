@@ -20,6 +20,8 @@ int main(int argc, char* argv[]){
     HashBin *htq    = NULL;
     Quadras *q      = criarQuadra();
 
+
+
     // 2. PROCESSAR PARÂMETROS DA LINHA DE COMANDOS
     printf("\n\n\n\n\n#------------ PROCESSANDO OS PARAMETROS DA LINHA DE COMANDO... ----------#\n");
     // 2.1: Processa os parâmetros da linha de comando e armazena as informações necessárias para a execução do programa no objeto de parâmetros criado na etapa anterior
@@ -30,6 +32,8 @@ int main(int argc, char* argv[]){
     }printf("#------------------------------------------------------------------------#\n\n\n\n\n");
     // 2.2: Cria a estrutura de dados necessária para armazenar os dados do arquivo .geo
     htq = criarHash(param);
+
+
 
     // 3. PROCESSAR O GEO
     printf("\n#-------------------- PROCESSANDO O ARQUIVO .GEO... ---------------------#\n");
@@ -47,6 +51,8 @@ int main(int argc, char* argv[]){
         return -1;
     }
     
+
+
     // // 4. PROCESSAR O PM (Se fornecido)
     // // 4.1: Verifica se o arquivo .pm foi fornecido como argumento. 
     // // Se sim, processa o arquivo .pm e armazena os dados em uma estrutura de dados adequada (Tabela Hash, Pessoas, etc.)
@@ -77,6 +83,8 @@ int main(int argc, char* argv[]){
     // }
     // printf("#------------------------------------------------------------------------#\n\n\n\n\n");
 
+
+
     // 4. PROCESSAR O QRY (Se fornecido)
     // 4.1: Verifica se o arquivo .qry foi fornecido como argumento.
     if (getNomeQry(param) == NULL){
@@ -91,6 +99,8 @@ int main(int argc, char* argv[]){
         }
         printf("#------------------------------------------------------------------------#\n\n\n\n\n");
     }
+    
+
     
     // 5: LIBERAR MEMÓRIA ALOCADA PARA PARÂMETROS E ENCERRAR PROGRAMA
     printf("#---------------------- ENCERRANDO O PROGRAMA... ------------------------#\n");
