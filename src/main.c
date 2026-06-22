@@ -7,6 +7,7 @@
 #include "hashBin.h"
 #include "geo.h"
 #include "qry.h"
+#include "svg.h"
 
 int main(int argc, char* argv[]){
     system("cls");
@@ -46,7 +47,7 @@ int main(int argc, char* argv[]){
         return -1;
     }printf("#------------------------------------------------------------------------#\n\n\n\n\n");
     // 3.2: Salva o diretório da tabela hash com os dados do arquivo .geo em um arquivo de saída no formato .hfc
-    if(salvarDiretorioHFC(htq, getNomeGeo(param)) != 0){
+    if(salvarDiretorioHFC(htq, param) != 0){
         printf("ERRO: Salvamento do diretório da tabela hash do arquivo .geo.\n");
         shutProgram(&param, &htq, &q);
         return -1;
