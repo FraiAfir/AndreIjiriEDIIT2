@@ -155,12 +155,17 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
         linha[strcspn(linha, "\n")] = '\0'; // Remove o ENTER do final da linha, se existir
         linha[strcspn(linha, "\r")] = '\0'; // Previne bugs de quebra de linha do Windows
         if(strlen(linha) == 0) continue;    // Ignora linhas em branco
-
+        
         // Precedido de um [*] para facilitar a identificação das linhas do arquivo .qry no meio dos outros prints de depuração
-        fprintf(qryTXT, "\n[*] %s\n", linha);
+        fprintf(qryTXT, "\n[*] %s", linha);
 
-        // 2.2: Extrai apenas o comando (string) para sabermos o que fazer
-        char* comando = strtok(linha, " \n\r");
+        // 2.2: Extrai apenas o primeiro token da linha, que corresponde ao comando do arquivo .qry, para identificar qual comando deve ser processado
+        // Cria uma cópia da linha para usar na extração do comando, para não perder a linha original para os próximos comandos
+        char* bufferLinha = strdup(linha);
+        // Buffer para armazenar o comando extraído da linha do arquivo .qry
+        char* comando = NULL;
+        // Extrai o primeiro token da linha, usando espaço como delimitador. Ex: "mvm 50 10 10 100 100" => "mvm"
+        comando = strtok(bufferLinha, " ");
 
         // 2.3: Processa o comando lido do arquivo .qry
         if(comando != NULL){
@@ -169,12 +174,16 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
              */
             if(strcmp(comando, "@o?") == 0){
                 // Inicializa buffers para os parâmetros do comando @o? (reg, cep, face e num)
-                char *reg = NULL, *cep = NULL, *face = NULL, *num = NULL;
+                char reg[100]  = "";
+                char cep[100]  = "";
+                char face[100] = "";
+                char num[100]  = "";
+
                 // Extrai os parâmetros do comando @o? (reg, cep, face e num)
                 sscanf(linha, "%*s %s %s %s %s", reg, cep, face, num);
 
                 // Verifica se os parâmetros do comando @o? foram lidos corretamente
-                if(reg != NULL && cep != NULL && face != NULL && num != NULL){
+                if(reg[0] != '\0' && cep[0] != '\0' && face[0] != '\0' && num[0] != '\0'){
                     if(armazenarPosGeografica(reg, cep, face, num, qrySVG, qryTXT) != 0){
                         fprintf(stderr, "ERRO: Falha ao armazenar a posicao geografica do endereco no registrador.\n");
                         return -1;
@@ -190,12 +199,17 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
              */
             if(strcmp(comando, "mvm") == 0){
                 // Inicializa buffers para os parâmetros do comando mvm (v, x, y, w e h)
-                char *v = NULL, *x = NULL, *y = NULL, *w = NULL, *h = NULL;
+                char v[100] = "";
+                char x[100] = "";
+                char y[100] = "";
+                char w[100] = "";
+                char h[100] = "";
+                
                 // Extrai os parâmetros do comando mvm (v, x, y, w, h)
                 sscanf(linha, "%*s %s %s %s %s %s", v, x, y, w, h);
 
                 // Verifica se os parâmetros do comando mvm foram lidos corretamente
-                if(v != NULL && x != NULL && y != NULL && w != NULL && h != NULL){
+                if(v[0] != '\0' && x[0] != '\0' && y[0] != '\0' && w[0] != '\0' && h[0] != '\0'){
                     if(atualizarVelocidade(v, x, y, w, h) != 0){
                         fprintf(stderr, "ERRO: Falha ao atualizar a velocidade media das arestas.\n");
                         return -1;
@@ -211,12 +225,13 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
              */
             if(strcmp(comando, "regs") == 0){
                 // Inicializa buffer para o parâmetro do comando regs (vl)
-                char *vl = NULL;
+                char vl[100] = "";
+
                 // Extrai o parâmetro do comando regs (velocidade média limite)
                 sscanf(linha, "%*s %s", vl);
 
                 // Verifica se o parâmetro do comando regs foi lido corretamente
-                if(vl != NULL){
+                if(vl[0] != '\0'){
                     if(calcularComponentesConexos(vl, qrySVG, qryTXT) != 0){
                         fprintf(stderr, "ERRO: Falha ao calcular os componentes conexos.\n");
                         return -1;
@@ -233,12 +248,13 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
              */
             if(strcmp(comando, "exp") == 0){
                 // Inicializa buffer para o parâmetro do comando exp (vl)
-                char *vl = NULL;
+                char vl[100] = "";
+
                 // Extrai o parâmetro do comando exp (velocidade média limite)
                 sscanf(linha, "%*s %s", vl);
 
                 // Verifica se o parâmetro do comando exp foi lido corretamente
-                if(vl != NULL){
+                if(vl[0] != '\0'){
                     if(calcularArvoreGeradoraMinima(vl, qrySVG) != 0){
                         fprintf(stderr, "ERRO: Falha ao calcular a árvore geradora mínima.\n");
                         return -1;
@@ -254,12 +270,17 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
              * Desenhar os percursos (mais curto, mais rápido) com as cores cc e cr, respectivamente.
              */
             if(strcmp(comando, "p?") == 0){
+                // Inicializa buffers para os parâmetros do comando p? (reg1, reg2, cc e cr)
+                char reg1[100] = "";
+                char reg2[100] = "";
+                char cc[100]   = "";
+                char cr[100]   = "";
+                
                 // Extrai os parâmetros do comando p?
-                char *reg1 = NULL, *reg2 = NULL, *cc = NULL, *cr = NULL;
                 sscanf(linha, "%*s %s %s %s %s", reg1, reg2, cc, cr);
 
                 // Verifica se os parâmetros do comando p? foram lidos corretamente
-                if(reg1 != NULL && reg2 != NULL && cc != NULL && cr != NULL){
+                if(reg1[0] != '\0' && reg2[0] != '\0' && cc[0] != '\0' && cr[0] != '\0'){
                     if(calcularMelhorTrajeto(reg1, reg2, cc, cr, qrySVG, qryTXT) != 0){
                         fprintf(stderr, "ERRO: Falha ao calcular o melhor trajeto.\n");
                         return -1;
@@ -273,7 +294,7 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
 
         // 2.4: Se o comando lido do arquivo .qry for NULL, imprime uma mensagem de erro e continua para a próxima linha
         else{
-            printf("ERRO: Comando lido do arquivo .qry \"é\" NULL.\n");
+            printf("ERRO: Comando lido do arquivo .qry eh NULL.\n");
             return -1;
         }
     }
