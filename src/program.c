@@ -14,7 +14,9 @@ int bootProgram(Param** param, HashBin** htq, Quadras** q){
     }
 
     // 2: Cria a estrutura de dados necessária para armazenar os dados do arquivo .geo
-    *htq = criarHash("cidade.hf");
+    *htq = criarHash(*param);
+
+    // 2.3: Verifica se a tabela hash foi criada com sucesso
     if(*htq == NULL){
         fprintf(stderr, "ERRO: Criar a estrutura de dados para armazenar os dados do arquivo .geo.\n");
         shutProgram(param, htq, q);

@@ -6,6 +6,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include "params.h"
+
 typedef struct quadras Quadras;
 typedef struct bucket Bucket;
 typedef struct hashBin HashBin;
@@ -154,7 +156,7 @@ char*  getQuadraCFill(Quadras* q);
  * @param nomeArquivo Nome do arquivo binário a ser criado
  * @return            Ponteiro para a tabela hash criada. NULL em caso de erro
  */
-HashBin* criarHash(const char* nomeArquivo);
+HashBin* criarHash(Param* params);
 /**
  * Esta função é responsável por criar um novo registro do tipo Quadras, inicializando os campos como nulo.
  * @return Ponteiro para o novo registro criado. NULL em caso de erro
@@ -211,10 +213,10 @@ int inserirReg(HashBin* dir, char* cep, double x, double y, double w, double h, 
  * em um formato que possa ser lido e reconstruído posteriormente.
  * 
  * @param dir               Ponteiro para o diretório da tabela hash a ser salvo
- * @param nomeArquivoHFC    Nome do arquivo binário onde o diretório deve ser salvo
+ * @param params            Ponteiro para os parâmetros do programa
  * @return                  0 em caso de sucesso. -1 em caso de erro
  */
-int salvarDiretorioHFC(HashBin* dir, char* nomeArquivoHFC);
+int salvarDiretorioHFC(HashBin* dir, Param* params);
 /**
  * Esta função é responsável por carregar o diretório da tabela hash de um arquivo binário,
  * permitindo que a estrutura da tabela hash seja recarregada em uma sessão posterior.

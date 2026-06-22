@@ -10,33 +10,26 @@
 #include "svg.h"
 
 int main(int argc, char* argv[]){
-    system("cls");
-
     printf("##################### INICIO DA EXECUCAO DO PROGRAMA #####################\n\n");
 
     printf("Argumentos da linha de comando:\n");
     for(int i = 0; i < argc; i++) {printf("Argumento do argv[%d]: %s\n", i, argv[i]);}
 
     // 1: Cria os objetos das estruturas necssárias para a execução do código
-    Param   *param  = NULL;
+    Param   *param  = criarParametro();
     HashBin *htq    = NULL;
-    Quadras *q      = NULL;
-
-    // 1.1: Inicializa os objetos de Parametro e da ED para armazenar os dados do arquivo .geo
-    if(bootProgram(&param, &htq, &q) == -1){
-        printf("ERRO: Inicializacao dos objetos.\n");
-        return -1;
-    }
+    Quadras *q      = criarQuadra();
 
     // 2. PROCESSAR PARÂMETROS DA LINHA DE COMANDOS
     printf("\n\n\n\n\n#------------ PROCESSANDO OS PARAMETROS DA LINHA DE COMANDO... ----------#\n");
     // 2.1: Processa os parâmetros da linha de comando e armazena as informações necessárias para a execução do programa no objeto de parâmetros criado na etapa anterior
-    if(processarParametros(param, argc, argv) == -1) {
+    if(processarParametros(param, argc, argv) == -1){
         printf("ERRO: Processamento dos parametros da linha de comando.\n");
         shutProgram(&param, &htq, &q);
         return -1;
     }printf("#------------------------------------------------------------------------#\n\n\n\n\n");
-    
+    // 2.2: Cria a estrutura de dados necessária para armazenar os dados do arquivo .geo
+    htq = criarHash(param);
 
     // 3. PROCESSAR O GEO
     printf("\n#-------------------- PROCESSANDO O ARQUIVO .GEO... ---------------------#\n");
@@ -46,13 +39,13 @@ int main(int argc, char* argv[]){
         shutProgram(&param, &htq, &q);
         return -1;
     }printf("#------------------------------------------------------------------------#\n\n\n\n\n");
+    
     // 3.2: Salva o diretório da tabela hash com os dados do arquivo .geo em um arquivo de saída no formato .hfc
     if(salvarDiretorioHFC(htq, param) != 0){
         printf("ERRO: Salvamento do diretório da tabela hash do arquivo .geo.\n");
         shutProgram(&param, &htq, &q);
         return -1;
     }
-    printf("#------------------------------------------------------------------------#\n\n\n\n\n");
     
     // // 4. PROCESSAR O PM (Se fornecido)
     // // 4.1: Verifica se o arquivo .pm foi fornecido como argumento. 
@@ -105,5 +98,6 @@ int main(int argc, char* argv[]){
     printf("#------------------------------------------------------------------------#\n\n\n\n\n");
     printf("\n##################### FIM DA EXECUCAO DO PROGRAMA ########################\n\n");
 
+    printf("\n");
     return 0;
 }

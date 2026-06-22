@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include "params.h"
 #include "hashBin.h"
 
 #define TAM_STRING 32
@@ -237,7 +236,8 @@ char*  getQuadraCFill(Quadras* q) { return q->cfill; }
 
 
 /*                                        FUNÇÕES PRINCIPAIS                                     */
-HashBin* criarHash(const char* nomeArquivo){
+HashBin* criarHash(Param* params){
+
     // 1: Aloca a estrutura do Diretório na memória RAM
     HashBin* dir = (HashBin*)malloc(sizeof(HashBin));
     if(dir == NULL){
@@ -248,7 +248,13 @@ HashBin* criarHash(const char* nomeArquivo){
     // 2: Cria/Abre o arquivo físico no disco no modo Binário de Leitura e Escrita
     // "wb+" Cria um arquivo novo limpo
     // "rb+" Abre um arquivo existente para leitura e escrita (mantendo o conteúdo existente)
-    dir->arq_hf = fopen(nomeArquivo, "wb+");
+
+    // 2.1: Monta o caminho de saída do arquivo físico da tabela hash usando o diretório de saída completo fornecido pelos parâmetros e o nome do arquivo "cidade.hf"
+    char nomeArquivoFisico[256];                            // Buffer para armazenar o caminho completo do arquivo físico do diretório (.hf)
+    strcpy(nomeArquivoFisico, getDirSaidaCompleto(params)); // nomeArquivoFisico = "./saida/"
+    strcat(nomeArquivoFisico, "cidade.hf");                // "./saida/" + "cidade.hf" = "./saida/cidade.hf"
+
+    dir->arq_hf = fopen(nomeArquivoFisico, "wb+");
     if(dir->arq_hf == NULL){
         printf("ERRO: Falha na abertura do arquivo físico da tabela hash.\n");
         free(dir);
@@ -453,9 +459,18 @@ int inserirReg(HashBin* dir, char* cep, double x, double y, double w, double h, 
     }
 }
 
-int salvarDiretorioHFC(HashBin* dir, char* nomeArquivoHFC){
-    // 1: Abre o arquivo de diretório para escrita em modo binário
-    FILE* f = fopen("cidade.hfc", "wb");
+int salvarDiretorioHFC(HashBin* dir, Param* params){
+    // 1: Salva a estrutura do diretório da RAM para um arquivo físico (.hfc) 
+    // para que ela possa ser carregada posteriormente, mantendo a persistência dos dados do diretório da tabela hash
+
+    // 1.1: Monta o caminho de saída com o nome do arquivo físico do diretório (.hfc) para garantir que ele seja criado corretamente no local desejado
+    char nomeArquivoFisico[256];                    // Buffer para armazenar o caminho completo do arquivo físico do diretório (.hfc)
+    strcpy(nomeArquivoFisico, getDirSaidaCompleto(params)); // nomeArquivoFisico = "./saida/"
+    strcat(nomeArquivoFisico, "cidade.hfc");        // "./saida/" + "cidade.hfc" = "./saida/cidade.hfc"
+
+    // 1.2: Abre o arquivo de diretório para escrita em modo binário
+    FILE* f = fopen(nomeArquivoFisico, "wb");
+    // 1.3: Verifica se o arquivo foi aberto corretamente
     if(f == NULL){
         printf("ERRO: Nao foi possivel criar o arquivo cidade.hfc\n");
         return -1;
