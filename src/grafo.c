@@ -38,16 +38,18 @@ typedef struct grafo{
 
 
 /*                                       FUNÇÕES AUXILIARES                                       */
-char* getIndiceVertice(Grafo* g, char* id){
+int getIndiceVertice(Grafo* g, char* id){
     // 1: Verifica se o grafo é válido (não é NULL)
     if(g == NULL){
         printf("[ERRO]\n");
         printf("in grafo.c [getIndiceVertice();]: Invalid Graph (NULL)\n");
-        return NULL;
+        return -1;
     }
     
     // 2: Procedimento para encontrar o índice do vértice com o ID fornecido
     // TO-DO
+
+    return 1;
 }
 
 int getNumVertices(Grafo* g){
@@ -170,7 +172,7 @@ int inserirAresta(Grafo* g, char* ldir, char* lesq, double cmp, double vm, char*
         return -1;
     }
 
-    // 2: Encontra os índices inteiros dos vértices de origem e destino usando a função getIndiceVertice, 
+    // 2: Encontra os índices dos vértices de origem e destino usando a função getIndiceVertice, 
     // passando os IDs dos vértices como parâmetros
     int idxOrigem  = getIndiceVertice(g, ldir);
     int idxDestino = getIndiceVertice(g, lesq);
@@ -178,7 +180,7 @@ int inserirAresta(Grafo* g, char* ldir, char* lesq, double cmp, double vm, char*
     if(idxOrigem == -1 || idxDestino == -1){
         printf("[ERRO]\n");
         printf("in grafo.c [inserirAresta();]: Vertices not found\n");
-        printf("[ldir:\t%s]\n[lesq:\t%s]\n", ldir, lesq);
+        printf("[ldir:\t%p]\n[lesq:\t%p]\n", (void*)ldir, (void*)lesq);
         return -1;
     }
 
