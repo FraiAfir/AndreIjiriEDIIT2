@@ -3,7 +3,12 @@
 
 typedef struct parametro Param;
 
-/**
+
+
+/** DEFINIÇÃO DO MÓDULO
+ * Este módulo de Parâmetros é responsável por processar os parâmetros/argumentos passados na linha de comando para o programa,
+ * armazenando os valores dos parâmetros em uma estrutura de dados adequada (Param).
+ * 
  * Este arquivo define a estrutura de dados e as funções relacionadas ao 
  * processamento dos parâmetros/argumentos passados na linha de comando para o programa.
  * 
@@ -15,6 +20,8 @@ typedef struct parametro Param;
  * As funções de processamento dos parâmetros da linha de comando seguem as regras estabelecidas para os parâmetros obrigatórios e opcionais, 
  * e garantem que os caminhos completos sejam formados corretamente para os arquivos e diretórios de entrada e saída.
  */
+
+
 
 /*                                       FUNÇÕES AUXILIARES                                      */
 /**
@@ -60,13 +67,13 @@ char* getDirSaida          (Param* param);
 char* getDirEntrada        (Param* param);
 char* getNomeGeo           (Param* param);
 char* getNomeQry           (Param* param);
-char* getNomePM            (Param* param);
+char* getNomeVia           (Param* param);
 void  setDirEntradaCompleto(Param* param, const char* dirEntradaCompleto);
 void  setDirEntrada        (Param* param, const char* dirEntrada);
 void  setDirSaida          (Param* param, const char* dirSaida);
 void  setNomeGeo           (Param* param, const char* nomeGeo);
 void  setNomeQry           (Param* param, const char* nomeQry);
-void  setNomePM            (Param* param, const char* nomePM);
+void  setNomeVia           (Param* param, const char* nomeVia);
 /*###############################################################################################*/
 
 

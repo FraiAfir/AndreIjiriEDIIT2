@@ -11,7 +11,7 @@ typedef struct parametro{
     char* dirSaida;              // Diretório de saída   (obrigatório)          Ex: "./saida/"
     char* nomeGeo;               // Nome do arquivo .geo (obrigatório)          Ex: "cidade.geo"
     char* nomeQry;               // Nome do arquivo .qry (opcional)             Ex: "consultas.qry"
-    char* nomePM;                // Nome do arquivo .pm  (opcional)             Ex: "pessoas.pm"
+    char* nomeVia;               // Nome do arquivo .via (opcional)             Ex: "vias.via"
 
     char* dirEntradaCompleto;    // Caminho completo do diretório de entrada
     char* dirSaidaCompleto;      // Caminho completo do diretório de saída
@@ -110,7 +110,7 @@ int tratarCaminhosCompletos(Param* param){
     // 3: Exibe os caminhos completos dos arquivos e diretórios para debugação
     printf("Geo: \t\t%s\n", param->nomeGeo);
     printf("Qry: \t\t%s\n", param->nomeQry);
-    printf("VIA: \t\t%s\n", param->nomePM);
+    printf("Via: \t\t%s\n", param->nomeVia);
     printf("Dir Entrada: \t%s\n", param->dirEntradaCompleto);
     printf("Dir Saida: \t%s\n", param->dirSaidaCompleto);
 
@@ -267,7 +267,7 @@ char* getDirSaida          (Param* param) {return param->dirSaida;          }
 char* getDirEntrada        (Param* param) {return param->dirEntrada;        }
 char* getNomeGeo           (Param* param) {return param->nomeGeo;           }
 char* getNomeQry           (Param* param) {return param->nomeQry;           }
-char* getNomePM            (Param* param) {return param->nomePM;            }
+char* getNomeVia           (Param* param) {return param->nomeVia;           }
 void  setDirEntradaCompleto(Param* param, const char* dirEntradaCompleto){
     // 1: Verifica se o campo dirEntradaCompleto já possui um valor alocado
     // e, se sim, libera a memória alocada para evitar vazamento de memória 
@@ -348,21 +348,21 @@ void  setNomeQry(Param* param, const char* nomeQry){
     // 3: Copia o valor do nome do arquivo .qry para o campo nomeQry da estrutura de parâmetros
     strcpy(param->nomeQry, nomeQry);
 }
-void  setNomePM(Param* param, const char* nomePM){
-    // 1: Verifica se o campo nomePM já possui um valor alocado
+void  setNomeVia(Param* param, const char* nomeVia){
+    // 1: Verifica se o campo nomeVia já possui um valor alocado
     // e, se sim, libera a memória alocada para evitar vazamento de memória 
-    // antes de atribuir um novo valor ao campo nomePM
-    if(param->nomePM != NULL) free(param->nomePM);
+    // antes de atribuir um novo valor ao campo nomeVia
+    if(param->nomeVia != NULL) free(param->nomeVia);
 
-    // 2: Aloca memória para o campo nomePM
-    param->nomePM = malloc(sizeof(char) * (strlen(nomePM) + 1));
-    if(param->nomePM == NULL){
+    // 2: Aloca memória para o campo nomeVia
+    param->nomeVia = malloc(sizeof(char) * (strlen(nomeVia) + 1));
+    if(param->nomeVia == NULL){
         fprintf(stderr, "ERRO: Falha na alocação de memória para o nome do arquivo .pm.\n");
         return;
     }
 
-    // 3: Copia o valor do nome do arquivo .pm para o campo nomePM da estrutura de parâmetros
-    strcpy(param->nomePM, nomePM);
+    // 3: Copia o valor do nome do arquivo .pm para o campo nomeVia da estrutura de parâmetros
+    strcpy(param->nomeVia, nomeVia);
 }
 /*###############################################################################################*/
 
@@ -382,7 +382,7 @@ Param* criarParametro(){
     param->dirSaida   = NULL;
     param->nomeGeo    = NULL;
     param->nomeQry    = NULL;
-    param->nomePM     = NULL;
+    param->nomeVia    = NULL;
 
     param->dirEntradaCompleto = NULL;
     param->dirSaidaCompleto   = NULL;
@@ -426,7 +426,7 @@ int freeParametros(Param* param){
     if(param->dirEntrada != NULL) free(param->dirEntrada);
     if(param->nomeGeo    != NULL) free(param->nomeGeo);
     if(param->nomeQry    != NULL) free(param->nomeQry);
-    if(param->nomePM     != NULL) free(param->nomePM);
+    if(param->nomeVia    != NULL) free(param->nomeVia);
     if(param->dirSaida   != NULL) free(param->dirSaida);
 
     if(param->dirEntradaCompleto != NULL) free(param->dirEntradaCompleto);
