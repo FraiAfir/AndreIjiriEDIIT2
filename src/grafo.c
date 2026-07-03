@@ -38,12 +38,12 @@ typedef struct grafo{
 
 
 /*                                       FUNÇÕES AUXILIARES                                       */
-int getIndiceVertice(Grafo* g, char* id){
+char* getIndiceVertice(Grafo* g, char* id){
     // 1: Verifica se o grafo é válido (não é NULL)
     if(g == NULL){
-        printf("[ERRO]\n");
-        printf("in grafo.c [getIndiceVertice();]: Invalid Graph (NULL)\n");
-        return -1;
+        printf("[ERROR]\n");
+        printf("In grafo.c [getIndiceVertice();]: Invalid Graph (NULL)\n");
+        return NULL;
     }
     
     // 2: Procedimento para encontrar o índice do vértice com o ID fornecido
@@ -55,8 +55,8 @@ int getIndiceVertice(Grafo* g, char* id){
 int getNumVertices(Grafo* g){
     // 1: Verifica se o grafo é válido (não é NULL)
     if(g == NULL){
-        printf("[ERRO]\n");
-        printf("in grafo.c [getNumVertices();]: Invalid Graph (NULL)\n");
+        printf("[ERROR]\n");
+        printf("In grafo.c [getNumVertices();]: Invalid Graph (NULL)\n");
         return -1;
     }
 
@@ -69,8 +69,8 @@ int getNumVertices(Grafo* g){
 Grafo* criarGrafo(int maxVertices){
     // 1: Verifica se o número máximo de vértices é válido (maior que zero)
     if(maxVertices <= 0){
-        printf("[ERRO]\n");
-        printf("in grafo.c [criarGrafo();]: Invalid maximum number of vertices (%d)\n", maxVertices);
+        printf("[ERROR]\n");
+        printf("In grafo.c [criarGrafo();]: Invalid maximum number of vertices (%d)\n", maxVertices);
         return NULL;
     }
 
@@ -78,8 +78,8 @@ Grafo* criarGrafo(int maxVertices){
     Grafo* g = (Grafo*)malloc(sizeof(struct grafo));
     // 2.1: Verifica se a alocação de memória foi bem-sucedida
     if(g == NULL){
-        printf("[ERRO]\n");
-        printf("in grafo.c [criarGrafo();]: Failed to allocate memory for the graph\n");
+        printf("[ERROR]\n");
+        printf("In grafo.c [criarGrafo();]: Failed to allocate memory for the graph\n");
         return NULL;
     }
 
@@ -91,8 +91,8 @@ Grafo* criarGrafo(int maxVertices){
     g->vetorVertices = (Vertice*)calloc(maxVertices, sizeof(Vertice));
     // 3.2: Verifica se a alocação de memória para o vetor de vértices foi bem-sucedida
     if(g->vetorVertices == NULL){
-        printf("[ERRO]\n");
-        printf("in grafo.c [criarGrafo();]: Failed to allocate memory for the vertices array\n");
+        printf("[ERROR]\n");
+        printf("In grafo.c [criarGrafo();]: Failed to allocate memory for the vertices array\n");
         free(g);
         return NULL;
     }
@@ -106,8 +106,8 @@ Grafo* criarGrafo(int maxVertices){
 int freeGrafo(Grafo* g){
     // 1: Verifica se o grafo é válido (não é NULL)
     if(g == NULL){
-        printf("[ERRO]\n");
-        printf("in grafo.c [freeGrafo();]: Invalid Graph (NULL)\n");
+        printf("[ERROR]\n");
+        printf("In grafo.c [freeGrafo();]: Invalid Graph (NULL)\n");
         return -1;
     }
 
@@ -132,13 +132,13 @@ int freeGrafo(Grafo* g){
 int inserirVertice(Grafo* g, char* id, double x, double y){
     // 1: Verifica se o grafo é válido (não é NULL) e se ainda há capacidade para inserir um novo vértice
     if(g == NULL){
-        printf("[ERRO]\n");
-        printf("in grafo.c [inserirVertice();]: Invalid Graph (NULL)\n");
+        printf("[ERROR]\n");
+        printf("In grafo.c [inserirVertice();]: Invalid Graph (NULL)\n");
         return -1;
     }
     if(g->qntdAtual >= g->maxVertices){
-        printf("[ERRO]\n");
-        printf("in grafo.c [inserirVertice();]: Maximum number of vertices reached (%d)\n", g->maxVertices);
+        printf("[ERROR]\n");
+        printf("In grafo.c [inserirVertice();]: Maximum number of vertices reached (%d)\n", g->maxVertices);
         return -1;
     }
 
@@ -158,38 +158,54 @@ int inserirVertice(Grafo* g, char* id, double x, double y){
     return 0;
 }
 
-int inserirAresta(Grafo* g, char* ldir, char* lesq, double cmp, double vm, char* nomeRua){
+int inserirAresta(Grafo* g, char *i, char* j, char* ldir, char* lesq, double cmp, double vm, char* nomeRua){
     // 1: Verifica se o grafo é válido (não é NULL) e se os parâmetros de entrada são válidos (IDs dos vértices, nome da rua, etc.)
     if(g == NULL){
-        printf("[ERRO]\n");
-        printf("in grafo.c [inserirAresta();]: Invalid Graph (NULL)\n");
+        printf("[ERROR]\n");
+        printf("In grafo.c [inserirAresta();]: Invalid Graph (NULL)\n");
         return -1;
     }
-    if(ldir == NULL || lesq == NULL || nomeRua == NULL || cmp <= 0 || vm <= 0){
-        printf("[ERRO]\n");
-        printf("in grafo.c [inserirAresta();]: Invalid input parameters (NULL or non-positive values)\n");
-        printf("[ldir:\t%s]\n[lesq:\t%s]\n[nomeRua:\t%s]\n[comprimento:\t%f]\n[velocidadeMedia:\t%f]\n", ldir, lesq, nomeRua, cmp, vm);
+    if(i == NULL || j == NULL || ldir == NULL || lesq == NULL || nomeRua == NULL || cmp <= 0 || vm <= 0){
+        printf("[ERROR]\n");
+        printf("In grafo.c [inserirAresta();]: Invalid input parameters (NULL or non-positive values)\n");
+        printf("[i:\t%p]\n[j:\t%p]\n[ldir:\t%p]\n[lepq:\t%p]\n[nomeRua:\t%p]\n[comprimento:\t%f]\n[velocidadeMedia:\t%f]\n", 
+            (void*)i, (void*)j, (void*)ldir, (void*)lesq, (void*)nomeRua, cmp, vm);
         return -1;
     }
 
     // 2: Encontra os índices dos vértices de origem e destino usando a função getIndiceVertice, 
     // passando os IDs dos vértices como parâmetros
-    int idxOrigem  = getIndiceVertice(g, ldir);
-    int idxDestino = getIndiceVertice(g, lesq);
-    // 2.1: Verifica se os índices dos vértices de origem e destino foram encontrados corretamente (não são -1), indicando que os vértices existem no grafo
-    if(idxOrigem == -1 || idxDestino == -1){
-        printf("[ERRO]\n");
-        printf("in grafo.c [inserirAresta();]: Vertices not found\n");
+    char *idOrigem  = getIndiceVertice(g, i);
+    char *idDestino = getIndiceVertice(g, j);
+    // 2.1: Verifica se os índices dos vértices de origem e destino foram encontrados corretamente (não são NULL), indicando que os vértices existem no grafo
+    if(idOrigem == NULL || idDestino == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [inserirAresta();]: Vertices not found\n");
         printf("[ldir:\t%p]\n[lesq:\t%p]\n", (void*)ldir, (void*)lesq);
         return -1;
     }
+    /** 2.2: Busca os índices inteiros dos vértices char* de origem e destino no vetor de vértices do grafo
+     * Converte os ponteiros retornados pela função getIndiceVertice para inteiros.
+     * 
+     * Calcula a diferença entre os endereços de memória apontados pelos ponteiros, 
+     * resultando em um valor inteiro que representa o número de elementos do tipo apontado entre os dois ponteiros. 
+     * No caso, ao subtrair o ponteiro do vértice de origem e destino do ponteiro base do vetor de vértices,
+     * obtemos o índice inteiro correspondente ao vértice de origem no vetor de vértices do grafo:
+     * - idOrigem = 0x00010 (endereço do vértice de origem)
+     * - idDestino = 0x00020 (endereço do vértice de destino)
+     * - g->vetorVertices = 0x00000 (endereço base do vetor de vértices)
+     * - idOrigemInt = idOrigem - g->vetorVertices = 0x0000010 - 0x00000 = 10 (índice do vértice de origem)
+     * - idDestinoInt = idDestino - g->vetorVertices = 0x0000020 - 0x00000 = 20 (índice do vértice de destino)
+     */
+    int idOrigemInt  = (int)(idOrigem  - g->vetorVertices);
+    int idDestinoInt = (int)(idDestino - g->vetorVertices);
 
     // 3: Cria e preenche a estrutura de atributos da aresta (rua/via)
     InfoAresta* info = (InfoAresta*)malloc(sizeof(InfoAresta));
     // 3.1: Verifica se a alocação de memória para os atributos da aresta foi bem-sucedida
     if(info == NULL){
-        printf("[ERRO]\n");
-        printf("in grafo.c [inserirAresta();]: Failed to allocate memory for the edge attributes\n");
+        printf("[ERROR]\n");
+        printf("In grafo.c [inserirAresta();]: Failed to allocate memory for the edge attributes\n");
         return -1;
     }
     // 3.2: Preenche os atributos da aresta (rua/via) usando os parâmetros de entrada fornecidos para a função, copiando os valores para a estrutura de atributos da aresta (InfoAresta)
@@ -203,19 +219,19 @@ int inserirAresta(Grafo* g, char* ldir, char* lesq, double cmp, double vm, char*
     Arco* novoArco = (Arco*)malloc(sizeof(Arco));
     // 4.1: Verifica se a alocação de memória para o novo arco foi bem-sucedida
     if(novoArco == NULL){
-        printf("[ERRO]\n");
-        printf("in grafo.c [inserirAresta();]: Failed to allocate memory for the new edge\n");
+        printf("[ERROR]\n");
+        printf("In grafo.c [inserirAresta();]: Failed to allocate memory for the new edge\n");
         free(info); // Libera a memória alocada para os atributos da aresta antes de retornar
         return -1;
     }
     // 4.2: Preenche os dados do novo arco, atribuindo o índice do vértice de destino e os atributos da aresta (rua/via) à estrutura do arco
-    novoArco->vDestino = idxDestino;    // Atribui o índice do vértice de destino ao arco
+    novoArco->vDestino = idDestinoInt;  // Atribui o índice do vértice de destino ao arco
     novoArco->info     = info;          // Atribui os atributos da aresta (rua/via) ao arco  
     
     // 5: Insere o novo arco na lista de adjacência do vértice de origem, 
     // atualizando os ponteiros para manter a estrutura da lista encadeada de arestas adjacentes
-    novoArco->proximo = g->vetorVertices[idxOrigem].listaAdj;   // O próximo arco do novo arco aponta para o início da lista de adjacência atual do vértice de origem
-    g->vetorVertices[idxOrigem].listaAdj = novoArco;            // O início da lista de adjacência do vértice de origem agora aponta para o novo arco, inserindo-o no início da lista
+    novoArco->proximo = g->vetorVertices[idOrigemInt].listaAdj;   // O próximo arco do novo arco aponta para o início da lista de adjacência atual do vértice de origem
+    g->vetorVertices[idOrigemInt].listaAdj = novoArco;            // O início da lista de adjacência do vértice de origem agora aponta para o novo arco, inserindo-o no início da lista
 
     // 6: Retorna 0 para indicar sucesso na inserção da aresta
     return 0;

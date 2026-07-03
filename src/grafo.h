@@ -39,9 +39,9 @@ typedef struct grafo Grafo;
  * 
  * @param g     Ponteiro para o grafo onde o vértice deve ser buscado
  * @param id    Identificador do vértice a ser buscado
- * @return      Índice do vértice no grafo se encontrado. -1 caso contrário
+ * @return      Índice do vértice no grafo se encontrado. NULL caso contrário
  */
-int getIndiceVertice(Grafo* g, char* id);
+char* getIndiceVertice(Grafo* g, char* id);
 /**
  * Esta função é responsável por obter o número de vértices no grafo.
  * 
@@ -95,14 +95,16 @@ int inserirVertice(Grafo* g, char* id, double x, double y);
  * utilizando os identificadores dos vértices de origem e destino.
  * 
  * @param g         Ponteiro para o grafo
- * @param ldir      Identificador do vértice de origem da aresta
- * @param lesq      Identificador do vértice de destino da aresta
+ * @param i         Identificador do vértice de origem da aresta
+ * @param j         Identificador do vértice de destino da aresta   
+ * @param ldir      Identificador da quadra do lado direito da aresta
+ * @param lesq      Identificador da quadra do lado esquerdo da aresta
  * @param cmp       Comprimento da aresta       (peso para o cálculo do caminho mais curto)
  * @param vm        Velocidade média na aresta  (peso para o cálculo do caminho mais rápido)
  * @param nome      Nome da aresta
  * @return          0 em caso de sucesso. -1 em caso de erro
  */
-int inserirAresta(Grafo* g, char* ldir, char* lesq, double cmp, double vm, char* nomeRua);
+int inserirAresta(Grafo* g, char* i, char* j, char* ldir, char* lesq, double cmp, double vm, char* nomeRua);
 /*###############################################################################################*/
 
 #endif
