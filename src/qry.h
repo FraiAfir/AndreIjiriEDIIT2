@@ -8,7 +8,9 @@ typedef struct parametro Param;
 #include "params.h"
 #include "hashBin.h"
 
-/**
+/** DEFINIÇÃO DO MÓDULO
+ * Este módulo de Qry é responsável, principalmente, por fazer um parser do arquivo .qry.
+ * 
  * O qry é um arquivo de texto que contém uma série de comandos de consulta e modificação dos dados armazenados a partir do arquivo .geo,
  * conforme as instruções do arquivo .qry, e produzir os arquivos de saída .svg e .txt com os resultados das operações realizadas.
  * 

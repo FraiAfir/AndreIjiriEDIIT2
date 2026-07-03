@@ -6,7 +6,10 @@
 
 typedef struct parametro Param;
 
-/**
+/** DEFINIÇÃO DO MÓDULO
+ * Este módulo de Geo é responsável, principalmete, por fazer um parser do arquivo .geo,
+ * que contém informações sobre a cidade de Bitnópolis.
+ * 
  * Este contrato contém as declarações das funções relacionadas ao processamento do arquivo .geo,
  * incluindo a leitura dos dados do arquivo .geo, o armazenamento desses dados em uma estrutura de dados adequada (Tabela Hash e Quadras), 
  * e a geração de um arquivo .svg com a representação gráfica dos dados do arquivo .geo.

@@ -4,6 +4,8 @@
 
 #include "qry.h"
 
+
+
 /*                           ESTRUTURAS DE DADOS A SEREM IMPLEMENTADAS                           */
 typedef struct qry{
     // 1: Comando do arquivo .qry
