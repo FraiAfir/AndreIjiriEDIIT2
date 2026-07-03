@@ -41,16 +41,17 @@ LDFLAGS =
 
 # ================================= COMPILAÇÃO PROJ. PRINCIPAL ================================== #
 # Arquivos-fonte e objetos
-OBJETOS = main.o params.o program.o hashBin.o geo.o svg.o qry.o
+OBJETOS = main.o geo.o grafo.o hashbin.o params.o program.o qry.o svg.o
 
-main.o: main.c params.h program.h hashBin.h geo.h svg.h qry.h
+main.o: main.c geo.h grafo.h hashBin.h params.h program.h qry.h svg.h
 
+geo.o:     geo.c geo.h
+grafo.o:   grafo.c grafo.h
+hashBin.o: hashBin.c hashBin.h
 params.o:  params.c params.h
 program.o: program.c program.h
-hashBin.o: hashBin.c hashBin.h
-geo.o:     geo.c geo.h
-svg.o:     svg.c svg.h
 qry.o:     qry.c qry.h
+svg.o:     svg.c svg.h
 
 # Projeto principal
 $(PROJ_NAME): $(OBJETOS)
@@ -108,9 +109,14 @@ test_qry: ../test/test_qry.c qry.c svg.c params.c hashBin.c
 	$(CC) ../test/test_qry.c qry.c svg.c params.c hashBin.c -o ../test/test_qry $(LIBS) $(LDFLAGS)
 	@echo.
 
+test_grafo: ../test/test_grafo.c grafo.c
+	@echo "Compilando $< ..."
+	$(CC) ../test/test_grafo.c grafo.c -o ../test/test_grafo $(LIBS) $(LDFLAGS)
+	@echo.
 
 
-compila_tests: test_params test_program test_hashBin test_geo test_svg test_qry
+
+compila_tests: test_params test_program test_hashBin test_geo test_svg test_qry test_grafo
 	@echo.
 	@echo.
 	@echo "Compilando os testes de unidade para PARAMS..."
@@ -119,6 +125,7 @@ compila_tests: test_params test_program test_hashBin test_geo test_svg test_qry
 	@echo "Compilando os testes de unidade para GEO..."
 	@echo "Compilando os testes de unidade para SVG..."
 	@echo "Compilando os testes de unidade para QRY..."
+	@echo "Compilando os testes de unidade para GRAFO..."
 	@echo.
 	@echo "Compilacao dos testes de unidade finalizada com sucesso."
 	@echo.
@@ -160,6 +167,11 @@ ted_tests: compila_tests
 	@echo.
 	@echo.
 	@echo.
+	../test/test_grafo$(EXEC)
+
+	@echo.
+	@echo.
+	@echo.
 	@echo.
 	@echo "Testes de unidade para os parametros executados com sucesso."
 
@@ -182,6 +194,7 @@ clean:
 	$(RM) "../test/test_geo$(EXEC)"
 	$(RM) "../test/test_svg$(EXEC)"
 	$(RM) "../test/test_qry$(EXEC)"
+	$(RM) "../test/test_grafo$(EXEC)"
 	$(RM) "../test/teste.svg"
 	$(RM) "./hashQ_teste.hf"
 	$(RM) "./hashQ_teste.hfc"
@@ -204,6 +217,6 @@ clean:
 .PHONY: all
 .PHONY: clean
 .PHONY: ted_tests 
-.PHONY: test_params test_program test_hashBin test_geo test_svg test_qry
+.PHONY: test_params test_program test_hashBin test_geo test_svg test_qry test_grafo
 .PHONY: compila_tests
 # =============================================================================================== #
