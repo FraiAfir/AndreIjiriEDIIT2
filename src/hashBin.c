@@ -237,7 +237,6 @@ char*  getQuadraCFill(Quadras* q) { return q->cfill; }
 
 /*                                        FUNÇÕES PRINCIPAIS                                     */
 HashBin* criarHash(Param* params){
-
     // 1: Aloca a estrutura do Diretório na memória RAM
     HashBin* dir = (HashBin*)malloc(sizeof(HashBin));
     if(dir == NULL){
@@ -464,9 +463,9 @@ int salvarDiretorioHFC(HashBin* dir, Param* params){
     // para que ela possa ser carregada posteriormente, mantendo a persistência dos dados do diretório da tabela hash
 
     // 1.1: Monta o caminho de saída com o nome do arquivo físico do diretório (.hfc) para garantir que ele seja criado corretamente no local desejado
-    char nomeArquivoFisico[256];                    // Buffer para armazenar o caminho completo do arquivo físico do diretório (.hfc)
+    char nomeArquivoFisico[256];                            // Buffer para armazenar o caminho completo do arquivo físico do diretório (.hfc)
     strcpy(nomeArquivoFisico, getDirSaidaCompleto(params)); // nomeArquivoFisico = "./saida/"
-    strcat(nomeArquivoFisico, "cidade.hfc");        // "./saida/" + "cidade.hfc" = "./saida/cidade.hfc"
+    strcat(nomeArquivoFisico, "cidade.hfc");                // "./saida/" + "cidade.hfc" = "./saida/cidade.hfc"
 
     // 1.2: Abre o arquivo de diretório para escrita em modo binário
     FILE* f = fopen(nomeArquivoFisico, "wb");
