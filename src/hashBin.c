@@ -251,7 +251,7 @@ HashBin* criarHash(Param* params){
     // 2.1: Monta o caminho de saída do arquivo físico da tabela hash usando o diretório de saída completo fornecido pelos parâmetros e o nome do arquivo "cidade.hf"
     char nomeArquivoFisico[256];                            // Buffer para armazenar o caminho completo do arquivo físico do diretório (.hf)
     strcpy(nomeArquivoFisico, getDirSaidaCompleto(params)); // nomeArquivoFisico = "./saida/"
-    strcat(nomeArquivoFisico, "cidade.hf");                // "./saida/" + "cidade.hf" = "./saida/cidade.hf"
+    strcat(nomeArquivoFisico, "cidade.hf");                 // "./saida/" + "cidade.hf" = "./saida/cidade.hf"
 
     dir->arq_hf = fopen(nomeArquivoFisico, "wb+");
     if(dir->arq_hf == NULL){

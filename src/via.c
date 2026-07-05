@@ -56,14 +56,14 @@ int montarCaminhoVia(Param* param, char* caminhoVia){
 
     // 2: Imprime o nome do arquivo .via original para depuração
     printf("Diretorio de entrada completo: \t\t%s\n", dirEntrada);
-    printf("Arquivo .via fornecido: \t\t\t%s\n", nomeVia);
+    printf("Arquivo .via fornecido: \t\t%s\n", nomeVia);
     
     // 3: Concatena o diretório de entrada completo com o nome do arquivo .via
     strcpy(caminhoVia, dirEntrada);
     strcat(caminhoVia, nomeVia);
 
     // 4: Imprime o caminho completo do arquivo .via para depuração
-    printf("Caminho completo do arquivo .via: \t\t%s\n", caminhoVia);
+    printf("Caminho completo do arquivo .via: \t%s\n", caminhoVia);
 
     return 0;
 }
@@ -156,7 +156,7 @@ int readFileVia(FILE* arquivoVia, Grafo* g, Param* param){
                 }else{
                     printf("[ERROR]\n");
                     printf("In via.c [readFileVia();]: Invalid parameters for command 'e' in .via file\n");
-                    printf("[i:\t%s]\n[j:\t%s]\n[ldir:\t%s]\n[lesq:\t%s]\n[cmp:\t%f]\n[vm:\t%f]\n[nome:\t%s]\n", 
+                    printf("[i:\t%s]\n[j:\t%s]\n[ldir:\t%s]\n[lesq:\t%s]\n[cmp:\t%f]\n[vm:\t%f]\n[nome:\t%s]\n\n", 
                         i, j, ldir, lesq, cmp, vm, nome);
                     return -1;
                 }

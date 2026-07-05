@@ -122,11 +122,10 @@ test_via: ../test/test_via.c via.c params.c grafo.c
 
 
 
-compila_tests: test_params test_program test_hashBin test_geo test_svg test_qry test_grafo test_via
+compila_tests: test_params test_hashBin test_geo test_svg test_qry test_grafo test_via
 	@echo.
 	@echo.
 	@echo "Compilando os testes de unidade para PARAMS..."
-	@echo "Compilando os testes de unidade para PROGRAM..."
 	@echo "Compilando os testes de unidade para HASHBIN..."
 	@echo "Compilando os testes de unidade para GEO..."
 	@echo "Compilando os testes de unidade para SVG..."
@@ -145,11 +144,6 @@ ted_tests: compila_tests
 
 	@echo "Executando os testes de unidade para os parametros..."
 	../test/test_params$(EXEC)
-
-	@echo.
-	@echo.
-	@echo.
-	../test/test_program$(EXEC)
 
 	@echo.
 	@echo.
@@ -201,7 +195,6 @@ clean:
 
 	@echo Limpando os arquivos de teste...
 	$(RM) "../test/test_params$(EXEC)"
-	$(RM) "../test/test_program$(EXEC)"
 	$(RM) "../test/test_hashBin$(EXEC)"
 	$(RM) "../test/test_geo$(EXEC)"
 	$(RM) "../test/test_svg$(EXEC)"
@@ -230,6 +223,6 @@ clean:
 .PHONY: all
 .PHONY: clean
 .PHONY: ted_tests 
-.PHONY: test_params test_program test_hashBin test_geo test_svg test_qry test_grafo test_via
+.PHONY: test_params test_hashBin test_geo test_svg test_qry test_grafo test_via
 .PHONY: compila_tests
 # =============================================================================================== #
