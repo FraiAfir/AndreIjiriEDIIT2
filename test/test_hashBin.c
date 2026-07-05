@@ -42,6 +42,7 @@ void tearDown(void){
 // 1: Testa se a função criarHash realmente cria um objeto de tabela hash e não retorna NULL
 void test_CriarHash_NaoDeveRetornarNull(){
     // 1.1: Cria uma tabela hash para ser usada no teste de criação da tabela hash
+    setDirSaidaCompleto(params_teste, "../test/");
     tabela_teste = criarHash(params_teste); 
     
     // 1.2: Verifica a criação de uma tabela hash usando a função criarHash, passando um nome de arquivo de teste
