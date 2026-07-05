@@ -7,6 +7,7 @@
 #include "hashBin.h"
 #include "geo.h"
 #include "qry.h"
+#include "via.h"
 #include "svg.h"
 
 int main(int argc, char* argv[]){
@@ -16,9 +17,10 @@ int main(int argc, char* argv[]){
     for(int i = 0; i < argc; i++) {printf("Argumento do argv[%d]: %s\n", i, argv[i]);}
 
     // 1: Cria os objetos das estruturas necssárias para a execução do código
-    Param   *param  = criarParametro();
-    HashBin *htq    = NULL;
-    Quadras *q      = criarQuadra();
+    Param   *param = criarParametro();
+    HashBin *h     = NULL;
+    Quadras *q     = criarQuadra();
+    Grafo   *g     = NULL;
 
 
 
@@ -26,62 +28,33 @@ int main(int argc, char* argv[]){
     printf("\n\n\n\n\n#------------ PROCESSANDO OS PARAMETROS DA LINHA DE COMANDO... ----------#\n");
     // 2.1: Processa os parâmetros da linha de comando e armazena as informações necessárias para a execução do programa no objeto de parâmetros criado na etapa anterior
     if(processarParametros(param, argc, argv) == -1){
-        printf("ERRO: Processamento dos parametros da linha de comando.\n");
-        shutProgram(&param, &htq, &q);
+        printf("[ERROR]\n");
+        printf("In main.c [processarParametros();]: Error processing command line parameters.\n");
+        shutProgram(&param, &h, &q, &g);
         return -1;
     }printf("#------------------------------------------------------------------------#\n\n\n\n\n");
     // 2.2: Cria a estrutura de dados necessária para armazenar os dados do arquivo .geo
-    htq = criarHash(param);
+    h = criarHash(param);
 
 
 
     // 3. PROCESSAR O GEO
     printf("\n#-------------------- PROCESSANDO O ARQUIVO .GEO... ---------------------#\n");
     // 3.1: Processa o arquivo .geo e armazena os dados em uma estrutura de dados adequada (Tabela Hash, Quadras, etc.)
-    if(processarGeo(param, htq, q) != 0){
-        printf("ERRO: Processamento do arquivo .geo.\n");
-        shutProgram(&param, &htq, &q);
+    if(processarGeo(param, h, q) != 0){
+        printf("[ERROR]\n");
+        printf("In main.c [processarGeo();]: Error processing .geo file.\n");
+        shutProgram(&param, &h, &q, &g);
         return -1;
     }printf("#------------------------------------------------------------------------#\n\n\n\n\n");
     
     // 3.2: Salva o diretório da tabela hash com os dados do arquivo .geo em um arquivo de saída no formato .hfc
-    if(salvarDiretorioHFC(htq, param) != 0){
-        printf("ERRO: Salvamento do diretório da tabela hash do arquivo .geo.\n");
-        shutProgram(&param, &htq, &q);
+    if(salvarDiretorioHFC(h, param) != 0){
+        printf("[ERROR]\n");
+        printf("In main.c [salvarDiretorioHFC();]: Error saving HFC directory.\n");
+        shutProgram(&param, &h, &q, &g);
         return -1;
     }
-    
-
-
-    // // 4. PROCESSAR O PM (Se fornecido)
-    // // 4.1: Verifica se o arquivo .pm foi fornecido como argumento. 
-    // // Se sim, processa o arquivo .pm e armazena os dados em uma estrutura de dados adequada (Tabela Hash, Pessoas, etc.)
-    // if(getNomePM(param) == NULL){
-    //     printf("\n#----------- ARQUIVO .PM NAO FORNECIDO. PULANDO ESTA ETAPA... ----------#\n");
-    // }else{
-    //     printf("\n#--------------------- PROCESSANDO O ARQUIVO .PM... --------------------#\n");
-    //     // 4.2: Processa o arquivo .pm e armazena os dados em uma estrutura de dados adequada (Tabela Hash, Pessoas, etc.)
-    //     if(processarPM(param, htp, htq, p) != 0){
-    //         printf("ERRO: Processamento do arquivo .pm.\n");
-    //         shutProgram(&param, &htq, &q, &htp, &p);
-    //         return -1;
-    //     }
-
-    //     // 4.3: Salva o diretório da tabela hash com os dados do arquivo .pm em um arquivo de saída no formato .hfc
-    //     if(salvarDiretorioHFC_PM(htp, getNomePM(param)) != 0){
-    //         printf("ERRO: Salvamento do diretório da tabela hash do arquivo .pm.\n");
-    //         shutProgram(&param, &htq, &q, &htp, &p);
-    //         return -1;
-    //     }
-        
-    //     // 4.4: Gera um relatório com os dados do arquivo .pm em um arquivo de saída no formato .hfd
-    //     if(gerarRelatorioHFD(htp, getNomePM(param)) != 0){
-    //         printf("ERRO: Geracao do relatorio .hfd do arquivo .pm.\n");
-    //         shutProgram(&param, &htq, &q, &htp, &p);
-    //         return -1;
-    //     }
-    // }
-    // printf("#------------------------------------------------------------------------#\n\n\n\n\n");
 
 
 
@@ -92,19 +65,40 @@ int main(int argc, char* argv[]){
     }else{
         printf("\n#-------------------- PROCESSANDO O ARQUIVO .QRY... ---------------------#\n");
         // 4.1: Processa o arquivo .qry utilizando os dados armazenados a partir do processamento do arquivo .geo (e do arquivo .pm, se fornecido)
-        if(processarQry(param, htq) != 0){
-            printf("ERRO: Processamento do arquivo .qry.\n");
-            shutProgram(&param, &htq, &q);
+        if(processarQry(param, h) != 0){
+            printf("[ERROR]\n");
+            printf("In main.c [processarQry();]: Error processing .qry file.\n");
+            shutProgram(&param, &h, &q, &g);
             return -1;
         }
         printf("#------------------------------------------------------------------------#\n\n\n\n\n");
     }
-    
 
+
+
+    // 5. PROCESSAR O VIA (Se fornecido)
+    // 5.1: Verifica se o arquivo .via foi fornecido como argumento. 
+    // Se não for fornecido, exibe uma mensagem informando que esta etapa será pulada.
+    if(getNomeVia(param) == NULL){
+        printf("\n#----------- ARQUIVO .VIA NAO FORNECIDO. PULANDO ESTA ETAPA... ----------#\n");
+    }else{
+        // Se o arquivo .via for fornecido, o processa e armazena os dados em uma estrutura de dados adequada (Grafo)
+        printf("\n#--------------------- PROCESSANDO O ARQUIVO .VIA... --------------------#\n");
+        // 5.2: Processa o arquivo .via e armazena os dados em uma estrutura de dados adequada (Tabela Hash, Pessoas, etc.)
+        if(processarVia(param, g) != 0){
+            printf("[ERROR]\n");
+            printf("In main.c [processarVia();]: Error processing .via file.\n");
+            shutProgram(&param, &h, &q, &g);
+            return -1;
+        }
+    }
+    printf("#------------------------------------------------------------------------#\n\n\n\n\n");
+
+    
     
     // 5: LIBERAR MEMÓRIA ALOCADA PARA PARÂMETROS E ENCERRAR PROGRAMA
     printf("#---------------------- ENCERRANDO O PROGRAMA... ------------------------#\n");
-    shutProgram(&param, &htq, &q);
+    shutProgram(&param, &h, &q, &g);
     printf("#------------------------------------------------------------------------#\n\n\n\n\n");
     printf("\n##################### FIM DA EXECUCAO DO PROGRAMA ########################\n\n");
 

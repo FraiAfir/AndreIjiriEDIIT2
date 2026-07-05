@@ -222,29 +222,29 @@ int processarArgumentosInternos(Param* param, int argc, char* argv[]){
             }
         }
 
-        // 1.5: Parâmetro -via (nome do arquivo .via)
-        // else if(strcmp(argv[i], "-via") == 0){
-        //     // 1.5.1: Verifica se o próximo argumento existe e não é outro parâmetro (começa com '-')
-        //     if(argv[i + 1] != NULL){
-        //         // Aloca memória para o nome do arquivo .via
-        //         param->nomeVIA = malloc(sizeof(char) * (strlen(argv[i + 1]) + 1));
-        //         if(param->nomeVIA == NULL){
-        //             printf("ERRO: Falha na alocação de memória para o nome do arquivo .via.\n");
-        //             return -1;
-        //         }
+        // 1.5: Parâmetro -v (nome do arquivo .via)
+        else if(strcmp(argv[i], "-v") == 0){
+            // 1.5.1: Verifica se o próximo argumento existe e não é outro parâmetro (começa com '-')
+            if(argv[i + 1] != NULL){
+                // Aloca memória para o nome do arquivo .via
+                param->nomeVia = malloc(sizeof(char) * (strlen(argv[i + 1]) + 1));
+                if(param->nomeVia == NULL){
+                    printf("ERRO: Falha na alocação de memória para o nome do arquivo .via.\n");
+                    return -1;
+                }
                 
-        //         // Copia o nome do arquivo .via para o campo correspondente na estrutura de parâmetros
-        //         strcpy(param->nomeVIA, argv[i + 1]);
+                // Copia o nome do arquivo .via para o campo correspondente na estrutura de parâmetros
+                strcpy(param->nomeVia, argv[i + 1]);
 
-        //         // Incrementa o índice para pular o nome do arquivo .via e continuar processando os próximos argumentos
-        //         i += 2;
-        //     }
-        //     // 1.5.2: Se o próximo argumento não existir ou for outro parâmetro, exibe uma mensagem de erro, pois o nome do arquivo .via é opcional
-        //     else{
-        //         printf("ERRO: Nome do arquivo .via não fornecido. (-via opcional)\n");
-        //         return -1;
-        //     }
-        // } 
+                // Incrementa o índice para pular o nome do arquivo .via e continuar processando os próximos argumentos
+                i += 2;
+            }
+            // 1.5.2: Se o próximo argumento não existir ou for outro parâmetro, exibe uma mensagem de erro, pois o nome do arquivo .via é opcional
+            else{
+                printf("ERRO: Nome do arquivo .via não fornecido. (-v opcional)\n");
+                return -1;
+            }
+        } 
         
         // 1.6: Se o argumento não for reconhecido como um parâmetro válido, exibe uma mensagem de aviso e ignora o argumento
         else{
@@ -269,8 +269,8 @@ char* getNomeGeo           (Param* param) {return param->nomeGeo;           }
 char* getNomeQry           (Param* param) {return param->nomeQry;           }
 char* getNomeVia           (Param* param) {return param->nomeVia;           }
 void  setDirEntradaCompleto(Param* param, const char* dirEntradaCompleto){
-    // 1: Verifica se o campo dirEntradaCompleto já possui um valor alocado
-    // e, se sim, libera a memória alocada para evitar vazamento de memória 
+    // 1: Verifica se o campo dirEntradaCompleto já possui um valor alocado e, 
+    // se sim, libera a memória alocada para evitar vazamento de memória 
     // antes de atribuir um novo valor ao campo dirEntradaCompleto
     if(param->dirEntradaCompleto != NULL) free(param->dirEntradaCompleto);
 
@@ -283,6 +283,22 @@ void  setDirEntradaCompleto(Param* param, const char* dirEntradaCompleto){
 
     // 3: Copia o valor do diretório de entrada completo para o campo dirEntradaCompleto da estrutura de parâmetros
     strcpy(param->dirEntradaCompleto, dirEntradaCompleto);
+}
+void  setDirSaidaCompleto(Param* param, const char* dirSaidaCompleto){
+    // 1: Verifica se o campo dirSaidaCompleto já possui um valor alocado e, 
+    // se sim, libera a memória alocada para evitar vazamento de memória 
+    // antes de atribuir um novo valor ao campo dirSaidaCompleto
+    if(param->dirSaidaCompleto != NULL) free(param->dirSaidaCompleto);
+
+    // 2: Aloca memória para o campo dirSaidaCompleto
+    param->dirSaidaCompleto = malloc(sizeof(char) * (strlen(dirSaidaCompleto) + 1));
+    if(param->dirSaidaCompleto == NULL){
+        fprintf(stderr, "ERRO: Falha na alocacao de memoria para o diretorio de saida completo.\n");
+        return;
+    }
+
+    // 3: Copia o valor do diretório de saída completo para o campo dirSaidaCompleto da estrutura de parâmetros
+    strcpy(param->dirSaidaCompleto, dirSaidaCompleto);
 }
 void  setDirEntrada(Param* param, const char* dirEntrada){
     // 1: Verifica se o campo dirEntrada já possui um valor alocado
