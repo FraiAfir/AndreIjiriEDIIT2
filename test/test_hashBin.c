@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../src/params.h"
 #include "../src/hashBin.h"
 #include "../unity/unity.c"
 
 // Variável global para ser usada nos testes
 HashBin* tabela_teste = NULL;
+Param*   params_teste = NULL;
 
 /************************************** FUNÇÕES A SEREM TESTADAS ***************************************/
 // Função de configuração (setUp) para inicializar o ambiente de teste antes de cada teste ser executado
@@ -16,6 +18,8 @@ HashBin* tabela_teste = NULL;
 void setUp(void){
     freeHash(tabela_teste);
     tabela_teste = NULL;
+    freeParametros(params_teste);
+    params_teste = NULL;
 
     remove("hash_teste.hf");
     remove("hash_teste.hfc");
@@ -28,6 +32,8 @@ void setUp(void){
 void tearDown(void){
     freeHash(tabela_teste);
     tabela_teste = NULL;
+    freeParametros(params_teste);
+    params_teste = NULL;
 
     remove("hash_teste.hf");
     remove("hash_teste.hfc");
@@ -36,7 +42,7 @@ void tearDown(void){
 // 1: Testa se a função criarHash realmente cria um objeto de tabela hash e não retorna NULL
 void test_CriarHash_NaoDeveRetornarNull(){
     // 1.1: Cria uma tabela hash para ser usada no teste de criação da tabela hash
-    tabela_teste = criarHash("hash_teste.hf"); 
+    tabela_teste = criarHash(params_teste); 
     
     // 1.2: Verifica a criação de uma tabela hash usando a função criarHash, passando um nome de arquivo de teste
     TEST_ASSERT_NOT_NULL(tabela_teste);
@@ -57,7 +63,7 @@ void test_CriarQuadra_NaoDeveRetornarNull(){
 // 3: Testa se a função inserirReg insere um novo registro corretamente e retorna 0
 void test_InserirReg_DeveRetornarZero(){
     // 3.1: Cria uma tabela hash para ser usada no teste de inserção de registro
-    tabela_teste = criarHash("hash_teste.hf");
+    tabela_teste = criarHash(params_teste);
 
     // 3.2: Tenta inserir um novo registro com uma chave única
     int resultado = inserirReg(tabela_teste, "q01.1", 0.0, 0.0, 10.0, 10.0, "5.0px", "black", "black"); 
@@ -69,7 +75,7 @@ void test_InserirReg_DeveRetornarZero(){
 // 4: Testa se a função splitBucket divide corretamente um bucket cheio e retorna 0
 void test_DividirBucket_DeveRetornarZero(){
     // 4.1: Cria uma tabela hash para ser usada no teste de divisão de bucket
-    tabela_teste = criarHash("hash_teste.hf");
+    tabela_teste = criarHash(params_teste);
 
     // 4.2: Insere registros suficientes para preencher um bucket e causar um split
     inserirReg(tabela_teste, "q01.1", 0.0, 0.0, 10.0, 10.0, "5.0px", "black", "black");
@@ -85,10 +91,10 @@ void test_DividirBucket_DeveRetornarZero(){
 // 5: Testa se a função salvarDiretorioHFC salva corretamente o diretório da tabela hash em um arquivo .hfc e retorna 0
 void test_SalvarDirHFC_DeveRetornarZero(){
     // 5.1: Cria uma tabela hash para ser usada no teste de salvamento do diretório HFC
-    tabela_teste = criarHash("hash_teste.hf");
+    tabela_teste = criarHash(params_teste);
 
     // 5.2: Tenta salvar o diretório da tabela hash em um arquivo de saída no formato .hfc
-    int resultado = salvarDiretorioHFC(tabela_teste, "hash_teste.hfc");
+    int resultado = salvarDiretorioHFC(tabela_teste, params_teste);
 
     // 5.3: Verifica se a função retornar 0 (sucesso) para o salvamento do diretório da tabela hash em um arquivo .hfc
     TEST_ASSERT_EQUAL_INT(0, resultado);
@@ -97,10 +103,10 @@ void test_SalvarDirHFC_DeveRetornarZero(){
 // 6: Testa se a função carregarDiretorioHFC carrega corretamente o diretório da tabela hash a partir de um arquivo .hfc e retorna um ponteiro válido
 void test_CarregarDirHFC_DeveRetornarPonteiroValido(){
     // 6.1: Cria uma tabela hash para ser usada no teste de carregamento do diretório HFC
-    tabela_teste = criarHash("hash_teste.hf");
+    tabela_teste = criarHash(params_teste);
 
     // 6.2: Salva o diretório da tabela hash em um arquivo de saída no formato .hfc para garantir que o arquivo exista para o teste de carregamento
-    salvarDiretorioHFC(tabela_teste, "hash_teste.hfc");
+    salvarDiretorioHFC(tabela_teste, params_teste);
 
     // 6.3: Tenta carregar o diretório da tabela hash a partir do arquivo .hfc criado
     HashBin* dir_carregado = carregarDiretorioHFC("hash_teste.hfc", "hash_teste.hf");
@@ -129,7 +135,7 @@ void test_HashFunc_DeveGerarValorConsistente(){
 // e retorna 0 para uma chave inexistente
 void test_BuscarQuadra_DeveRetornarRegistroCorreto(){
     // 8.1: Cria uma tabela hash para ser usada no teste de busca de quadra
-    tabela_teste = criarHash("hash_teste.hf");
+    tabela_teste = criarHash(params_teste);
     
     // 8.2: Insere um registro para garantir que haja um registro existente para a busca, 
     // e verifica se a função retornar 0 (sucesso) para a inserção do registro
@@ -157,7 +163,7 @@ void test_BuscarQuadra_DeveRetornarRegistroCorreto(){
 // e retorna 0 para uma chave inexistente
 void test_RemoverQuadra_DeveRemoverRegistroCorreto(){
     // 9.1: Cria uma tabela hash para ser usada no teste de remoção de quadra
-    tabela_teste = criarHash("hash_teste.hf");
+    tabela_teste = criarHash(params_teste);
     
     // 9.2: Insere um registro para garantir que haja um registro existente para a remoção, 
     // e verifica se a função retornar 0 (sucesso) para a inserção do registro

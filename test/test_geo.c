@@ -67,7 +67,7 @@ void test_LerArquivoGEO_DeveRetornarZero(){
     TEST_ASSERT_NOT_NULL(arquivoGeo);
 
     // 2.4: Tenta ler o arquivo .geo usando a função readFileGeo e verifica se a função retornar 0 (sucesso)
-    HashBin* h = criarHash("teste.hf");
+    HashBin* h = criarHash(param_teste);
     Quadras* q = criarQuadra();
     TEST_ASSERT_EQUAL_INT(0, readFileGeo(arquivoGeo, h, q, param_teste));
 
@@ -83,7 +83,7 @@ void test_ProcessarArquivoGEO_DeveRetornarZero(){
     setNomeGeo(param_teste, "t1.geo");
 
     // 3.2: Tenta processar o arquivo .geo usando a função processarGeo e verifica se a função retornar 0 (sucesso)
-    HashBin* h = criarHash("teste.hf");
+    HashBin* h = criarHash(param_teste);
     Quadras* q = criarQuadra();
     TEST_ASSERT_EQUAL_INT(0, processarGeo(param_teste, h, q));
 }

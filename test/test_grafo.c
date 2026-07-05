@@ -90,20 +90,20 @@ void test_InserirArestas_DeveRetornarZero_E_TratamentoDeErros(void){
     int res_insercao = 0;
 
     // 4.1: Cria um grafo para ser usado no teste de inserção de arestas e tratamento de erros
-    grafo_teste = grafoCriar(5);
+    grafo_teste = criarGrafo(2);
     
     // 4.2: Insere dois vértices no grafo para serem usados na inserção de arestas
     inserirVertice(grafo_teste, "v1", 0.0, 0.0);
     inserirVertice(grafo_teste, "v2", 100.0, 0.0);
     
     // 4.3 - Inserção Válida: Conecta v1 -> v2 (Não deve estourar erro nem travar)
-    res_insercao = inserirAresta(grafo_teste, "v1", "v2", 150.75, 60.0, "Av. Central");
+    res_insercao = inserirAresta(grafo_teste, "v1", "v2", "Londrina", "Cambé", 150.75, 60.0, "Av. Central");
     TEST_ASSERT_EQUAL_INT(0, res_insercao);
     
     // 4.4 - Inserção Inválida: Origem ou Destino não existem no Grafo (Deve retornar -1)
-    res_insercao = inserirAresta(grafo_teste, "v1", "v_fantasma", 10.0, 40.0, "Rua Inexistente");
+    res_insercao = inserirAresta(grafo_teste, "v1", "v_fantasma", "Londrina", "Cambé", 10.0, 40.0, "Rua Inexistente");
     TEST_ASSERT_EQUAL_INT(-1, res_insercao);
-    res_insercao = inserirAresta(grafo_teste, "v_fantasma", "v2", 10.0, 40.0, "Rua Inexistente");
+    res_insercao = inserirAresta(grafo_teste, "v_fantasma", "v2", "Londrina", "Cambé", 10.0, 40.0, "Rua Inexistente");
     TEST_ASSERT_EQUAL_INT(-1, res_insercao);
 
     // 4.5: Libera a memória alocada para o grafo criado durante o teste para evitar vazamentos de memória

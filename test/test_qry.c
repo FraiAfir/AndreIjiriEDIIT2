@@ -57,7 +57,7 @@ void test_ProcessarQry_DeveRetornarZero(void){
     setNomeQry(param_teste, "t1.qry");
 
     // 2.2: Cria uma tabela hash de teste para quadras
-    tabelaQ_teste = criarHash("hashQ_teste.hf");
+    tabelaQ_teste = criarHash(param_teste);
 
     // 2.3: Popular as tabelas hash de teste com dados fictícios 
     // para garantir que a função processarQry tenha dados para processar durante o teste
@@ -99,7 +99,7 @@ void test_LerArquivoQry_DeveRetornarZero(void){
     montarCaminhoQry(param_teste, caminhoQry);
 
     // 3.2: Criar tabelas hash de teste para pessoas e quadras
-    tabelaQ_teste = criarHash("hashQ_teste.hfc");
+    tabelaQ_teste = criarHash(param_teste);
 
     // 3.3: Abrir o arquivo .qry para leitura
     FILE* arquivoQry = fopen(caminhoQry, "r");
