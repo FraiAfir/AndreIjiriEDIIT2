@@ -87,7 +87,7 @@ int main(int argc, char* argv[]){
         // 5.2: Processa o arquivo .via e armazena os dados em uma estrutura de dados adequada (Tabela Hash, Pessoas, etc.)
         if(processarVia(param, g) != 0){
             printf("[ERROR]\n");
-            printf("In main.c [processarVia();]: Error processing .via file.\n");
+            printf("In main.c [processarVia();]: Error processing .via file.\n\n");
             shutProgram(&param, &h, &q, &g);
             return -1;
         }

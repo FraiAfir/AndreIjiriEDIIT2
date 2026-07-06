@@ -188,7 +188,7 @@ int readFileVia(FILE* arquivoVia, Grafo* g, Param* param){
                     // Insere a aresta no grafo usando os parâmetros lidos do arquivo .via
                     if(inserirAresta(g, idOrigem, idDestino, ldir, lesq, cmp, vm, nome) != 0){
                         printf("[ERROR]\n");
-                        printf("In via.c [readFileVia();]: Failed to insert arc into the graph\n");
+                        printf("In via.c [readFileVia();]: Failed to insert arc into the graph\n\n");
                         return -1;
                     }
                 
@@ -250,7 +250,7 @@ int processarVia(Param* param, Grafo* g){
     // 3: Lê e processa os dados do arquivo .via
     if(readFileVia(arquivoVia, g, param) != 0){
         printf("[ERROR]\n");
-        printf("In via.c [processarVia();]: Failed to read the .via file: %s\n", caminhoVia);
+        printf("In via.c [processarVia();]: Failed to read the .via file: %s\n\n", caminhoVia);
         fclose(arquivoVia);
         return -1;
     }
