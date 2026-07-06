@@ -69,33 +69,55 @@ int montarCaminhoVia(Param* param, char* caminhoVia){
 }
 
 int readFileVia(FILE* arquivoVia, Grafo* g, Param* param){
-    // 1: Inicializa o buffer para leitura das linhas do arquivo .via
-    char linha[256];
+    int nv = 0;
+    /** 1: Lê a primeira linha do arquivo .via para obter o número de vértices (nv) do grafo
+     * fscanf(FILE *const _Stream, const char *const _Format, ...):
+     * - inline int __cdecl:        Retorna um inteiro que indica o número de itens lidos com sucesso ou EOF(-1) em caso de erro
+     * - FILE *const _Stream:       Ponteiro para o arquivo de entrada
+     * - const char *const _Format: String de formato que especifica como os dados devem ser lidos
+     * - ...:                       Argumentos adicionais que correspondem aos especificadores de formato na string de formato
+     * 
+     * if(fscanf(arquivoVia, "%d", &nv) != 1):
+     * - arquivoVia: Ponteiro para o arquivo de entrada (.via)
+     * - "%d":       Especificador de formato que indica que um inteiro deve ser lido do arquivo
+     * - &nv:        Endereço da variável nv onde o valor lido será armazenado
+     * - != 1:       Verifica se a leitura do número de vértices foi bem-sucedida (1 valor lido com sucesso)
+     */
+    if(fscanf(arquivoVia, "%d", &nv) != 1){
+        printf("[ERROR]\n");
+        printf("In via.c [readFileVia();]: Failed to read the number of vertices from the .via file\n");
+        return -1;
+    }
 
-    // 2: Parser do arquivo .via linha por linha
+    // 2: Cria o grafo e o mapa de IDs com base no número de vértices (nv) lido do arquivo .via
+    g          = criarGrafo(nv);
+    Mapa* mapa = criarMapa(nv);
+
+    char linha[256];
+    // 3: Parser do arquivo .via linha por linha
     while(fgets(linha, sizeof(linha), arquivoVia) != NULL){
-        /** 2.1: Limpeza da linha
+        /** 3.1: Limpeza da linha
          * strcspn(const char *_Str, const char *_Control):
-         * - const char *_Str: Ponteiro para a string de entrada que será analisada
+         * - size_t __cdecl:       Retorna o número de caracteres na string de entrada antes do primeiro caractere encontrado na string de controle
+         * - const char *_Str:     Ponteiro para a string de entrada que será analisada
          * - const char *_Control: Ponteiro para a string de caracteres de controle que serão buscados na string de entrada
          * 
          * strcspn(linha, "\n"):
          * - linha: Ponteiro para a string de entrada (linha lida do arquivo .via)
-         * - "\n": String de controle contendo apenas o caractere de nova linha (ENTER)
+         * - "\n":  String de controle contendo apenas o caractere de nova linha (ENTER)
          * 
          * strscpn(...) = '\0': Substitui o caractere de nova linha (ENTER) encontrado na linha lida do arquivo .via 
-         * por um caractere nulo ('\0'), efetivamente removendo o ENTER do final da linha.
+         * por um caractere nulo ('\0'), removendo o ENTER do final da linha.
          */
         linha[strcspn(linha, "\n")] = '\0'; // Remove o ENTER do final da linha, se existir
-        linha[strcspn(linha, "\r")] = '\0'; // Previne bugs de quebra de linha do Windows
         if(strlen(linha) == 0) continue;    // Ignora linhas em branco
 
-        // 2.2: Extrai apenas o primeiro token da linha, que corresponde ao comando do arquivo .via, para identificar qual comando deve ser processado
+        // 3.2: Extrai apenas o primeiro token da linha, que corresponde ao comando do arquivo .via, para identificar qual comando deve ser processado
         char* bufferLinha = strdup(linha);
         char* comando = NULL;
         comando = strtok(bufferLinha, " ");
 
-        // 2.3: Processa o comando lido do arquivo .via
+        // 3.3: Processa o comando lido do arquivo .via
         if(comando != NULL){
             /** COMANDO: v id x y
              * Cria o vértice id posicionado nas coordenadas [x,y]
@@ -114,11 +136,23 @@ int readFileVia(FILE* arquivoVia, Grafo* g, Param* param){
 
                 // Verifica se os parâmetros foram lidos corretamente
                 if(id[0] != '\0' && x[0] != '\0' && y[0] != '\0'){
+                    // Obtem o índice do vértice a ser inserido no grafo
+                    int indice = getNumVertices(g);
+
+                    // Insere o vértice no grafo usando os parâmetros lidos do arquivo .via
                     if(inserirVertice(g, id, atof(x), atof(y)) != 0){
                         printf("[ERROR]\n");
                         printf("In via.c [readFileVia();]: Failed to insert vertice into the graph\n");
                         return -1;
                     }
+
+                    // Insere o ID do vértice no mapa de IDs para facilitar a busca posterior
+                    if(inserirMapa(mapa, id, indice) != 0){
+                        printf("[ERROR]\n");
+                        printf("In via.c [readFileVia();]: Failed to insert vertice ID into the map\n");
+                        return -1;
+                    }
+
                 // Caso algum dos parâmetros seja inválido (NULL), imprime uma mensagem de erro e retorna -1
                 }else{
                     printf("[ERROR]\n");
@@ -147,12 +181,18 @@ int readFileVia(FILE* arquivoVia, Grafo* g, Param* param){
                 
                 // Verifica se os parâmetros foram lidos corretamente
                 if(i[0] != '\0' && j[0] != '\0' && ldir[0] != '\0' && lesq[0] != '\0' && cmp != -1.0 && vm != -1.0 && nome[0] != '\0'){
-                    if(inserirAresta(g, i, j, ldir, lesq, cmp, vm, nome) != 0){
+                    // Obtem o índice do vértice de origem e destino no grafo usando o mapa de IDs
+                    int idOrigem  = buscarMapa(mapa, i);
+                    int idDestino = buscarMapa(mapa, j);
+
+                    // Insere a aresta no grafo usando os parâmetros lidos do arquivo .via
+                    if(inserirAresta(g, idOrigem, idDestino, ldir, lesq, cmp, vm, nome) != 0){
                         printf("[ERROR]\n");
                         printf("In via.c [readFileVia();]: Failed to insert arc into the graph\n");
                         return -1;
                     }
-                // Caso algum dos parâmetros seja inválido (NULL), imprime uma mensagem de erro e retorna -1
+                
+                    // Caso algum dos parâmetros seja inválido (NULL), imprime uma mensagem de erro e retorna -1
                 }else{
                     printf("[ERROR]\n");
                     printf("In via.c [readFileVia();]: Invalid parameters for command 'e' in .via file\n");
@@ -163,7 +203,7 @@ int readFileVia(FILE* arquivoVia, Grafo* g, Param* param){
             }
         }
 
-        // 2.4: Se o comando lido do arquivo .qry for NULL, imprime uma mensagem de erro e continua para a próxima linha
+        // 3.4: Se o comando lido do arquivo .qry for NULL, imprime uma mensagem de erro e continua para a próxima linha
         else{
             printf("[ERROR]\n");
             printf("In via.c [readFileVia();]: .via file command is NULL\n");
@@ -171,7 +211,14 @@ int readFileVia(FILE* arquivoVia, Grafo* g, Param* param){
         }
     }
 
-    // 3: Retorna 0 para indicar sucesso na leitura do arquivo .via
+    // 4: Destrói o mapa de IDs após o processamento do arquivo .via, liberando a memória alocada para ele
+    if(destruirMapa(mapa) != 0){
+        printf("[ERROR]\n");
+        printf("In via.c [readFileVia();]: Failed to destroy the map\n");
+        return -1;
+    }
+
+    // 5: Retorna 0 para indicar sucesso na leitura do arquivo .via
     return 0;
 }
 /*###############################################################################################*/

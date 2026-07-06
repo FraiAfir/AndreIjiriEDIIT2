@@ -3,6 +3,7 @@
 
 #include "params.h"
 #include "grafo.h"
+#include "mapaID.h"
 
 typedef struct parametro Param;
 typedef struct via Via;
