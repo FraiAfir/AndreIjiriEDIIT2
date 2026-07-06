@@ -41,13 +41,14 @@ LDFLAGS =
 
 # ================================= COMPILAÇÃO PROJ. PRINCIPAL ================================== #
 # Arquivos-fonte e objetos
-OBJETOS = main.o geo.o grafo.o hashbin.o params.o program.o qry.o svg.o via.o
+OBJETOS = main.o geo.o grafo.o hashbin.o mapaID.o params.o program.o qry.o svg.o via.o
 
-main.o: main.c geo.h grafo.h hashBin.h params.h program.h qry.h svg.h via.h
+main.o: main.c geo.h grafo.h hashBin.h mapaID.h params.h program.h qry.h svg.h via.h
 
 geo.o:     geo.c geo.h
 grafo.o:   grafo.c grafo.h
 hashBin.o: hashBin.c hashBin.h
+mapaID.o:  mapaID.c mapaID.h
 params.o:  params.c params.h
 program.o: program.c program.h
 qry.o:     qry.c qry.h
