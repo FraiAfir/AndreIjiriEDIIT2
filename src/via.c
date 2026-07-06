@@ -138,15 +138,15 @@ int readFileVia(FILE* arquivoVia, Grafo* g, Param* param){
                 char  j[100]    = "";
                 char  ldir[100] = "";
                 char  lesq[100] = "";
-                float cmp       = 0.0;
-                float vm        = 0.0;
+                float cmp       = -1.0;
+                float vm        = -1.0;
                 char  nome[100] = "";
 
                 // Extrai os parâmetros
                 sscanf(linha, "%*s %s %s %s %s %f %f %s", i, j, ldir, lesq, &cmp, &vm, nome);
                 
                 // Verifica se os parâmetros foram lidos corretamente
-                if(i[0] != '\0' && j[0] != '\0' && ldir[0] != '\0' && lesq[0] != '\0' && cmp != 0.0 && vm != 0.0 && nome[0] != '\0'){
+                if(i[0] != '\0' && j[0] != '\0' && ldir[0] != '\0' && lesq[0] != '\0' && cmp != -1.0 && vm != -1.0 && nome[0] != '\0'){
                     if(inserirAresta(g, i, j, ldir, lesq, cmp, vm, nome) != 0){
                         printf("[ERROR]\n");
                         printf("In via.c [readFileVia();]: Failed to insert arc into the graph\n");
