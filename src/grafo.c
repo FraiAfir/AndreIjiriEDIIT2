@@ -38,18 +38,18 @@ typedef struct grafo{
 
 
 /*                                       FUNÇÕES AUXILIARES                                       */
-char* getIndiceVertice(Grafo* g, char* id){
+int getIndiceVertice(Grafo* g, char* id){
     // 1: Verifica se o grafo é válido (não é NULL)
     if(g == NULL){
         printf("[ERROR]\n");
         printf("In grafo.c [getIndiceVertice();]: Invalid Graph (NULL)\n");
-        return NULL;
+        return -1;
     }
     
     // 2: Procedimento para encontrar o índice do vértice com o ID fornecido
     // TO-DO
 
-    return 1;
+    return 0;
 }
 
 int getNumVertices(Grafo* g){
@@ -158,47 +158,21 @@ int inserirVertice(Grafo* g, char* id, double x, double y){
     return 0;
 }
 
-int inserirAresta(Grafo* g, char *i, char* j, char* ldir, char* lesq, double cmp, double vm, char* nomeRua){
-    // 1: Verifica se o grafo é válido (não é NULL) e se os parâmetros de entrada são válidos (IDs dos vértices, nome da rua, etc.)
+int inserirAresta(Grafo* g, int i, int j, char* ldir, char* lesq, double cmp, double vm, char* nomeRua){
+    // 1: Verifica se o grafo é válido (não é NULL)
     if(g == NULL){
         printf("[ERROR]\n");
         printf("In grafo.c [inserirAresta();]: Invalid Graph (NULL)\n");
         return -1;
     }
-    if(i == NULL || j == NULL || ldir == NULL || lesq == NULL || nomeRua == NULL || cmp <= 0 || vm <= 0){
+    // 2: Verifica se os parâmetros de entrada são válidos (IDs dos vértices, nome da rua, etc.)
+    if(i == -1 || j == -1 || ldir == NULL || lesq == NULL || nomeRua == NULL || cmp <= 0 || vm <= 0){
         printf("[ERROR]\n");
         printf("In grafo.c [inserirAresta();]: Invalid input parameters (NULL or non-positive values)\n");
-        printf("[i:\t%p]\n[j:\t%p]\n[ldir:\t%p]\n[lepq:\t%p]\n[nomeRua:\t%p]\n[comprimento:\t%f]\n[velocidadeMedia:\t%f]\n", 
-            (void*)i, (void*)j, (void*)ldir, (void*)lesq, (void*)nomeRua, cmp, vm);
+        printf("[i:\t%d]\n[j:\t%d]\n[ldir:\t%p]\n[lepq:\t%p]\n[nomeRua:\t%p]\n[comprimento:\t%f]\n[velocidadeMedia:\t%f]\n", 
+            i, j, (void*)ldir, (void*)lesq, (void*)nomeRua, cmp, vm);
         return -1;
     }
-
-    // 2: Encontra os índices dos vértices de origem e destino usando a função getIndiceVertice, 
-    // passando os IDs dos vértices como parâmetros
-    char *idOrigem  = getIndiceVertice(g, i);
-    char *idDestino = getIndiceVertice(g, j);
-    // 2.1: Verifica se os índices dos vértices de origem e destino foram encontrados corretamente (não são NULL), indicando que os vértices existem no grafo
-    if(idOrigem == NULL || idDestino == NULL){
-        printf("[ERROR]\n");
-        printf("In grafo.c [inserirAresta();]: Vertices not found\n");
-        printf("[ldir:\t%p]\n[lesq:\t%p]\n", (void*)ldir, (void*)lesq);
-        return -1;
-    }
-    /** 2.2: Busca os índices inteiros dos vértices char* de origem e destino no vetor de vértices do grafo
-     * Converte os ponteiros retornados pela função getIndiceVertice para inteiros.
-     * 
-     * Calcula a diferença entre os endereços de memória apontados pelos ponteiros, 
-     * resultando em um valor inteiro que representa o número de elementos do tipo apontado entre os dois ponteiros. 
-     * No caso, ao subtrair o ponteiro do vértice de origem e destino do ponteiro base do vetor de vértices,
-     * obtemos o índice inteiro correspondente ao vértice de origem no vetor de vértices do grafo:
-     * - idOrigem = 0x00010 (endereço do vértice de origem)
-     * - idDestino = 0x00020 (endereço do vértice de destino)
-     * - g->vetorVertices = 0x00000 (endereço base do vetor de vértices)
-     * - idOrigemInt = idOrigem - g->vetorVertices = 0x0000010 - 0x00000 = 10 (índice do vértice de origem)
-     * - idDestinoInt = idDestino - g->vetorVertices = 0x0000020 - 0x00000 = 20 (índice do vértice de destino)
-     */
-    int idOrigemInt  = (int)(idOrigem  - g->vetorVertices);
-    int idDestinoInt = (int)(idDestino - g->vetorVertices);
 
     // 3: Cria e preenche a estrutura de atributos da aresta (rua/via)
     InfoAresta* info = (InfoAresta*)malloc(sizeof(InfoAresta));
@@ -225,13 +199,20 @@ int inserirAresta(Grafo* g, char *i, char* j, char* ldir, char* lesq, double cmp
         return -1;
     }
     // 4.2: Preenche os dados do novo arco, atribuindo o índice do vértice de destino e os atributos da aresta (rua/via) à estrutura do arco
-    novoArco->vDestino = idDestinoInt;  // Atribui o índice do vértice de destino ao arco
-    novoArco->info     = info;          // Atribui os atributos da aresta (rua/via) ao arco  
+    novoArco->vDestino = j;     // Atribui o índice do vértice de destino ao arco
+    novoArco->info     = info;  // Atribui os atributos da aresta (rua/via) ao arco  
     
-    // 5: Insere o novo arco na lista de adjacência do vértice de origem, 
-    // atualizando os ponteiros para manter a estrutura da lista encadeada de arestas adjacentes
-    novoArco->proximo = g->vetorVertices[idOrigemInt].listaAdj;   // O próximo arco do novo arco aponta para o início da lista de adjacência atual do vértice de origem
-    g->vetorVertices[idOrigemInt].listaAdj = novoArco;            // O início da lista de adjacência do vértice de origem agora aponta para o novo arco, inserindo-o no início da lista
+    /** 5: Insere o novo arco na lista de adjacência do vértice de origem
+     * Atuaiza os ponteiros para manter a estrutura da lista encadeada de arestas adjacentes
+     * 
+     * O próximo arco do novo arco aponta para o início da lista de adjacência atual do vértice de origem
+     * Ex: novoArco|próx -> listaAdj[i]
+     * 
+     * O início da lista de adjacência do vértice de origem agora aponta para o novo arco, inserindo-o no início da lista
+     * Ex: listaAdj[i] -> novoArco
+     */
+    novoArco->proximo = g->vetorVertices[i].listaAdj;
+    g->vetorVertices[i].listaAdj = novoArco;
 
     // 6: Retorna 0 para indicar sucesso na inserção da aresta
     return 0;
