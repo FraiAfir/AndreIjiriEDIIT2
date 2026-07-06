@@ -166,11 +166,11 @@ int inserirAresta(Grafo* g, int i, int j, char* ldir, char* lesq, double cmp, do
         return -1;
     }
     // 2: Verifica se os parâmetros de entrada são válidos (IDs dos vértices, nome da rua, etc.)
-    if(i == -1 || j == -1 || ldir == NULL || lesq == NULL || nomeRua == NULL || cmp <= 0 || vm <= 0){
+    if(i == -1 || j == -1 || ldir == NULL || lesq == NULL || nomeRua == NULL || cmp < 0 || vm < 0){
         printf("[ERROR]\n");
         printf("In grafo.c [inserirAresta();]: Invalid input parameters (NULL or non-positive values)\n");
         printf("[i:\t\t%d]\n[j:\t\t%d]\n[ldir:\t\t%p]\n[lesq:\t\t%p]\n[nomeRua:\t%s]\n[cmp:\t\t%f]\n[vm:\t\t%f]\n\n", 
-            i, j, (void*)ldir, (void*)lesq, nomeRua, cmp, vm);
+            i, j, ldir, lesq, nomeRua, cmp, vm);
         return -1;
     }
 
