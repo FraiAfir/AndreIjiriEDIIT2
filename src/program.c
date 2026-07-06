@@ -7,7 +7,7 @@
 
 int shutProgram(Param** param, HashBin** h, Quadras** q, Grafo** g){
     printf("\n\n");
-    printf("Freeing allocated resources...\n");
+    printf("Freeing allocated resources...\n\n");
 
     // 1: Libera a memória alocada para os objetos de Parametro
     if(*param == NULL){
