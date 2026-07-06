@@ -57,14 +57,14 @@ int montarCaminhoQry(Param* param, char* caminhoQry){
 
     // 2: Imprime o nome do arquivo .qry original para depuração
     printf("Diretorio de entrada completo: \t\t%s\n", dirEntrada);
-    printf("Arquivo .qry fornecido: \t\t\t%s\n", nomeQry);
+    printf("Arquivo .qry fornecido: \t\t%s\n", nomeQry);
     
     // 3: Concatena o diretório de entrada completo com o nome do arquivo .qry
     strcpy(caminhoQry, dirEntrada);
     strcat(caminhoQry, nomeQry);
 
     // 4: Imprime o caminho completo do arquivo .qry para depuração
-    printf("Caminho completo do arquivo .qry: \t\t%s\n", caminhoQry);
+    printf("Caminho completo do arquivo .qry: \t%s\n", caminhoQry);
 
     return 0;
 }
