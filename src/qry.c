@@ -79,7 +79,7 @@ int montarCaminhoQry(Param* param, char* caminhoQry){
     return 0;
 }
 
-int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
+int readFileQry(FILE* arquivoQry, HashBin* h, Param* param, Grafo* g){
     // 1: Prepara os arquivos de saída (SVG e TXT) para o processamento do arquivo .qry
     // 1.1: Busca diretório de saída
     char* dirSaida = getDirSaidaCompleto(param);    // Ex: "./saida/"
@@ -227,7 +227,7 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
 
                 // Verifica se os parâmetros do comando mvm foram lidos corretamente
                 if(v[0] != '\0' && x[0] != '\0' && y[0] != '\0' && w[0] != '\0' && h[0] != '\0'){
-                    if(atualizarVelocidade(v, x, y, w, h) != 0){
+                    if(atualizarVelocidade(g, v, x, y, w, h) != 0){
                         printf("[ERROR]\n");
                         printf("In qry.c [readFileQry();]: Failed to update the average speed of the edges.\n\n");
                         return -1;
@@ -411,7 +411,7 @@ int calcularCoordenadaEndereco(Quadras* q, char face, int num, double* posX, dou
 
 
 /*                                       FUNÇÕES PRINCIPAIS                                      */
-int processarQry(Param* param, HashBin* h){
+int processarQry(Param* param, HashBin* h, Grafo* g){
     // Inicializa o buffer para o caminho completo do arquivo .qry
     char caminhoQry[512];
 
@@ -433,7 +433,7 @@ int processarQry(Param* param, HashBin* h){
     }
 
     // 3: Lê e processa os dados do arquivo .qry
-    if(readFileQry(arquivoQry, h, param) != 0){ 
+    if(readFileQry(arquivoQry, h, param, g) != 0){ 
         printf("[ERROR]\n");
         printf("In qry.c [processarQry();]: Failed to read the .qry file: %s\n\n", caminhoQry);
         fclose(arquivoQry);
@@ -547,9 +547,16 @@ int armazenarPosGeografica(HashBin* h, char *reg, char *cep, char *face, char *n
     return 0;
 }
 
-int atualizarVelocidade(char *v, char *x, char *y, char *w, char *h){
-    // 1: Implementar a lógica para atualizar a velocidade média das arestas dentro da região (x,y,w,h) para v
-    // ...
+int atualizarVelocidade(Grafo* g, char *v, char *x, char *y, char *w, char *h){
+    // 1: Converte os parâmetros de string para double
+    double nova_vm = atof(v);
+    double rx = atof(x);
+    double ry = atof(y);
+    double rw = atof(w);
+    double rh = atof(h);
+
+    // 2: Atualiza a velocidade média das arestas dentro da região (x, y, w, h) para v
+    grafoAtualizarVelocidadeRegiao(g, rx, ry, rw, rh, nova_vm);
 
     return 0;
 }

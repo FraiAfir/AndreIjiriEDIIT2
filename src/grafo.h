@@ -39,6 +39,19 @@ typedef struct grafo Grafo;
  * @return      Número de vértices no grafo
  */
 int getNumVertices(Grafo* g);
+/**
+ * Esta é uma função auxiliar ao TAD qry que atualiza a velocidade média das arestas 
+ * dentro de uma região retangular definida por (x, y, w, h) para uma nova velocidade v.
+ * 
+ * @param g     Ponteiro para o grafo
+ * @param x     Coordenada x do canto superior esquerdo da região retangular
+ * @param y     Coordenada y do canto superior esquerdo da região retangular
+ * @param w     Largura da região retangular
+ * @param h     Altura da região retangular
+ * @param v     Nova velocidade média a ser atribuída às arestas dentro da região
+ * @return      0 em caso de sucesso. -1 em caso de erro
+ */
+int grafoAtualizarVelocidadeRegiao(Grafo* g, double x, double y, double w, double h, double v);
 /*###############################################################################################*/
 
 

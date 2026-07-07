@@ -6,6 +6,7 @@ typedef struct registrador Registrador;
 typedef struct parametro Param;
 
 #include "svg.h"
+#include "grafo.h"
 #include "params.h"
 #include "hashBin.h"
 
@@ -38,9 +39,10 @@ int montarCaminhoQry(Param* param, char* caminhoQry);
  * @param arquivoQry    Ponteiro para o arquivo .qry aberto
  * @param hash          Ponteiro para a tabela hash de quadras (HashBin)
  * @param param         Ponteiro para a estrutura de parâmetros
+ * @param g             Ponteiro para o grafo
  * @return              0 em caso de sucesso. -1 em caso de erro
  */
-int readFileQry(FILE* arquivoQry, HashBin* hash, Param* param);
+int readFileQry(FILE* arquivoQry, HashBin* hash, Param* param, Grafo* g);
 /**
  * Esta função é responsável por clonar o arquivo .svg base para um novo arquivo .svg do .qry, 
  * que será utilizado para desenhar os resultados das operações do arquivo .qry.
@@ -80,9 +82,10 @@ int calcularCoordenadaEndereco(Quadras* q, char face, int num, double* posX, dou
  * 
  * @param param Ponteiro para a estrutura de parâmetros
  * @param hash  Ponteiro para a tabela hash de quadras (HashBin)
+ * @param g     Ponteiro para o grafo
  * @return      0 em caso de sucesso. -1 em caso de erro
  */
-int processarQry(Param* param, HashBin* hash);
+int processarQry(Param* param, HashBin* hash, Grafo* g);
 /**
  * Esta função é responsável por criar uma instância de Qry, alocando a memória necessária e inicializando seus campos.
  * @return Ponteiro para a instância de Qry criada. NULL em caso de erro
@@ -115,7 +118,8 @@ int armazenarPosGeografica(HashBin* h, char *reg, char *cep, char *face, char *n
 /**
  * COMANDO: mvm
  * Atualiza a velocidade média das arestas dentro da região (x,y,w,h) para v.
-
+ * 
+ * @param g     Ponteiro para o grafo
  * @param v     Velocidade média a ser atualizada
  * @param x     Coordenada x do canto superior esquerdo da região
  * @param y     Coordenada y do canto superior esquerdo da região
@@ -123,7 +127,7 @@ int armazenarPosGeografica(HashBin* h, char *reg, char *cep, char *face, char *n
  * @param h     Altura da região
  * @return      0 em caso de sucesso. -1 em caso de erro
  */
-int atualizarVelocidade(char *v, char *x, char *y, char *w, char *h);
+int atualizarVelocidade(Grafo* g, char *v, char *x, char *y, char *w, char *h);
 /**
  * COMANDO: regs
  * Considera como insuficiente os trechos com velocidade média inferior a vl. Calcula os componentes conexos.

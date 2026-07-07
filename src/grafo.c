@@ -49,6 +49,50 @@ int getNumVertices(Grafo* g){
     // 2: Retorna a quantidade atual de vértices no grafo
     return g ? g->qntdAtual : 0;
 }
+
+int grafoAtualizarVelocidadeRegiao(Grafo* g, double x, double y, double w, double h, double novaVelocidade){
+    // 1: Verifica se o grafo é válido (não é NULL)
+    if(g == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [grafoAtualizarVelocidadeRegiao();]: Invalid Graph (NULL)\n\n");
+        return -1;
+    }
+
+    // 2: Determina as fronteiras da região retangular (x_min, x_max, y_min, y_max)
+    double x_min = x;
+    double x_max = x + w;
+    double y_min = y;
+    double y_max = y + h;
+
+    // 3: Percorre todos os vértices do grafo para verificar se estão dentro da região retangular
+    for (int i = 0; i < g->qntdAtual; i++){
+        // 3.1: Obtém o vértice de origem
+        Vertice orig = g->vetorVertices[i];
+
+        // 3.2: Verifica se o vértice de origem está dentro da região retangular
+        if(orig.x >= x_min && orig.x <= x_max && orig.y >= y_min && orig.y <= y_max){
+            // 3.2.1: Obtém a cabeça da lista de adjacência do vértice de origem
+            Arco* arcoAtual = orig.listaAdj;
+
+            // 3.2.2: Percorre a lista de adjacência do vértice de origem para verificar os vértices de destino
+            while(arcoAtual != NULL){
+                // Obtém o vértice de destino correspondente ao arco atual
+                Vertice dest = g->vetorVertices[arcoAtual->vDestino];
+
+                // Verifica se o vértice de destino também está dentro da região retangular
+                if(dest.x >= x_min && dest.x <= x_max && dest.y >= y_min && dest.y <= y_max){
+                    // Atualiza a velocidade média da aresta (arco)
+                    if(arcoAtual->info != NULL) {arcoAtual->info->velocidadeMedia = novaVelocidade;}
+                }
+
+                // Avança para o próximo arco na lista de adjacência do vértice de origem
+                arcoAtual = arcoAtual->proximo;
+            }
+        }
+    }
+
+    return 0;
+}
 /*################################################################################################*/
 
 /*                                         FUNÇÕES PRINCIPAIS                                     */
