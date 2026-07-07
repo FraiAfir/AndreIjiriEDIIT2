@@ -171,7 +171,7 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
         if(strlen(linha) == 0) continue;    // Ignora linhas em branco
         
         // Precedido de um [*] para facilitar a identificação das linhas do arquivo .qry no meio dos outros prints de depuração
-        fprintf(qryTXT, "\n[*] %s", linha);
+        fprintf(qryTXT, "[*] %s\n", linha);
 
         // 2.2: Extrai apenas o primeiro token da linha, que corresponde ao comando do arquivo .qry, para identificar qual comando deve ser processado
         // Cria uma cópia da linha para usar na extração do comando, para não perder a linha original para os próximos comandos
@@ -489,22 +489,22 @@ int freeQry(Qry* qry){
 int armazenarPosGeografica(HashBin* h, char *reg, char *cep, char *face, char *num, FILE* qrySVG, FILE* qryTXT){
     // 1: Busca a quadra correspondente ao cep fornecido no hash binário
     Quadras* q = criarQuadra();
-    if(buscarQuadra(h, cep, q) != 0){
+    if(buscarQuadra(h, cep, q) != 1){
         printf("[ERROR]\n");
-        printf("In qry.c [armazenarPosGeografica();]: Failed to find the block with the given cep in the hash table.\n");
+        printf("In qry.c [armazenarPosGeografica();]: Failed to find the block with the given cep in the hash table.\n\n");
         freeQuadra(q);
         return -1;
     }
 
     // 2: Converte os parâmetros face e num para os tipos corretos (char e int)
-    char face = face[0];
-    int num   = atoi(num);
+    char f    = face[0];
+    int n     = atoi(num);
     double px = 0.0, py = 0.0;
 
     // 3: Calcula as coordenadas (x, y) do endereço com base na quadra, face e número
-    if(calcularCoordenadaEndereco(q, face, num, &px, &py) != 0){
+    if(calcularCoordenadaEndereco(q, f, n, &px, &py) != 0){
         printf("[ERROR]\n");
-        printf("In qry.c [armazenarPosGeografica();]: Failed to calculate the geographic coordinates of the address.\n");
+        printf("In qry.c [armazenarPosGeografica();]: Failed to calculate the geographic coordinates of the address.\n\n");
         freeQuadra(q);
         return -1;
     }
@@ -529,13 +529,13 @@ int armazenarPosGeografica(HashBin* h, char *reg, char *cep, char *face, char *n
     // 5: Se o registrador não foi encontrado e atualizado, imprime uma mensagem de erro
     if(!salvoFlag){
         printf("[ERROR]\n");
-        printf("In qry.c [armazenarPosGeografica();]: Failed to store the geographic position in the register. No available register found.\n");
+        printf("In qry.c [armazenarPosGeografica();]: Failed to store the geographic position in the register. No available register found.\n\n");
         freeQuadra(q);
         return -1;
     }
 
     // 6: TXT - Reporta a coordenada relativa ao endereço no arquivo .txt do .qry
-    fprintf(qryTXT, "[INFO]: [@o?] %s %s %c %d\n", reg, cep, face, num);
+    fprintf(qryTXT, "[INFO]: [@o?] %s %s %c %d\n", reg, cep, f, n);
     fprintf(qryTXT, "Address coordinates stored in register %s: (%.2lf, %.2lf)\n\n", reg, px, py);
 
     // 7: SVG

@@ -139,10 +139,10 @@ int atualizarDiretorio(HashBin* dir, long offset_bucket_antigo, long offset_buck
 
 int buscarQuadra(HashBin* dir, char* cep, Quadras* resultado){
     // 1: Calcular o Hash e o Índice no diretório
-    int valor_hash = hashFunc(cep);
+    unsigned int valor_hash = hashFunc(cep);
 
     // 2: Aplicamos a máscara para pegar apenas os bits da prof_global atual
-    int indice = valor_hash & ((1 << dir->prof_global) - 1); 
+    unsigned int indice = valor_hash & ((1 << dir->prof_global) - 1); 
     /**
      * Calcula o índice do diretório usando os últimos 'p' bits do hash do CEP, onde 'p' é a profundidade global da tabela hash. 
      * A expressão (1 << dir->prof_global) - 1 cria uma máscara que tem os últimos 'p' bits definidos como 1 e os demais como 0, 
