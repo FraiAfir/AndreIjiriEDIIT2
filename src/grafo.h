@@ -27,22 +27,6 @@ typedef struct grafo Grafo;
 
 /*                                       FUNÇÕES AUXILIARES                                      */
 /**
- * Esta função é responsável por obter o índice de um vértice no grafo a partir do seu identificador (id).
- * 
- * A função percorre a lista de vértices do grafo e compara o id de cada vértice com o id fornecido como argumento.
- * 
- * Se um vértice com o id correspondente for encontrado, a função retorna o índice desse vértice no grafo. 
- * Caso contrário, a função retorna NULL para indicar que o vértice não foi encontrado.
- * 
- * A função é útil para operações que exigem acesso a um vértice específico no grafo, 
- * como a inserção de arestas ou a busca por caminhos entre vértices.
- * 
- * @param g     Ponteiro para o grafo onde o vértice deve ser buscado
- * @param id    Identificador do vértice a ser buscado
- * @return      Índice do vértice no grafo se encontrado. -1 caso contrário
- */
-int getIndiceVertice(Grafo* g, char* id);
-/**
  * Esta função é responsável por obter o número de vértices no grafo.
  * 
  * A função percorre a estrutura de dados do grafo e conta o número de vértices presentes, 

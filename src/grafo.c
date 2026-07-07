@@ -38,20 +38,6 @@ typedef struct grafo{
 
 
 /*                                       FUNÇÕES AUXILIARES                                       */
-int getIndiceVertice(Grafo* g, char* id){
-    // 1: Verifica se o grafo é válido (não é NULL)
-    if(g == NULL){
-        printf("[ERROR]\n");
-        printf("In grafo.c [getIndiceVertice();]: Invalid Graph (NULL)\n");
-        return -1;
-    }
-    
-    // 2: Procedimento para encontrar o índice do vértice com o ID fornecido
-    // TO-DO
-
-    return 0;
-}
-
 int getNumVertices(Grafo* g){
     // 1: Verifica se o grafo é válido (não é NULL)
     if(g == NULL){
@@ -74,20 +60,21 @@ Grafo* criarGrafo(int maxVertices){
         return NULL;
     }
 
-    // 2: Aloca memória para a estrutura do grafo
+    // 2: Cria a estrutura do grafo e aloca memória para ela
+    // 2.1: Aloca memória para a estrutura do grafo
     Grafo* g = (Grafo*)malloc(sizeof(struct grafo));
-    // 2.1: Verifica se a alocação de memória foi bem-sucedida
+    // 2.2: Verifica se a alocação de memória foi bem-sucedida
     if(g == NULL){
         printf("[ERROR]\n");
         printf("In grafo.c [criarGrafo();]: Failed to allocate memory for the graph\n");
         return NULL;
     }
-
-    // 3: Inicializa os atributos do grafo
+    // 2.3: Inicializa os atributos do grafo
     g->maxVertices = maxVertices;
     g->qntdAtual   = 0;
     
-    // 3.1: Aloca o vetor de vértices limpo (Preenche com zeros) usando calloc
+    // 3: Cria o vetor de vértices do grafo e aloca memória para ele
+    // 3.1: Aloca o vetor de vértices de forma limpa
     g->vetorVertices = (Vertice*)calloc(maxVertices, sizeof(Vertice));
     // 3.2: Verifica se a alocação de memória para o vetor de vértices foi bem-sucedida
     if(g->vetorVertices == NULL){
@@ -96,9 +83,13 @@ Grafo* criarGrafo(int maxVertices){
         free(g);
         return NULL;
     }
-    
-    // 3.2: Inicializa a estrutura de dados conténdo o grafo (Vetor de vértices, tabela hash, etc.)
-    // TO-DO 
+    // 3.3: Inicializa os atributos de cada vértice no vetor de vértices (ID, coordenadas, lista de adjacência)
+    for(int i = 0; i < maxVertices; i++){
+        g->vetorVertices[i].id[0] = '\0';
+        g->vetorVertices[i].x = 0.0;
+        g->vetorVertices[i].y = 0.0;
+        g->vetorVertices[i].listaAdj = NULL;
+    }
 
     return g;
 }
@@ -111,21 +102,24 @@ int freeGrafo(Grafo* g){
         return -1;
     }
 
-    // 2: Libera a memória alocada para os vértices e arestas do grafo
-    // TO-DO
-    // for(){
-    // }
+    // 2: Percorre os vértices inseridos no grafo (de 0 até qntdAtual - 1) para liberar a memória das listas de adjacência
+    for(int i = 0; i < g->qntdAtual; i++){
+        Arco* atual = g->vetorVertices[i].listaAdj;
+        // 2.1: Percorre a lista de adjacência do vértice atual e libera a memória de cada arco e seus atributos
+        while(atual != NULL){
+            Arco* prox = atual->proximo;
+            if(atual->info != NULL) {free(atual->info);}    // Libera a memória dos atributos da aresta (InfoAresta)
+            free(atual);                                    // Libera a memória do arco atual
+            atual = prox;                                   // Avança para o próximo arco na lista
+        }
+    }
 
-    // 3: Libera o vetor de vértices
-    free(g->vetorVertices);
-    
-    // 4: Libera a estrutura de dados conténdo o grafo (Vetor de vértices, tabela hash, etc.)
-    // TO-DO
+    // 3: Libera a memória do vetor de vértices do grafo
+    if(g->vetorVertices != NULL) {free(g->vetorVertices);}
 
-    // 5: Libera a estrutura principal do grafo
+    // 4: Libera a estrutura principal do grafo
     free(g);
 
-    // 6: Retorna 0 para indicar sucesso na liberação do grafo
     return 0;
 }
 
