@@ -2,6 +2,7 @@
 #define _QRY_H
 
 typedef struct qry Qry;
+typedef struct registrador Registrador;
 typedef struct parametro Param;
 
 #include "svg.h"
@@ -53,6 +54,18 @@ int readFileQry(FILE* arquivoQry, HashBin* hash, Param* param);
  * @return Ponteiro para o arquivo .svg do .qry criado, ou NULL em caso de erro
  */
 FILE* clonarSvgBase(char* caminhoSvgBase, char* caminhoSvgQry);
+/**
+ * Esta função é responsável por calcular as coordenadas (x, y) do endereço especificado pelo cep, face e número,
+ * com base nas coordenadas e dimensões da quadra correspondente.
+ * 
+ * @param q        Ponteiro para a quadra correspondente
+ * @param face     Face do endereço (N, S, L, O)
+ * @param num      Número do endereço
+ * @param x    Ponteiro para armazenar a coordenada x calculada
+ * @param y    Ponteiro para armazenar a coordenada y calculada
+ * @return         0 em caso de sucesso. -1 em caso de erro
+ */
+int calcularCoordenadaEndereco(Quadras* q, char face, int num, double* posX, double* posY);
 /*###############################################################################################*/
 
 
@@ -98,7 +111,7 @@ int freeQry(Qry* qry);
  * @param qryTXT    Ponteiro para o arquivo .txt do .qry para reportar a coordenada relativa ao endereço
  * @return          0 em caso de sucesso. -1 em caso de erro
  */
-int armazenarPosGeografica(char *reg, char *cep, char *face, char *num, FILE* qrySVG, FILE* qryTXT);
+int armazenarPosGeografica(HashBin* h, char *reg, char *cep, char *face, char *num, FILE* qrySVG, FILE* qryTXT);
 /**
  * COMANDO: mvm
  * Atualiza a velocidade média das arestas dentro da região (x,y,w,h) para v.

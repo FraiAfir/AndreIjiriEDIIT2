@@ -43,6 +43,16 @@ typedef struct qry{
     char *vl;
     char *reg1, *reg2, *cc, *cr;
 }Qry;
+
+typedef struct registrador{
+    char id[16];
+    double x;
+    double y;
+    int ativoFlag; // 0 = vazio | 1 = ocupado
+} Registrador;
+
+#define MAX_REGS 100
+Registrador bancoRegistradores[MAX_REGS];
 /*###############################################################################################*/
 
 
@@ -136,14 +146,16 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
     // 1.10: Clona o SVG BASE para o SVG QRY
     FILE* qrySVG = clonarSvgBase(caminhoSvgBase, caminhoSvgQry);    
     if(qrySVG == NULL){
-        printf("ERRO: Nao foi possivel abrir/clonar o SVG: %s\n", caminhoSvgBase);
+        printf("[ERROR]\n");
+        printf("In qry.c [readFileQry();]: Failed to clone the base .svg file to the .qry .svg file.\n\n");
         return -1;
     }
     
     // 1.11: Abre o arquivo de saída .txt para escrita dos resultados das consultas do arquivo .qry
     FILE* qryTXT = fopen(caminhoTxtQry, "w");
     if(qryTXT == NULL){
-        printf("ERRO: Nao foi possivel criar o arquivo de texto para os resultados do .qry: %s\n", caminhoTxtQry);
+        printf("[ERROR]\n");
+        printf("In qry.c [readFileQry();]: Failed to create the .txt file for the .qry results: %s\n\n", caminhoTxtQry);
         return -1;
     }
     
@@ -186,12 +198,15 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
 
                 // Verifica se os parâmetros do comando @o? foram lidos corretamente
                 if(reg[0] != '\0' && cep[0] != '\0' && face[0] != '\0' && num[0] != '\0'){
-                    if(armazenarPosGeografica(reg, cep, face, num, qrySVG, qryTXT) != 0){
-                        fprintf(stderr, "ERRO: Falha ao armazenar a posicao geografica do endereco no registrador.\n");
+                    if(armazenarPosGeografica(h, reg, cep, face, num, qrySVG, qryTXT) != 0){
+                        printf("[ERROR]\n");
+                        printf("In qry.c [readFileQry();]: Failed to store the geographic position of the address in the register.\n\n");
                         return -1;
                     }
                 }else{
-                    printf("ERRO: Parametros do comando @o? lidos do arquivo .qry sao invalidos (NULL).\n");
+                    printf("[ERROR]\n");
+                    printf("In qry.c [readFileQry();]: Invalid parameters for command @o? read from the .qry file.\n");
+                    printf("[reg:\t%s]\n[cep:\t%s]\n[face:\t%s]\n[num:\t%s]\n\n", reg, cep, face, num);
                     return -1;
                 }
             }
@@ -213,11 +228,14 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
                 // Verifica se os parâmetros do comando mvm foram lidos corretamente
                 if(v[0] != '\0' && x[0] != '\0' && y[0] != '\0' && w[0] != '\0' && h[0] != '\0'){
                     if(atualizarVelocidade(v, x, y, w, h) != 0){
-                        fprintf(stderr, "ERRO: Falha ao atualizar a velocidade media das arestas.\n");
+                        printf("[ERROR]\n");
+                        printf("In qry.c [readFileQry();]: Failed to update the average speed of the edges.\n\n");
                         return -1;
                     }
                 }else{
-                    printf("ERRO: Parametros do comando mvm lidos do arquivo .qry sao invalidos (NULL).\n");
+                    printf("[ERROR]\n");
+                    printf("In qry.c [readFileQry();]: Invalid parameters for command mvm read from the .qry file.\n");
+                    printf("[v:\t%s]\n[x:\t%s]\n[y:\t%s]\n[w:\t%s]\n[h:\t%s]\n\n", v, x, y, w, h);
                     return -1;
                 }
             }
@@ -235,11 +253,14 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
                 // Verifica se o parâmetro do comando regs foi lido corretamente
                 if(vl[0] != '\0'){
                     if(calcularComponentesConexos(vl, qrySVG, qryTXT) != 0){
-                        fprintf(stderr, "ERRO: Falha ao calcular os componentes conexos.\n");
+                        printf("[ERROR]\n");
+                        printf("In qry.c [readFileQry();]: Failed to calculate the connected components.\n\n");
                         return -1;
                     }
                 }else{
-                    printf("ERRO: Parametro do comando regs lido do arquivo .qry eh NULL.\n");
+                    printf("[ERROR]\n");
+                    printf("In qry.c [readFileQry();]: Invalid parameter for command regs read from the .qry file.\n");
+                    printf("[vl:\t%s]\n\n", vl);
                     return -1;
                 }
             }
@@ -258,11 +279,14 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
                 // Verifica se o parâmetro do comando exp foi lido corretamente
                 if(vl[0] != '\0'){
                     if(calcularArvoreGeradoraMinima(vl, qrySVG) != 0){
-                        fprintf(stderr, "ERRO: Falha ao calcular a árvore geradora mínima.\n");
+                        printf("[ERROR]\n");
+                        printf("In qry.c [readFileQry();]: Failed to calculate the minimum spanning tree.\n\n");
                         return -1;
                     }
                 }else{
-                    printf("ERRO: Parametro do comando exp lido do arquivo .qry eh NULL.\n");
+                    printf("[ERROR]\n");
+                    printf("In qry.c [readFileQry();]: Invalid parameter for command exp read from the .qry file.\n");
+                    printf("[vl:\t%s]\n\n", vl);
                     return -1;
                 }
             }
@@ -284,11 +308,14 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
                 // Verifica se os parâmetros do comando p? foram lidos corretamente
                 if(reg1[0] != '\0' && reg2[0] != '\0' && cc[0] != '\0' && cr[0] != '\0'){
                     if(calcularMelhorTrajeto(reg1, reg2, cc, cr, qrySVG, qryTXT) != 0){
-                        fprintf(stderr, "ERRO: Falha ao calcular o melhor trajeto.\n");
+                        printf("[ERROR]\n");
+                        printf("In qry.c [readFileQry();]: Failed to calculate the best route.\n\n");
                         return -1;
                     }
                 }else{
-                    printf("ERRO: Parametros do comando p? lidos do arquivo .qry sao invalidos (NULL).\n");
+                    printf("[ERROR]\n");
+                    printf("In qry.c [readFileQry();]: Invalid parameters for command p? read from the .qry file.\n");
+                    printf("[reg1:\t%s]\n[reg2:\t%s]\n[cc:\t%s]\n[cr:\t%s]\n\n", reg1, reg2, cc, cr);
                     return -1;
                 }
             }
@@ -296,7 +323,9 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
 
         // 2.4: Se o comando lido do arquivo .qry for NULL, imprime uma mensagem de erro e continua para a próxima linha
         else{
-            printf("ERRO: Comando lido do arquivo .qry eh NULL.\n");
+            printf("[ERROR]\n");
+            printf("In qry.c [readFileQry();]: Command read from the .qry file is NULL.\n");
+            printf("[comando:\t%s]\n\n", comando);
             return -1;
         }
     }
@@ -304,9 +333,11 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param){
     // 3: Fecha os arquivos de saída após o processamento do arquivo .qry
     fclose(qryTXT);
     if(fecharSvg(qrySVG) != 0){
-        fprintf(stderr, "ERRO: Fechar o arquivo .svg apos a geracao do conteudo.\n");
+        printf("[ERROR]\n");
+        printf("In qry.c [readFileQry();]: Failed to close the .svg file.\n\n");
         return -1;
-    }printf("Arquivo .svg fechado com sucesso apos a geracao do conteudo.\n");
+    }
+    printf("Arquivo .svg fechado com sucesso apos a geracao do conteudo.\n");
     return 0;
 }
 
@@ -314,9 +345,15 @@ FILE* clonarSvgBase(char* caminhoSvgBase, char* caminhoSvgQry){
     // 1: Abre o arquivo .svg base para leitura e o arquivo .svg do .qry para escrita 
     // (será criado a partir do clone do .svg base)
     FILE* arqBase = fopen(caminhoSvgBase, "r"); // Abre o arquivo .svg base para leitura
+    if(arqBase == NULL){
+        printf("[ERROR]\n");
+        printf("In qry.c [clonarSvgBase();]: Failed to open the base .svg file.\n\n");
+        return NULL;
+    }
     FILE* arqQry = fopen(caminhoSvgQry, "w");   // Abre o arquivo .svg do .qry para escrita (será criado a partir do clone do .svg base)
     if(arqBase == NULL || arqQry == NULL){
-        printf("ERRO: Nao foi possivel clonar o SVG base.\n");
+        printf("[ERROR]\n");
+        printf("In qry.c [clonarSvgBase();]: Failed to open the .svg files.\n\n");
         return NULL;
     }
 
@@ -337,6 +374,38 @@ FILE* clonarSvgBase(char* caminhoSvgBase, char* caminhoSvgQry){
     // 4: Retorna o ponteiro do novo arquivo pronto para receber os desenhos do .qry
     return arqQry; 
 }
+
+int calcularCoordenadaEndereco(Quadras* q, char face, int num, double* posX, double* posY){
+    // 1: Obtém as coordenadas (x, y) e dimensões (w, h) da quadra
+    double x = getQuadraX(q);
+    double y = getQuadraY(q);
+    double w = getQuadraW(q);
+    double h = getQuadraH(q);
+
+    /** 2: Calcula as coordenadas (x, y) do endereço com base na face e número, usando as coordenadas e dimensões da quadra
+     * NORTE: O endereço está na parte superior da quadra,
+     * então x varia com o número e y é constante (y da quadra)
+     * 
+     * SUL: O endereço está na parte inferior da quadra,
+     * então x varia com o número e y é constante (y + altura da quadra)
+     * 
+     * LESTE: O endereço está na parte direita da quadra,
+     * então x é constante (x + largura da quadra) e y varia com o número
+     * 
+     * OESTE: O endereço está na parte esquerda da quadra,
+     * então x é constante (x da quadra) e y varia com o número
+     */
+    if      (face == 'N') { *posX = (x + num); *posY = (y)      ; return 0; }
+    else if (face == 'S') { *posX = (x + num); *posY = (y + h)  ; return 0; }
+    else if (face == 'L') { *posX = (x + w)  ; *posY = (y + num); return 0; }
+    else if (face == 'O') { *posX = (x)      ; *posY = (y + num); return 0; }
+    else{
+        printf("[ERROR]\n");
+        printf("In qry.c [calcularCoordenadaEndereco();]: Address face invalid. Must be one of the following: N, S, L, O.\n");
+        printf("[face:\t%c]\n\n", face);
+        return -1;
+    }
+}
 /*###############################################################################################*/
 
 
@@ -348,7 +417,8 @@ int processarQry(Param* param, HashBin* h){
 
     // 1: Monta o caminho completo do arquivo .qry
     if(montarCaminhoQry(param, caminhoQry) != 0){
-        fprintf(stderr, "ERRO: Montar o caminho completo do arquivo .qry.\n");
+        printf("[ERROR]\n");
+        printf("In qry.c [processarQry();]: Failed to build the complete path for the .qry file.\n\n");
         return -1;
     }
 
@@ -357,13 +427,15 @@ int processarQry(Param* param, HashBin* h){
     // 2: Abre o arquivo .qry para leitura
     FILE* arquivoQry = fopen(caminhoQry, "r");
     if(arquivoQry == NULL){
-        fprintf(stderr, "ERRO: Nao foi possivel abrir o arquivo .qry: %s\n", caminhoQry);
+        printf("[ERROR]\n");
+        printf("In qry.c [processarQry();]: Failed to open the .qry file: %s\n\n", caminhoQry);
         return -1;
     }
 
     // 3: Lê e processa os dados do arquivo .qry
     if(readFileQry(arquivoQry, h, param) != 0){ 
-        fprintf(stderr, "ERRO: Leitura do arquivo .qry.\n");
+        printf("[ERROR]\n");
+        printf("In qry.c [processarQry();]: Failed to read the .qry file: %s\n\n", caminhoQry);
         fclose(arquivoQry);
         return -1;
     }
@@ -378,7 +450,8 @@ Qry* criarQry(){
     // 1: Aloca memória para o objeto Qry
     Qry* qry = (Qry*)malloc(sizeof(Qry));
     if(qry == NULL){
-        fprintf(stderr, "ERRO: Falha na alocacao de memoria para o objeto Qry\n");
+        printf("[ERROR]\n");
+        printf("In qry.c [criarQry();]: Memory allocation failed for Qry object.\n\n");
         return NULL;
     }
 
@@ -395,7 +468,11 @@ Qry* criarQry(){
 
 int freeQry(Qry* qry){
     // 1: Verifica se o ponteiro do objeto Qry é NULL antes de tentar liberar a memória
-    if(qry == NULL) return 0;
+    if(qry == NULL){
+        printf("[ERROR]\n");
+        printf("In qry.c [freeQry();]: Qry object is NULL.\n\n");
+        return 0;
+    }
 
     // 2: Libera a memória alocada para as strings dentro do objeto Qry, se não forem NULL
     free(qry->comando);
@@ -409,14 +486,63 @@ int freeQry(Qry* qry){
     return 0;
 }
 
-int armazenarPosGeografica(char *reg, char *cep, char *face, char *num, FILE* qrySVG, FILE* qryTXT){
+int armazenarPosGeografica(HashBin* h, char *reg, char *cep, char *face, char *num, FILE* qrySVG, FILE* qryTXT){
+    // 1: Busca a quadra correspondente ao cep fornecido no hash binário
+    Quadras* q = criarQuadra();
+    if(buscarQuadra(h, cep, q) != 0){
+        printf("[ERROR]\n");
+        printf("In qry.c [armazenarPosGeografica();]: Failed to find the block with the given cep in the hash table.\n");
+        freeQuadra(q);
+        return -1;
+    }
 
-    // 1: Implementar a lógica para armazenar a posição geográfica do endereço cep/face/num no registrador reg
-    // ...
-    // 2: Implementar a lógica para desenhar a linha vertical pontilhada vermelha no arquivo .svg do .qry
-    // ...
-    // 3: Implementar a lógica para reportar a coordenada relativa ao endereço no arquivo .txt do .qry
-    // ...
+    // 2: Converte os parâmetros face e num para os tipos corretos (char e int)
+    char face = face[0];
+    int num   = atoi(num);
+    double px = 0.0, py = 0.0;
+
+    // 3: Calcula as coordenadas (x, y) do endereço com base na quadra, face e número
+    if(calcularCoordenadaEndereco(q, face, num, &px, &py) != 0){
+        printf("[ERROR]\n");
+        printf("In qry.c [armazenarPosGeografica();]: Failed to calculate the geographic coordinates of the address.\n");
+        freeQuadra(q);
+        return -1;
+    }
+
+    // 4: Armazena as coordenadas (x, y) no registrador identificado por reg
+    // 4.1: Cria um flag para indicar se o registrador foi encontrado e atualizado
+    int salvoFlag = 0;
+    // 4.2: Percorre o banco de registradores para encontrar o registrador com o id correspondente a reg
+    for(int i = 0; i < MAX_REGS; i++){
+        // Se o registrador com o id correspondente a reg for encontrado 
+        // ou se o registrador estiver vazio (ativoFlag == 0), 
+        // atualiza as coordenadas (x, y) e marca o registrador como ocupado (ativoFlag = 1)
+        if(strcmp(bancoRegistradores[i].id, reg) == 0 || bancoRegistradores[i].ativoFlag == 0){
+            bancoRegistradores[i].x = px;
+            bancoRegistradores[i].y = py;
+            bancoRegistradores[i].ativoFlag = 1;
+            salvoFlag = 1;  // Marca que o registrador foi encontrado e atualizado
+            break;
+        }
+    }
+
+    // 5: Se o registrador não foi encontrado e atualizado, imprime uma mensagem de erro
+    if(!salvoFlag){
+        printf("[ERROR]\n");
+        printf("In qry.c [armazenarPosGeografica();]: Failed to store the geographic position in the register. No available register found.\n");
+        freeQuadra(q);
+        return -1;
+    }
+
+    // 6: TXT - Reporta a coordenada relativa ao endereço no arquivo .txt do .qry
+    fprintf(qryTXT, "[INFO]: [@o?] %s %s %c %d\n", reg, cep, face, num);
+    fprintf(qryTXT, "Address coordinates stored in register %s: (%.2lf, %.2lf)\n\n", reg, px, py);
+
+    // 7: SVG
+    // 7.1: Desenha a linha vertical pontilhada vermelha no arquivo .svg do .qry, mostrando a posição do endereço
+    fprintf(qrySVG, "<line x1=\"%lf\" y1=\"0\" x2=\"%lf\" y2=\"%lf\" stroke=\"red\" stroke-dasharray=\"5,5\" stroke-width=\"2\" />\n", px, px, py);
+    // 7.2: Coloca o número do registrador na outra extremidade da linha (topo da página)
+    fprintf(qrySVG, "<text x=\"%lf\" y=\"15\" fill=\"red\" font-family=\"Arial\" font-size=\"14\">%s</text>\n", px + 5, reg);
 
     return 0;
 }
