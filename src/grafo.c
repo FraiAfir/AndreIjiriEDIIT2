@@ -32,16 +32,89 @@ typedef struct grafo{
     int qntdAtual;          // Quantidade de vértices inseridos até o momento
     Vertice* vetorVertices; // Vetor dinâmico de Vértices [maxVertices]    
 } Grafo;
+
+
+
+// Estrutura do Bounding Box
 typedef struct boundingbox{
     double minX, minY, maxX, maxY;
 } BoundingBox;
+
+
+
+// Estrutura para armazenar as arestas selecionadas pelo algoritmo de Kruskal
+typedef struct arestas_kruskal{
+    int vOrigem;
+    int vDestino;
+    double comprimento;
+    InfoAresta* info;
+} ArestaKruskal;
+// Estrutura para armazenar a lista de arestas resultante do algoritmo de Kruskal
+typedef struct lista_arestas{
+    ArestaKruskal* vetorArestas; // Vetor de arestas da AGM resultante do algoritmo de Kruskal
+    int quantidade;              // Quantidade de arestas na AGM resultante
+    Grafo* grafoOriginal;        // Ponteiro para o grafo original (para referência às coordenadas dos vértices)
+} ListaArestas;
 /*################################################################################################*/
 
 
 
+/*                                       KRUSKAL | Union-Find                                     */
+int compararArestasKruskal(void* a, void* b){
+    // 1: Converte os ponteiros genéricos para ponteiros do tipo ArestaKruskal
+    ArestaKruskal *a1 = (ArestaKruskal*)a;
+    ArestaKruskal *a2 = (ArestaKruskal*)b;
+
+    /** 2: Compara os comprimentos das arestas para determinar a ordem
+     * Se a aresta a1 for menor que a2, retorna -1 (a1 vem antes de a2)
+     * Se a aresta a1 for maior que a2, retorna 1 (a1 vem depois de a2)
+     * Se forem iguais, retorna 0 (não há diferença na ordem)
+     */
+    if(a1->comprimento < a2->comprimento) return -1;
+    if(a1->comprimento > a2->comprimento) return 1;
+    return 0;
+}
+int uf_find(int i, int* pai){
+    // 1: Verifica se o índice do vértice é o próprio pai (raiz do conjunto) e retorna o índice do pai correspondente
+    if(pai[i] == i) return i;
+
+    // 2: Se não for o próprio pai, realiza a busca recursiva para encontrar a raiz do conjunto e aplica compressão de caminho
+    return pai[i] = uf_find(pai[i], pai);
+}
+void uf_union(int i, int j, int* pai){
+    // 1: Encontra as raízes dos conjuntos aos quais os vértices i e j pertencem
+    int raizI = uf_find(i, pai);
+    int raizJ = uf_find(j, pai);
+
+    // 2: Se as raízes forem diferentes, une os conjuntos fazendo a raiz de i apontar para a raiz de j
+    if(raizI != raizJ) {pai[raizI] = raizJ;}
+}
+/*################################################################################################*/
+
 
 
 /*                                       FUNÇÕES AUXILIARES                                       */
+int getCoordenadasVertice(Grafo* g, int indice, double* x, double* y){
+    // 1: Verifica se o grafo é válido ou se o índice do vértice é válido (dentro do intervalo permitido)
+    if(g == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [getCoordenadasVertice();]: Invalid Graph\n\n");
+        return -1;
+    }
+    if(indice < 0 || indice >= g->qntdAtual){
+        printf("[ERROR]\n");
+        printf("In grafo.c [getCoordenadasVertice();]: Invalid vertex index\n");
+        printf("[indice:\t%d]\n[qntdAtual:\t%d]\n\n", indice, g->qntdAtual);
+        return -1;
+    }
+
+    // 2: Obtém as coordenadas do vértice
+    *x = g->vetorVertices[indice].x;
+    *y = g->vetorVertices[indice].y;
+
+    return 0;
+}
+
 int getNumVertices(Grafo* g){
     // 1: Verifica se o grafo é válido (não é NULL)
     if(g == NULL){
@@ -54,11 +127,11 @@ int getNumVertices(Grafo* g){
     return g ? g->qntdAtual : 0;
 }
 
-int grafoAtualizarVelocidadeRegiao(Grafo* g, double x, double y, double w, double h, double novaVelocidade){
+int atualizaVelocidadeRegiaoGrafo(Grafo* g, double x, double y, double w, double h, double novaVelocidade){
     // 1: Verifica se o grafo é válido (não é NULL)
     if(g == NULL){
         printf("[ERROR]\n");
-        printf("In grafo.c [grafoAtualizarVelocidadeRegiao();]: Invalid Graph (NULL)\n\n");
+        printf("In grafo.c [atualizaVelocidadeRegiaoGrafo();]: Invalid Graph (NULL)\n\n");
         return -1;
     }
 
@@ -145,6 +218,60 @@ int getExtremidadesBB(BoundingBox* bb, int indice, double* minX, double* minY, d
     *maxY = bb[indice].maxY;
 
     return 0;
+}
+
+int getTamanhoListaArestas(ListaArestas* lista){
+    // 1: Verifica se a lista de arestas é válida (não é NULL)
+    if(lista == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [getTamanhoListaArestas();]: Invalid List of Edges (NULL)\n\n");
+        return 0;
+    }
+
+    // 2: Retorna a quantidade de arestas na lista
+    return lista->quantidade;
+}
+
+int getCoordenadasArestaLista(ListaArestas* lista, int indice, double* x1, double* y1, double* x2, double* y2){
+    // 1: Verifica se a lista de arestas é válida (não é NULL) e se o índice fornecido está dentro do intervalo permitido
+    if(lista == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [getCoordenadasArestaLista();]: Invalid List of Edges (NULL)\n\n");
+        return -1;
+    }
+    if(indice < 0 || indice >= lista->quantidade){
+        printf("[ERROR]\n");
+        printf("In grafo.c [getCoordenadasArestaLista();]: Invalid edge index (%d)\n", indice);
+        printf("[indice:\t%d]\n[quantidade:\t%d]\n\n", indice, lista->quantidade);
+        return -1;
+    }
+
+    // 2: Obtém os índices dos vértices de origem e destino da aresta no vetor de arestas
+    int idOrigem  = lista->vetorArestas[indice].vOrigem;
+    int idDestino = lista->vetorArestas[indice].vDestino;
+
+    // 3: Obtém as coordenadas dos vértices de origem e destino da aresta usando os índices obtidos
+    *x1 = lista->grafoOriginal->vetorVertices[idOrigem].x;
+    *y1 = lista->grafoOriginal->vetorVertices[idOrigem].y;
+    *x2 = lista->grafoOriginal->vetorVertices[idDestino].x;
+    *y2 = lista->grafoOriginal->vetorVertices[idDestino].y;
+
+    return 0;
+}
+
+int destruirListaArestas(ListaArestas* lista){
+    // 1: Verifica se a lista de arestas é válida (não é NULL)
+    if(lista == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [destruirListaArestas();]: Invalid List of Edges (NULL)\n\n");
+        return -1;
+    }
+
+    // 2: Verifica se o vetor de arestas é válido (não é NULL) e libera a memória alocada para ele
+    if(lista->vetorArestas != NULL) free(lista->vetorArestas);
+
+    // 3: Libera a memória alocada para a estrutura da lista de arestas
+    free(lista);
 }
 /*################################################################################################*/
 
@@ -352,5 +479,139 @@ int identificarComponentesConexos(Grafo* g, double vl, BoundingBox** vetorBB){
     }
 
     return contadorIlhas;
+}
+
+ListaArestas* aumentaVMArestas(Grafo* g, double vl){
+    // 1: Verifica se o grafo é válido (não é NULL)
+    if (g == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [aumentaVMArestas();]: Invalid Graph (NULL)\n\n");
+        return NULL;
+    }
+
+    // 2: Aloca memória para armazenar todas as arestas lentas (com velocidade < vl) do grafo
+    int maxArestas = g->qntdAtual * 10;
+    ArestaKruskal* todasArestas = (ArestaKruskal*)malloc(maxArestas * sizeof(ArestaKruskal));
+    if(todasArestas == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [aumentaVMArestas();]: Failed to allocate memory for the edges array\n\n");
+        return NULL;
+    }
+
+    // 3: Obtém as arestas do grafo com velocidade média menor que vl e armazena-as no vetor todasArestas
+    // 3.1: Flag para contar o número total de arestas lentas encontradas
+    int totalLentas = 0;
+    // 3.2: Percorre todos os vértices do grafo para acessar suas listas de adjacência e identificar as arestas lentas
+    for(int i = 0; i < g->qntdAtual; i++){
+        // 3.2.1: Obtém a cabeça da lista de adjacência do vértice atual
+        Arco* arco = g->vetorVertices[i].listaAdj;
+
+        // 3.2.2: Percorre a lista de adjacência do vértice atual enquanto houver arcos (arestas) disponíveis
+        while(arco != NULL){
+            // Verifica se a velocidade média da aresta é menor que o limite vl
+            if(arco->info->velocidadeMedia < vl){
+                // Armazena a aresta lenta no vetor todasArestas, preenchendo os campos correspondentes
+                todasArestas[totalLentas].vOrigem = i;
+                todasArestas[totalLentas].vDestino = arco->vDestino;
+                todasArestas[totalLentas].comprimento = arco->info->comprimento;
+                todasArestas[totalLentas].info = arco->info;
+
+                // Incrementa o contador de arestas lentas encontradas
+                totalLentas++;
+            }
+
+            // Avança para o próximo arco na lista de adjacência do vértice atual
+            arco = arco->proximo;
+        }
+    }
+
+    // 4: Verifica se foram encontradas arestas lentas; caso contrário, libera a memória alocada e retorna NULL
+    if(totalLentas == 0){
+        printf("[INFO]\n");
+        printf("In grafo.c [aumentaVMArestas();]: No edges with speed less than %.2f found in the graph\n\n", vl);
+        free(todasArestas);
+        return NULL;
+    }
+
+    /** 5: Ordena o vetor de arestas lentas pelo comprimento
+     * qsort(void *_Base, size_t _NumOfElements, size_t _SizeOfElements, _CoreCrtNonSecureSearchSortCompareFunction _CompareFunction):
+     * - void *_Base:                                                   Ponteiro para o primeiro elemento do vetor a ser ordenado
+     * - size_t _NumOfElements:                                         Número de elementos no vetor a ser ordenado
+     * - size_t _SizeOfElements:                                        Tamanho em bytes de cada elemento do vetor
+     * - _CoreCrtNonSecureSearchSortCompareFunction _CompareFunction:   Ponteiro para a função de comparação usada para determinar a ordem dos elementos
+     * 
+     * qsort(todasArestas, totalLentas, sizeof(ArestaKruskal), compararArestasKruskal):
+     * - todasArestas:              Ponteiro para o primeiro elemento do vetor de arestas lentas a ser ordenado
+     * - totalLentas:               Número de arestas lentas no vetor a ser ordenado
+     * - sizeof(ArestaKruskal):     Tamanho em bytes de cada elemento do vetor (tamanho da estrutura ArestaKruskal)
+     * - compararArestasKruskal:    Ponteiro para a função de comparação usada para determinar a ordem das arestas com base no comprimento
+     */
+    qsort(todasArestas, totalLentas, sizeof(ArestaKruskal), compararArestasKruskal);
+
+    // 6: Inicializa o vetor de pais para a estrutura de união-find
+    // e define cada vértice como seu próprio pai inicialmente
+    int* pai = (int*)malloc(g->qntdAtual * sizeof(int));
+    for(int i = 0; i < g->qntdAtual; i++) pai[i] = i;
+
+    // 7: Aloca memória para armazenar o resultado da AGM usando o algoritmo de Kruskal
+    ArestaKruskal* agmKruskal = (ArestaKruskal*)malloc((g->qntdAtual + 1) * sizeof(ArestaKruskal));
+    if(!agmKruskal == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [aumentaVMArestas();]: Failed to allocate memory for the MST result array\n\n");
+        free(todasArestas);
+        free(pai);
+        return NULL;
+    }
+
+    // 8: Kruskal
+    // 8.1: Inicializa o contador de arestas incluídas na AGM
+    int contAGM = 0;
+    // 8.2: Percorre todas as arestas lentas ordenadas pelo comprimento para construir a AGM
+    for(int i = 0; i < totalLentas; i++){
+        // 8.2.1: Obtém os índices dos vértices de origem e destino da aresta atual
+        int u = todasArestas[i].vOrigem;
+        int v = todasArestas[i].vDestino;
+
+        // 8.2.2: Verifica se os vértices u e v pertencem a conjuntos diferentes
+        if(uf_find(u, pai) != uf_find(v, pai)){
+            // Inclui a aresta na AGM
+            agmKruskal[contAGM] = todasArestas[i];
+            // Aumenta a velocidade média da aresta incluída na AGM em 50%
+            agmKruskal[contAGM].info->velocidadeMedia *= 1.5;
+            // Incrementa o contador de arestas incluídas na AGM
+            contAGM++;
+            // Une os conjuntos dos vértices u e v na estrutura de união-find
+            uf_union(u, v, pai);
+        }
+    }
+
+    // 9: Finaliza o vetor de resultado da AGM com um elemento nulo para indicar o fim da lista
+    agmKruskal[contAGM].info = NULL;
+
+    // 10: Cria a estrutura ListaArestas para armazenar o resultado da AGM e retorna-a
+    // 10.1: Aloca memória para a estrutura ListaArestas
+    ListaArestas* resultado  = (ListaArestas*)malloc(sizeof(ListaArestas));
+    // 10.2: Verifica se a alocação de memória para a estrutura ListaArestas foi bem-sucedida
+    if(resultado == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [aumentaVMArestas();]: Failed to allocate memory for the MST result structure\n\n");
+        free(todasArestas);
+        free(pai);
+        free(agmKruskal);
+        return NULL;
+    }
+    // 10.3: Preenche os campos da estrutura ListaArestas com o vetor de arestas da AGM,
+    // a quantidade de arestas incluídas e o ponteiro para o grafo original
+    resultado->vetorArestas  = agmKruskal;
+    resultado->quantidade    = contAGM;
+    resultado->grafoOriginal = g;
+
+    // 11: Libera a memória alocada para o vetor de todas as arestas lentas 
+    // e para o vetor de pais da estrutura de união-find
+    free(todasArestas);
+    free(pai);
+
+    // 12: Retorna a estrutura ListaArestas contendo o resultado da AGM obtida pelo algoritmo de Kruskal
+    return resultado;
 }
 /*################################################################################################*/

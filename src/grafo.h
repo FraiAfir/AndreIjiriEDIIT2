@@ -6,7 +6,8 @@
 
 typedef struct grafo Grafo;
 typedef struct boundingbox BoundingBox;
-
+typedef struct arestas_kruskal ArestaKruskal;
+typedef struct lista_arestas ListaArestas;
 
 
 /** DEFINIÇÃO DO MÓDULO
@@ -52,7 +53,7 @@ int getNumVertices(Grafo* g);
  * @param v     Nova velocidade média a ser atribuída às arestas dentro da região
  * @return      0 em caso de sucesso. -1 em caso de erro
  */
-int grafoAtualizarVelocidadeRegiao(Grafo* g, double x, double y, double w, double h, double v);
+int atualizaVelocidadeRegiaoGrafo(Grafo* g, double x, double y, double w, double h, double v);
 /**
  * Esta é a função auxiliar ao TAD qry que realiza uma busca em profundidade (DFS)
  * para identificar os componentes conexos do grafo, considerando apenas as arestas com velocidade média maior ou igual a vl.
@@ -79,6 +80,10 @@ void DFSIlhas(Grafo* g, int indiceVertice, int idIlhaAtual, double vl, BoundingB
  * @return          0 em caso de sucesso. -1 em caso de erro
  */
 int getExtremidadesBB(BoundingBox* bb, int indice, double* minX, double* minY, double* maxX, double* maxY);
+
+// Funções getter para a lista de arestas
+int getTamanhoListaArestas   (ListaArestas* lista);
+int getCoordenadasArestaLista(ListaArestas* lista, int indice, double* x1, double* y1, double* x2, double* y2);
 /*###############################################################################################*/
 
 
@@ -141,6 +146,28 @@ int inserirAresta(Grafo* g, int i, int j, char* ldir, char* lesq, double cmp, do
  * @return        Número de componentes conexos identificados. -1 em caso de erro
  */
 int identificarComponentesConexos(Grafo* g, double vl, BoundingBox** vetorBB);
+/**
+ * Esta função é responsável por calcular a árvore geradora mínima do grafo,
+ * considerando apenas as arestas com velocidade média inferior a vl.
+ * 
+ * @note Esta função utiliza o algoritmo de Kruskal para calcular a árvore geradora mínima.
+ * Assim como algumas funções auxiliares para a implementação do algoritmo de Kruskal, como:
+ * - compararArestasKruskal(); para ordenar as arestas por peso (comprimento)
+ * - uf_find(); e uf_union(); para gerenciar os conjuntos disjuntos dos vértices durante a execução do algoritmo de Kruskal.
+ * 
+ * @param g       Ponteiro para o grafo
+ * @param vl      Velocidade média limite para considerar uma aresta
+ * @return        Ponteiro para o vetor de arestas da AGM resultante. NULL em caso de erro
+ */
+ListaArestas* aumentaVMArestas(Grafo* g, double vl);
+/**
+ * Esta função é responsável por liberar a memória alocada para a lista de arestas,
+ * incluindo a memória alocada para cada aresta individualmente.
+ * 
+ * @param lista Ponteiro para a lista de arestas a ser liberada
+ * @return      0 em caso de sucesso. -1 em caso de erro
+ */
+int destruirListaArestas(ListaArestas* lista);
 /*###############################################################################################*/
 
 #endif

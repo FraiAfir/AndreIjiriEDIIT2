@@ -281,7 +281,7 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param, Grafo* g){
 
                 // Verifica se o parâmetro do comando exp foi lido corretamente
                 if(vl[0] != '\0'){
-                    if(calcularArvoreGeradoraMinima(vl, qrySVG) != 0){
+                    if(calcularArvoreGeradoraMinima(g, vl, qrySVG) != 0){
                         printf("[ERROR]\n");
                         printf("In qry.c [readFileQry();]: Failed to calculate the minimum spanning tree.\n\n");
                         return -1;
@@ -341,6 +341,7 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param, Grafo* g){
         return -1;
     }
     printf("Arquivo .svg fechado com sucesso apos a geracao do conteudo.\n");
+
     return 0;
 }
 
@@ -559,7 +560,7 @@ int atualizarVelocidade(Grafo* g, char *v, char *x, char *y, char *w, char *h){
     double rh = atof(h);
 
     // 2: Atualiza a velocidade média das arestas dentro da região (x, y, w, h) para v
-    grafoAtualizarVelocidadeRegiao(g, rx, ry, rw, rh, nova_vm);
+    atualizaVelocidadeRegiaoGrafo(g, rx, ry, rw, rh, nova_vm);
 
     return 0;
 }
@@ -614,9 +615,41 @@ int calcularComponentesConexos(Grafo* g, char *vl_str, FILE* qrySVG, FILE* qryTX
     return 0;
 }
 
-int calcularArvoreGeradoraMinima(char *vl, FILE* qrySVG){
-    // 1: Implementar a lógica para calcular a árvore geradora mínima (seleciona apenas as arestas com velocidade média inferior a vl) e aumentar em 50% a velocidade média das arestas selecionadas
-    // ...
+int calcularArvoreGeradoraMinima(Grafo* g, char *vl_str, FILE* qrySVG){
+    // 1: Converte o parâmetro de string para double
+    double vl = atof(vl_str);
+
+    // 2: Expande as vias com velocidade média inferior a vl
+    ListaArestas* viasExpandidas = aumentaVMArestas(g, vl);
+    if(viasExpandidas == NULL){
+        printf("[ERROR]\n");
+        printf("In qry.c [calcularArvoreGeradoraMinima();]: Failed to expand the edges with speed limit below %.2lf.\n\n", vl);
+        return -1;
+    }
+
+    // 3: Obtém o total de vias expandidas
+    int totalVias = getTamanhoListaArestas(viasExpandidas);
+    if(totalVias == 0){
+        printf("[INFO]\n");
+        printf("In qry.c [calcularArvoreGeradoraMinima();]: No slow edges found with speed limit below %.2lf.\n\n", vl);
+        destruirListaArestas(viasExpandidas);
+        return 0;
+    }
+
+    // 4: Desenha as vias expandidas no SVG com destaque (linha mais grossa e vermelha)
+    // 4.1: Declara variáveis para percorrer as vias expandidas e armazenar as coordenadas dos vértices de origem e destino
+    double x1, y1, x2, y2;
+    // 4.2: Percorre todas as vias expandidas e desenha cada uma delas no arquivo .svg do .qry
+    for(int i = 0; i < totalVias; i++){
+        // 4.2.1: Verifica se conseguiu obter as coordenadas dos vértices de origem e destino da via expandida i
+        if(getCoordenadasArestaLista(viasExpandidas, i, &x1, &y1, &x2, &y2) == 0){
+            // Desenha a via com destaque (linha mais grossa e colorida)
+            fprintf(qrySVG, "\t<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"yellow\" stroke-width=\"4\" />\n", x1, y1, x2, y2);
+        }
+    }
+
+    // 5: Libera a memória alocada para a lista de vias expandidas
+    destruirListaArestas(viasExpandidas);
 
     return 0;
 }

@@ -150,11 +150,19 @@ int calcularComponentesConexos(Grafo* g, char *vl_str, FILE* qrySVG, FILE* qryTX
  * 
  * SVG: pintar as arestas selecionadas com linha grossa e vermelha. 
  * 
- * @param vl        Velocidade média limite para selecionar as arestas para a árvore geradora mínima
+ * @note Esta é a função motor do algoritmo de Kruskal, que é utilizado para calcular a árvore geradora mínima do grafo.
+ * Esta função utiliza alguns procedimentos auxiliares para a implementação do algoritmo de Kruskal, como:
+ * - aumentaVMArestas(); para selecionar as arestas com velocidade média inferior a vl e aumentar em 50% a velocidade média das arestas selecionadas.
+ * - getTamanhoListaArestas(); para obter o total de arestas selecionadas para desenhar as arestas no arquivo .svg do .qry.
+ * - getCoordenadasArestaLista(); para obter as coordenadas dos vértices de origem e destino das arestas selecionadas para desenhar as arestas no arquivo .svg do .qry.
+ * - destruirListaArestas(); para liberar a memória alocada para a lista de arestas selecionadas.
+ * 
+ * @param g         Ponteiro para o grafo
+ * @param vl_str    Velocidade média limite para selecionar as arestas para a árvore
  * @param qrySVG    Ponteiro para o arquivo .svg do .qry para pintar as arestas selecionadas com linha grossa e vermelha
  * @return          0 em caso de sucesso. -1 em caso de erro
  */
-int calcularArvoreGeradoraMinima(char *vl, FILE* qrySVG);
+int calcularArvoreGeradoraMinima(Grafo* g, char *vl_str, FILE* qrySVG);
 /**
  * COMANDO: p?
  * Determina o melhor trajeto entre a origem (reg1) e o destino (reg2). 
