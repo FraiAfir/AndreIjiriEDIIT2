@@ -58,14 +58,34 @@ int main(int argc, char* argv[]){
 
 
 
-    // 4. PROCESSAR O QRY (Se fornecido)
-    // 4.1: Verifica se o arquivo .qry foi fornecido como argumento.
+    // 4. PROCESSAR O VIA (Se fornecido)
+    // 4.1: Verifica se o arquivo .via foi fornecido como argumento. 
+    // Se não for fornecido, exibe uma mensagem informando que esta etapa será pulada.
+    if(getNomeVia(param) == NULL){
+        printf("\n#----------- ARQUIVO .VIA NAO FORNECIDO. PULANDO ESTA ETAPA... ----------#\n");
+    }else{
+        // Se o arquivo .via for fornecido, o processa e armazena os dados em uma estrutura de dados adequada (Grafo)
+        printf("\n#--------------------- PROCESSANDO O ARQUIVO .VIA... --------------------#\n");
+        // 4.2: Processa o arquivo .via e armazena os dados em uma estrutura de dados adequada (Tabela Hash, Pessoas, etc.)
+        if(processarVia(param, &g) != 0){
+            printf("[ERROR]\n");
+            printf("In main.c [processarVia();]: Error processing .via file.\n\n");
+            shutProgram(&param, &h, &q, &g);
+            return -1;
+        }
+    }
+    printf("#------------------------------------------------------------------------#\n\n\n\n\n");
+
+
+
+    // 5. PROCESSAR O QRY (Se fornecido)
+    // 5.1: Verifica se o arquivo .qry foi fornecido como argumento.
     if (getNomeQry(param) == NULL){
         printf("\n#----------- ARQUIVO .QRY NAO FORNECIDO. PULANDO ESTA ETAPA... ----------#\n\n");
     }else{
         printf("\n#-------------------- PROCESSANDO O ARQUIVO .QRY... ---------------------#\n");
-        // 4.1: Processa o arquivo .qry utilizando os dados armazenados a partir do processamento do arquivo .geo (e do arquivo .pm, se fornecido)
-        if(processarQry(param, h) != 0){
+        // 5.1: Processa o arquivo .qry utilizando os dados armazenados a partir do processamento do arquivo .geo (e do arquivo .pm, se fornecido)
+        if(processarQry(param, h, g) != 0){
             printf("[ERROR]\n");
             printf("In main.c [processarQry();]: Error processing .qry file.\n");
             shutProgram(&param, &h, &q, &g);
@@ -76,27 +96,7 @@ int main(int argc, char* argv[]){
 
 
 
-    // 5. PROCESSAR O VIA (Se fornecido)
-    // 5.1: Verifica se o arquivo .via foi fornecido como argumento. 
-    // Se não for fornecido, exibe uma mensagem informando que esta etapa será pulada.
-    if(getNomeVia(param) == NULL){
-        printf("\n#----------- ARQUIVO .VIA NAO FORNECIDO. PULANDO ESTA ETAPA... ----------#\n");
-    }else{
-        // Se o arquivo .via for fornecido, o processa e armazena os dados em uma estrutura de dados adequada (Grafo)
-        printf("\n#--------------------- PROCESSANDO O ARQUIVO .VIA... --------------------#\n");
-        // 5.2: Processa o arquivo .via e armazena os dados em uma estrutura de dados adequada (Tabela Hash, Pessoas, etc.)
-        if(processarVia(param, g) != 0){
-            printf("[ERROR]\n");
-            printf("In main.c [processarVia();]: Error processing .via file.\n\n");
-            shutProgram(&param, &h, &q, &g);
-            return -1;
-        }
-    }
-    printf("#------------------------------------------------------------------------#\n\n\n\n\n");
-
-    
-    
-    // 5: LIBERAR MEMÓRIA ALOCADA PARA PARÂMETROS E ENCERRAR PROGRAMA
+    // 6: LIBERAR MEMÓRIA ALOCADA PARA PARÂMETROS E ENCERRAR PROGRAMA
     printf("#---------------------- ENCERRANDO O PROGRAMA... ------------------------#\n");
     shutProgram(&param, &h, &q, &g);
     printf("#------------------------------------------------------------------------#\n\n\n\n\n");

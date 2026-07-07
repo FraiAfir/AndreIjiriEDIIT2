@@ -68,7 +68,7 @@ int montarCaminhoVia(Param* param, char* caminhoVia){
     return 0;
 }
 
-int readFileVia(FILE* arquivoVia, Grafo* g, Param* param){
+int readFileVia(FILE* arquivoVia, Grafo** g, Param* param){
     int nv = 0;
     /** 1: Lê a primeira linha do arquivo .via para obter o número de vértices (nv) do grafo
      * fscanf(FILE *const _Stream, const char *const _Format, ...):
@@ -90,7 +90,7 @@ int readFileVia(FILE* arquivoVia, Grafo* g, Param* param){
     }
 
     // 2: Cria o grafo e o mapa de IDs com base no número de vértices (nv) lido do arquivo .via
-    g          = criarGrafo(nv);
+    *g          = criarGrafo(nv);
     Mapa* mapa = criarMapa(nv);
 
     char linha[256];
@@ -137,10 +137,10 @@ int readFileVia(FILE* arquivoVia, Grafo* g, Param* param){
                 // Verifica se os parâmetros foram lidos corretamente
                 if(id[0] != '\0' && x[0] != '\0' && y[0] != '\0'){
                     // Obtem o índice do vértice a ser inserido no grafo
-                    int indice = getNumVertices(g);
+                    int indice = getNumVertices(*g);
 
                     // Insere o vértice no grafo usando os parâmetros lidos do arquivo .via
-                    if(inserirVertice(g, id, atof(x), atof(y)) != 0){
+                    if(inserirVertice(*g, id, atof(x), atof(y)) != 0){
                         printf("[ERROR]\n");
                         printf("In via.c [readFileVia();]: Failed to insert vertice into the graph\n");
                         return -1;
@@ -186,7 +186,7 @@ int readFileVia(FILE* arquivoVia, Grafo* g, Param* param){
                     int idDestino = buscarMapa(mapa, j);
 
                     // Insere a aresta no grafo usando os parâmetros lidos do arquivo .via
-                    if(inserirAresta(g, idOrigem, idDestino, ldir, lesq, cmp, vm, nome) != 0){
+                    if(inserirAresta(*g, idOrigem, idDestino, ldir, lesq, cmp, vm, nome) != 0){
                         printf("[ERROR]\n");
                         printf("In via.c [readFileVia();]: Failed to insert arc into the graph\n\n");
                         return -1;
@@ -226,7 +226,7 @@ int readFileVia(FILE* arquivoVia, Grafo* g, Param* param){
 
 
 /*                                       FUNÇÕES PRINCIPAIS                                      */
-int processarVia(Param* param, Grafo* g){
+int processarVia(Param* param, Grafo** g){
     // Inicializa o buffer para o caminho completo do arquivo .via
     char caminhoVia[512];
 

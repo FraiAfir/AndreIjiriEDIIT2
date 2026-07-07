@@ -38,7 +38,7 @@ int montarCaminhoVia(Param* param, char* caminhoVia);
  * @param param         Ponteiro para a estrutura de parâmetros
  * @return              0 em caso de sucesso. -1 em caso de erro
  */
-int readFileVia(FILE* arquivoVia, Grafo* g, Param* param);
+int readFileVia(FILE* arquivoVia, Grafo** g, Param* param);
 /*###############################################################################################*/
 
 
@@ -55,7 +55,7 @@ int readFileVia(FILE* arquivoVia, Grafo* g, Param* param);
  * @param g     Ponteiro para o grafo que armazenará os dados do arquivo .via
  * @return      0 em caso de sucesso. -1 em caso de erro
  */
-int processarVia(Param* param, Grafo* g);
+int processarVia(Param* param, Grafo** g);
 /**
  * Esta função é responsável por criar uma instância de Via, alocando a memória necessária e inicializando seus campos.
  * @return Ponteiro para a instância de Via criada. NULL em caso de erro
