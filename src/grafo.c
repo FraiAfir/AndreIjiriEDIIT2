@@ -23,6 +23,7 @@ typedef struct arco{
 typedef struct vertice{
     char id[64];    // Vetor de caracteres para o ID do vértice (ex: "v1", "v2", etc.)
     double x, y;    // Coordenadas espaciais do vértice
+    int idIlha;     // Identificador da ilha à qual o vértice pertence (-1 = não pertence a nenhuma ilha)
     Arco* listaAdj; // Cabeça da lista encadeada de arestas que SAEM dele
 } Vertice;
 // Estrutura principal do Grafo
@@ -31,6 +32,9 @@ typedef struct grafo{
     int qntdAtual;          // Quantidade de vértices inseridos até o momento
     Vertice* vetorVertices; // Vetor dinâmico de Vértices [maxVertices]    
 } Grafo;
+typedef struct boundingbox{
+    double minX, minY, maxX, maxY;
+} BoundingBox;
 /*################################################################################################*/
 
 
@@ -90,6 +94,55 @@ int grafoAtualizarVelocidadeRegiao(Grafo* g, double x, double y, double w, doubl
             }
         }
     }
+
+    return 0;
+}
+
+void DFSIlhas(Grafo* g, int indiceVertice, int idIlhaAtual, double vl, BoundingBox* bb){
+    // 1: Marca o vértice atual como pertencente à ilha atual
+    g->vetorVertices[indiceVertice].idIlha = idIlhaAtual;
+
+    // 2: Atualiza o bounding box da ilha com as coordenadas do vértice atual
+    double vx = g->vetorVertices[indiceVertice].x;
+    double vy = g->vetorVertices[indiceVertice].y;
+
+    // 3: Atualiza os limites do bounding box com base nas coordenadas do vértice atual
+    if(vx < bb->minX) bb->minX = vx;
+    if(vx > bb->maxX) bb->maxX = vx;
+    if(vy < bb->minY) bb->minY = vy;
+    if(vy > bb->maxY) bb->maxY = vy;
+
+    // 4: Explora os vizinhos do vértice atual (arcos adjacentes) usando DFS
+    // 4.1: Obtém a cabeça da lista de adjacência do vértice atual
+    Arco* arco = g->vetorVertices[indiceVertice].listaAdj;
+    // 4.2: Percorre a lista de adjacência do vértice atual enquanto houver arcos (arestas) disponíveis
+    while(arco != NULL){
+        // Verifica se a velocidade média da aresta é maior ou igual ao limite vl
+        if(arco->info->velocidadeMedia >= vl){
+            // Obtém o índice do vértice vizinho (destino) correspondente ao arco atual
+            int vizinho = arco->vDestino;
+            // Se o vizinho ainda não foi visitado, continua a exploração a partir dele através de recursão da DFS
+            if(g->vetorVertices[vizinho].idIlha == -1) {DFSIlhas(g, vizinho, idIlhaAtual, vl, bb);}
+        }
+
+        // Avança para o próximo arco na lista de adjacência do vértice atual
+        arco = arco->proximo; // Próxima rua
+    }
+}
+
+int getExtremidadesBB(BoundingBox* bb, int indice, double* minX, double* minY, double* maxX, double* maxY){
+    // 1: Verifica se o ponteiro do bounding box é válido (não é NULL)
+    if(bb == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [getExtremidadesBB();]: Invalid Bounding Box (NULL)\n\n");
+        return -1;
+    }
+
+    // 2: Atribui os valores das extremidades do bounding box aos ponteiros fornecidos
+    *minX = bb[indice].minX;
+    *minY = bb[indice].minY;
+    *maxX = bb[indice].maxX;
+    *maxY = bb[indice].maxY;
 
     return 0;
 }
@@ -254,5 +307,50 @@ int inserirAresta(Grafo* g, int i, int j, char* ldir, char* lesq, double cmp, do
 
     // 6: Retorna 0 para indicar sucesso na inserção da aresta
     return 0;
+}
+
+int identificarComponentesConexos(Grafo* g, double vl, BoundingBox** vetorBB){
+    // 1: Verifica se o grafo é válido (não é NULL)
+    if(g == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [identificarComponentesConexos();]: Invalid Graph (NULL)\n");
+        return -1;
+    }
+
+    // 2: Inicializa todos os vértices como não pertencentes a nenhuma ilha (idIlha = -1)
+    for(int i = 0; i < g->qntdAtual; i++) {g->vetorVertices[i].idIlha = -1;}
+
+    // 3: Aloca memória para o vetor de Bounding Boxes (uma para cada ilha) com tamanho máximo igual à quantidade atual de vértices do grafo
+    *vetorBB = (BoundingBox*)malloc(g->qntdAtual * sizeof(BoundingBox));
+    // 3.1: Verifica se a alocação de memória para o vetor de Bounding Boxes foi bem-sucedida
+    if(*vetorBB == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [identificarComponentesConexos();]: Failed to allocate memory for the bounding boxes array\n");
+        return -1;
+    }
+
+    // 4: Identifica os componentes conexos do grafo, considerando apenas as arestas com velocidade média maior ou igual a vl
+    // 4.1: Inicializa o contador de ilhas (componentes conexos) como zero
+    int contadorIlhas = 0;
+    // 4.2: Percorre todos os vértices do grafo para identificar os componentes conexos
+    for(int i = 0; i < g->qntdAtual; i++){
+        // 4.2.1: Verifica se o vértice atual ainda não pertence a nenhuma ilha (idIlha == -1)
+        if(g->vetorVertices[i].idIlha == -1){
+            // Iniciando um novo componente conexo a partir do vértice atual com valores iniciais extremos para o bounding box
+            (*vetorBB)[contadorIlhas].minX = 999999.0;
+            (*vetorBB)[contadorIlhas].minY = 999999.0;
+            (*vetorBB)[contadorIlhas].maxX = -999999.0;
+            (*vetorBB)[contadorIlhas].maxY = -999999.0;
+
+            // Chama a função DFS para explorar todos os vértices conectados ao vértice atual,
+            // marcando-os como pertencentes à ilha atual e atualizando o bounding box da ilha
+            DFSIlhas(g, i, contadorIlhas, vl, &((*vetorBB)[contadorIlhas]));
+            
+            // Incrementa o contador de ilhas após a conclusão da exploração do componente conexo atual
+            contadorIlhas++;
+        }
+    }
+
+    return contadorIlhas;
 }
 /*################################################################################################*/

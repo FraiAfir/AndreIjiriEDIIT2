@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 typedef struct grafo Grafo;
+typedef struct boundingbox BoundingBox;
 
 
 
@@ -52,6 +53,32 @@ int getNumVertices(Grafo* g);
  * @return      0 em caso de sucesso. -1 em caso de erro
  */
 int grafoAtualizarVelocidadeRegiao(Grafo* g, double x, double y, double w, double h, double v);
+/**
+ * Esta é a função auxiliar ao TAD qry que realiza uma busca em profundidade (DFS)
+ * para identificar os componentes conexos do grafo, considerando apenas as arestas com velocidade média maior ou igual a vl.
+ * A função marca os vértices visitados com um identificador de ilha (idIlha) e atualiza o bounding box da ilha com as coordenadas dos vértices visitados.
+ * 
+ * @note Esta função é chamada recursivamente para explorar todos os vértices conectados ao vértice atual,
+ * marcando-os como pertencentes à ilha atual e atualizando o bounding box da ilha.
+ * @param g             Ponteiro para o grafo
+ * @param indiceVertice Índice do vértice atual a ser visitado na DFS
+ * @param idIlhaAtual   Identificador da ilha atual
+ * @param vl            Velocidade média limite para considerar uma aresta
+ * @param bb            Ponteiro para o bounding box da ilha
+ */
+void DFSIlhas(Grafo* g, int indiceVertice, int idIlhaAtual, double vl, BoundingBox* bb);
+/**
+ * Esta é uma função getter para obter as extremidades de um bounding box.
+ * 
+ * @param bb        Ponteiro para o bounding box
+ * @param indice    Índice do bounding box no vetor de bounding boxes
+ * @param minX      Ponteiro para armazenar a coordenada x mínima
+ * @param minY      Ponteiro para armazenar a coordenada y mínima
+ * @param maxX      Ponteiro para armazenar a coordenada x máxima
+ * @param maxY      Ponteiro para armazenar a coordenada y máxima
+ * @return          0 em caso de sucesso. -1 em caso de erro
+ */
+int getExtremidadesBB(BoundingBox* bb, int indice, double* minX, double* minY, double* maxX, double* maxY);
 /*###############################################################################################*/
 
 
@@ -102,6 +129,18 @@ int inserirVertice(Grafo* g, char* id, double x, double y);
  * @return          0 em caso de sucesso. -1 em caso de erro
  */
 int inserirAresta(Grafo* g, int i, int j, char* ldir, char* lesq, double cmp, double vm, char* nomeRua);
+/**
+ * Esta função é responsável por identificar os componentes conexos do grafo,
+ * considerando apenas as arestas com velocidade média maior ou igual a vl.
+ * Assim como popular o vetor de bounding boxes (vetorBB) com as extremidades de cada componente conexo identificado.
+ * 
+ * @note Esta função utiliza a busca em profundidade DFSIlhas(); para explorar os vértices do grafo e identificar os componentes conexos.
+ * @param g       Ponteiro para o grafo
+ * @param vl      Velocidade média limite para considerar uma aresta
+ * @param vetorBB Ponteiro para o vetor de Bounding Boxes
+ * @return        Número de componentes conexos identificados. -1 em caso de erro
+ */
+int identificarComponentesConexos(Grafo* g, double vl, BoundingBox** vetorBB);
 /*###############################################################################################*/
 
 #endif
