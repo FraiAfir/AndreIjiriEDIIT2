@@ -60,7 +60,7 @@ typedef struct lista_arestas{
 
 
 /*                                       KRUSKAL | Union-Find                                     */
-int compararArestasKruskal(void* a, void* b){
+int compararArestasKruskal(const void* a, const void* b){
     // 1: Converte os ponteiros genéricos para ponteiros do tipo ArestaKruskal
     ArestaKruskal *a1 = (ArestaKruskal*)a;
     ArestaKruskal *a2 = (ArestaKruskal*)b;
@@ -272,6 +272,8 @@ int destruirListaArestas(ListaArestas* lista){
 
     // 3: Libera a memória alocada para a estrutura da lista de arestas
     free(lista);
+
+    return 0;
 }
 /*################################################################################################*/
 
@@ -555,7 +557,7 @@ ListaArestas* aumentaVMArestas(Grafo* g, double vl){
 
     // 7: Aloca memória para armazenar o resultado da AGM usando o algoritmo de Kruskal
     ArestaKruskal* agmKruskal = (ArestaKruskal*)malloc((g->qntdAtual + 1) * sizeof(ArestaKruskal));
-    if(!agmKruskal == NULL){
+    if(agmKruskal == NULL){
         printf("[ERROR]\n");
         printf("In grafo.c [aumentaVMArestas();]: Failed to allocate memory for the MST result array\n\n");
         free(todasArestas);
