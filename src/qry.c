@@ -174,7 +174,7 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param, Grafo* g){
         if(strlen(linha) == 0) continue;    // Ignora linhas em branco
         
         // Precedido de um [*] para facilitar a identificação das linhas do arquivo .qry no meio dos outros prints de depuração
-        fprintf(qryTXT, "[*] %s\n", linha);
+        fprintf(qryTXT, "\n[*] %s\n", linha);
 
         // 2.2: Extrai apenas o primeiro token da linha, que corresponde ao comando do arquivo .qry, para identificar qual comando deve ser processado
         // Cria uma cópia da linha para usar na extração do comando, para não perder a linha original para os próximos comandos
@@ -605,7 +605,7 @@ int calcularComponentesConexos(Grafo* g, char *vl_str, FILE* qrySVG, FILE* qryTX
 
         // 5.2.5: Desenha o retângulo da bounding box da ilha de tráfego i com a cor selecionada e opacidade de 0.5
         fprintf(qrySVG, "\t<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" "
-                        "fill=\"%s\" fill-opacity=\"0.5\" stroke=\"%s\" stroke-width=\"2\" />\n",
+                        "fill=\"%s\" fill-opacity=\"0.25\" stroke=\"%s\" stroke-width=\"2\" />\n",
                 minX, minY, w, h, corAtual, corAtual);
     }
 
@@ -644,7 +644,7 @@ int calcularArvoreGeradoraMinima(Grafo* g, char *vl_str, FILE* qrySVG){
         // 4.2.1: Verifica se conseguiu obter as coordenadas dos vértices de origem e destino da via expandida i
         if(getCoordenadasArestaLista(viasExpandidas, i, &x1, &y1, &x2, &y2) == 0){
             // Desenha a via com destaque (linha mais grossa e colorida)
-            fprintf(qrySVG, "\t<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"yellow\" stroke-width=\"4\" />\n", x1, y1, x2, y2);
+            fprintf(qrySVG, "\t<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"red\" stroke-width=\"4\" />\n", x1, y1, x2, y2);
         }
     }
 
