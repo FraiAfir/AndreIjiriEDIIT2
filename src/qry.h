@@ -135,12 +135,14 @@ int atualizarVelocidade(Grafo* g, char *v, char *x, char *y, char *w, char *h);
  * SVG: Calcular os bounding boxes de cada componente conexo e desenhar os respectivos retângulos com cores diferentes e transparência de 50%.
  * TXT: reportar o número de componentes conexos.
  * 
- * @param vl        Velocidade média limite para considerar um trecho como insuficiente
+ * 
+ * @param g         Ponteiro para o grafo
+ * @param vl_str    Velocidade média limite para considerar um trecho como insuficiente
  * @param qrySVG    Ponteiro para o arquivo .svg do .qry para desenhar os retângulos dos componentes conexos
  * @param qryTXT    Ponteiro para o arquivo .txt do .qry para reportar o número de componentes conexos
  * @return          0 em caso de sucesso. -1 em caso de erro
  */
-int calcularComponentesConexos(char *vl, FILE* qrySVG, FILE* qryTXT);
+int calcularComponentesConexos(Grafo* g, char *vl_str, FILE* qrySVG, FILE* qryTXT);
 /**
  * COMANDO: exp
  * Calcula a árvore geradora mínima (seleciona apenas as arestas com velocidade média inferior a vl)

@@ -53,6 +53,9 @@ typedef struct registrador{
 
 #define MAX_REGS 100
 Registrador bancoRegistradores[MAX_REGS];
+
+const char* CORES_ILHAS[] = {"red", "blue", "green", "orange", "purple", "cyan", "magenta", "yellow", "brown", "pink"};
+const int NUM_CORES = 10;
 /*###############################################################################################*/
 
 
@@ -252,7 +255,7 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param, Grafo* g){
 
                 // Verifica se o parâmetro do comando regs foi lido corretamente
                 if(vl[0] != '\0'){
-                    if(calcularComponentesConexos(vl, qrySVG, qryTXT) != 0){
+                    if(calcularComponentesConexos(g, vl, qrySVG, qryTXT) != 0){
                         printf("[ERROR]\n");
                         printf("In qry.c [readFileQry();]: Failed to calculate the connected components.\n\n");
                         return -1;
@@ -561,9 +564,52 @@ int atualizarVelocidade(Grafo* g, char *v, char *x, char *y, char *w, char *h){
     return 0;
 }
 
-int calcularComponentesConexos(char *vl, FILE* qrySVG, FILE* qryTXT){
-    // 1: Implementar a lógica para considerar como insuficiente os trechos com velocidade média inferior a vl e calcular os componentes conexos
-    // ...
+int calcularComponentesConexos(Grafo* g, char *vl_str, FILE* qrySVG, FILE* qryTXT){
+    // 1: Converte o parâmetro de string para double
+    double vl = atof(vl_str);
+
+    // 2: Inicializa um ponteiro para armazenar as bounding boxes das ilhas de tráfego
+    BoundingBox *bb = NULL;
+
+    // 3: Calcula os componentes conexos
+    int totalIlhas = identificarComponentesConexos(g, vl, &bb);
+
+    // 4: TXT - Reporta a análise de vias com velocidade limite vl e o total de componentes conexos encontrados no arquivo .txt do .qry
+    fprintf(qryTXT, "[INFO]: [regs] %s\n", vl_str);
+    fprintf(qryTXT, "Arcs with speed limit of %.2lf analyzed\n", vl);
+    fprintf(qryTXT, "[%d] Connected components found\n\n", totalIlhas);
+
+    // 5: SVG - Desenha as bounding boxes das ilhas de tráfego no arquivo .svg do .qry
+    // 5.1: Declara variáveis para armazenar as extremidades da bounding box
+    double minX, minY, maxX, maxY;
+    // 5.2: Percorre todas as bounding boxes das ilhas de tráfego e desenha um retângulo para cada uma delas no arquivo .svg
+    for(int i = 0; i < totalIlhas; i++){
+        // 5.2.1: Obtém as extremidades da bounding box da ilha de tráfego i
+        if(getExtremidadesBB(bb, i, &minX, &minY, &maxX, &maxY) != 0){
+            printf("[ERROR]\n");
+            printf("In qry.c [calcularComponentesConexos();]: Failed to get the extremities of the bounding box for island %d.\n\n", i);
+            return -1;
+        }
+        // 5.2.2: Calcula a largura e altura da bounding box
+        double w = maxX - minX;
+        double h = maxY - minY;
+
+        // 5.2.3: Garante que a largura e altura mínima do retângulo seja 5.0 para melhor visualização no SVG
+        if(w < 1.0) w = 5.0;
+        if(h < 1.0) h = 5.0;
+
+        // 5.2.4: Seleciona a cor da ilha de tráfego com base no índice i,
+        // usando o array de cores CORES_ILHAS e o número total de cores NUM_CORES
+        const char* corAtual = CORES_ILHAS[i % NUM_CORES];
+
+        // 5.2.5: Desenha o retângulo da bounding box da ilha de tráfego i com a cor selecionada e opacidade de 0.5
+        fprintf(qrySVG, "\t<rect x=\"%lf\" y=\"%lf\" width=\"%lf\" height=\"%lf\" "
+                        "fill=\"%s\" fill-opacity=\"0.5\" stroke=\"%s\" stroke-width=\"2\" />\n",
+                minX, minY, w, h, corAtual, corAtual);
+    }
+
+    // 6: Libera a memória alocada para as bounding boxes das ilhas de tráfego
+    if(bb != NULL) {free(bb);}
 
     return 0;
 }
