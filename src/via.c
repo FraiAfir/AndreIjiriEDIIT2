@@ -92,7 +92,7 @@ int readFileVia(FILE* arquivoVia, Grafo** g, Param* param){
     }
 
     // 2: Cria o grafo e o mapa de IDs com base no número de vértices (nv) lido do arquivo .via
-    *g          = criarGrafo(nv);
+    *g         = criarGrafo(nv);
     Mapa* mapa = criarMapa(nv);
 
     char linha[256];
@@ -128,6 +128,7 @@ int readFileVia(FILE* arquivoVia, Grafo** g, Param* param){
              * @param y  Coordenada y do vértice
              */
             if(strcmp(comando, "v") == 0){
+                
                 // Inicializa buffers para os parâmetros
                 char id[100] = "";
                 char x[100]  = "";
@@ -145,6 +146,7 @@ int readFileVia(FILE* arquivoVia, Grafo** g, Param* param){
                     if(inserirVertice(*g, id, atof(x), atof(y)) != 0){
                         printf("[ERROR]\n");
                         printf("In via.c [readFileVia();]: Failed to insert vertice into the graph\n");
+                        free(bufferLinha);
                         return -1;
                     }
 
@@ -152,6 +154,7 @@ int readFileVia(FILE* arquivoVia, Grafo** g, Param* param){
                     if(inserirMapa(mapa, id, indice) != 0){
                         printf("[ERROR]\n");
                         printf("In via.c [readFileVia();]: Failed to insert vertice ID into the map\n");
+                        free(bufferLinha);
                         return -1;
                     }
 
@@ -160,6 +163,7 @@ int readFileVia(FILE* arquivoVia, Grafo** g, Param* param){
                     printf("[ERROR]\n");
                     printf("In via.c [readFileVia();]: Invalid parameters for command 'v' in .via file\n");
                     printf("[id:\t%s]\n[x:\t%s]\n[y:\t%s]\n", id, x, y);
+                    free(bufferLinha);
                     return -1;
                 }
             }
@@ -169,6 +173,7 @@ int readFileVia(FILE* arquivoVia, Grafo** g, Param* param){
              * Caso a aresta não possua quadras em algum de seus lados, esta ausência é indicada por um hífen (-)
              */
             if(strcmp(comando, "e") == 0){
+
                 // Inicializa buffers para os parâmetros
                 char  i[100]    = "";
                 char  j[100]    = "";
@@ -191,6 +196,7 @@ int readFileVia(FILE* arquivoVia, Grafo** g, Param* param){
                     if(inserirAresta(*g, idOrigem, idDestino, ldir, lesq, cmp, vm, nome) != 0){
                         printf("[ERROR]\n");
                         printf("In via.c [readFileVia();]: Failed to insert arc into the graph\n\n");
+                        free(bufferLinha);
                         return -1;
                     }
                 
@@ -200,6 +206,7 @@ int readFileVia(FILE* arquivoVia, Grafo** g, Param* param){
                     printf("In via.c [readFileVia();]: Invalid parameters for command 'e' in .via file\n");
                     printf("[i:\t%s]\n[j:\t%s]\n[ldir:\t%s]\n[lesq:\t%s]\n[cmp:\t%f]\n[vm:\t%f]\n[nome:\t%s]\n\n", 
                         i, j, ldir, lesq, cmp, vm, nome);
+                        free(bufferLinha);
                     return -1;
                 }
             }
@@ -209,8 +216,11 @@ int readFileVia(FILE* arquivoVia, Grafo** g, Param* param){
         else{
             printf("[ERROR]\n");
             printf("In via.c [readFileVia();]: .via file command is NULL\n");
+            free(bufferLinha);
             return -1;
         }
+
+        free(bufferLinha);
     }
 
     // 4: Destrói o mapa de IDs após o processamento do arquivo .via, liberando a memória alocada para ele

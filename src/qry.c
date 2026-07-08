@@ -206,12 +206,14 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param, Grafo* g){
                     if(armazenarPosGeografica(h, reg, cep, face, num, qrySVG, qryTXT) != 0){
                         printf("[ERROR]\n");
                         printf("In qry.c [readFileQry();]: Failed to store the geographic position of the address in the register.\n\n");
+                        free(bufferLinha);
                         return -1;
                     }
                 }else{
                     printf("[ERROR]\n");
                     printf("In qry.c [readFileQry();]: Invalid parameters for command @o? read from the .qry file.\n");
                     printf("[reg:\t%s]\n[cep:\t%s]\n[face:\t%s]\n[num:\t%s]\n\n", reg, cep, face, num);
+                    free(bufferLinha);
                     return -1;
                 }
             }
@@ -235,12 +237,14 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param, Grafo* g){
                     if(atualizarVelocidade(g, v, x, y, w, h) != 0){
                         printf("[ERROR]\n");
                         printf("In qry.c [readFileQry();]: Failed to update the average speed of the edges.\n\n");
+                        free(bufferLinha);
                         return -1;
                     }
                 }else{
                     printf("[ERROR]\n");
                     printf("In qry.c [readFileQry();]: Invalid parameters for command mvm read from the .qry file.\n");
                     printf("[v:\t%s]\n[x:\t%s]\n[y:\t%s]\n[w:\t%s]\n[h:\t%s]\n\n", v, x, y, w, h);
+                    free(bufferLinha);
                     return -1;
                 }
             }
@@ -260,12 +264,14 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param, Grafo* g){
                     if(calcularComponentesConexos(g, vl, qrySVG, qryTXT) != 0){
                         printf("[ERROR]\n");
                         printf("In qry.c [readFileQry();]: Failed to calculate the connected components.\n\n");
+                        free(bufferLinha);
                         return -1;
                     }
                 }else{
                     printf("[ERROR]\n");
                     printf("In qry.c [readFileQry();]: Invalid parameter for command regs read from the .qry file.\n");
                     printf("[vl:\t%s]\n\n", vl);
+                    free(bufferLinha);
                     return -1;
                 }
             }
@@ -286,12 +292,14 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param, Grafo* g){
                     if(calcularArvoreGeradoraMinima(g, vl, qrySVG) != 0){
                         printf("[ERROR]\n");
                         printf("In qry.c [readFileQry();]: Failed to calculate the minimum spanning tree.\n\n");
+                        free(bufferLinha);
                         return -1;
                     }
                 }else{
                     printf("[ERROR]\n");
                     printf("In qry.c [readFileQry();]: Invalid parameter for command exp read from the .qry file.\n");
                     printf("[vl:\t%s]\n\n", vl);
+                    free(bufferLinha);
                     return -1;
                 }
             }
@@ -315,12 +323,14 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param, Grafo* g){
                     if(calcularMelhorTrajeto(g, reg1, reg2, cc, cr, qrySVG, qryTXT) != 0){
                         printf("[ERROR]\n");
                         printf("In qry.c [readFileQry();]: Failed to calculate the best route.\n\n");
+                        free(bufferLinha);
                         return -1;
                     }
                 }else{
                     printf("[ERROR]\n");
                     printf("In qry.c [readFileQry();]: Invalid parameters for command p? read from the .qry file.\n");
                     printf("[reg1:\t%s]\n[reg2:\t%s]\n[cc:\t%s]\n[cr:\t%s]\n\n", reg1, reg2, cc, cr);
+                    free(bufferLinha);
                     return -1;
                 }
             }
@@ -331,8 +341,11 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param, Grafo* g){
             printf("[ERROR]\n");
             printf("In qry.c [readFileQry();]: Command read from the .qry file is NULL.\n");
             printf("[comando:\t%s]\n\n", comando);
+            free(bufferLinha);
             return -1;
         }
+
+        free(bufferLinha);
     }
 
     // 3: Fecha os arquivos de saída após o processamento do arquivo .qry

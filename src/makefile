@@ -57,20 +57,20 @@ via.o:     via.c via.h
 
 # Projeto principal
 $(PROJ_NAME): $(OBJETOS)
-	@echo.
-	@echo.
-	@echo.
-	@echo.
+	#@echo.
+	#@echo.
+	#@echo.
+	#@echo.
 
 	@echo "Compilando o projeto principal $(PROJ_NAME): ..."
 	$(CC) -o $(PROJ_NAME) $(OBJETOS) $(LIBS) $(LDFLAGS)
 	@echo "Compilacao finalizada com sucesso."
 
-	@echo.
+	#@echo.
 
 # Arquivos .c em .o
 %.o : %.c
-	@echo.
+	#@echo.
 	@echo "Compilando $< ..."
 	$(CC) -c $(CFLAGS) $< -o $@
 # =============================================================================================== #
@@ -81,51 +81,51 @@ $(PROJ_NAME): $(OBJETOS)
 
 # ==================================== COMPILAÇÃO DOS TESTES ==================================== #
 test_params: ../test/test_params.c params.c
-	@echo.
+	#@echo.
 	@echo "Compilando $< ..."
 	$(CC) ../test/test_params.c params.c -o ../test/test_params $(LIBS) $(LDFLAGS)
-	@echo.
+	#@echo.
 
 test_program: ../test/test_program.c program.c params.c hashBin.c geo.c svg.c
 	@echo "Compilando $< ..."
 	$(CC) ../test/test_program.c program.c params.c hashBin.c geo.c svg.c -o ../test/test_program $(LIBS) $(LDFLAGS)
-	@echo.
+	#@echo.
 
 test_hashBin: ../test/test_hashBin.c hashBin.c params.c
 	@echo "Compilando $< ..."
 	$(CC) ../test/test_hashBin.c hashBin.c params.c -o ../test/test_hashBin $(LIBS) $(LDFLAGS)
-	@echo.
+	#@echo.
 
 test_geo: ../test/test_geo.c geo.c params.c hashBin.c svg.c
 	@echo "Compilando $< ..."
 	$(CC) ../test/test_geo.c geo.c params.c hashBin.c svg.c -o ../test/test_geo $(LIBS) $(LDFLAGS)
-	@echo.
+	#@echo.
 
 test_svg: ../test/test_svg.c svg.c
 	@echo "Compilando $< ..."
 	$(CC) ../test/test_svg.c svg.c -o ../test/test_svg $(LIBS) $(LDFLAGS)
-	@echo.
+	#@echo.
 
 test_qry: ../test/test_qry.c qry.c svg.c params.c hashBin.c
 	@echo "Compilando $< ..."
 	$(CC) ../test/test_qry.c qry.c svg.c params.c hashBin.c -o ../test/test_qry $(LIBS) $(LDFLAGS)
-	@echo.
+	#@echo.
 
 test_grafo: ../test/test_grafo.c grafo.c
 	@echo "Compilando $< ..."
 	$(CC) ../test/test_grafo.c grafo.c -o ../test/test_grafo $(LIBS) $(LDFLAGS)
-	@echo.
+	#@echo.
 
 test_via: ../test/test_via.c via.c params.c grafo.c
 	@echo "Compilando $< ..."
 	$(CC) ../test/test_via.c via.c params.c grafo.c -o ../test/test_via $(LIBS) $(LDFLAGS)
-	@echo.
+	#@echo.
 
 
 
 compila_tests: test_params test_hashBin test_geo test_svg test_qry test_grafo test_via
-	@echo.
-	@echo.
+	#@echo.
+	#@echo.
 	@echo "Compilando os testes de unidade para PARAMS..."
 	@echo "Compilando os testes de unidade para HASHBIN..."
 	@echo "Compilando os testes de unidade para GEO..."
@@ -133,56 +133,56 @@ compila_tests: test_params test_hashBin test_geo test_svg test_qry test_grafo te
 	@echo "Compilando os testes de unidade para QRY..."
 	@echo "Compilando os testes de unidade para GRAFO..."
 	@echo "Compilando os testes de unidade para VIA..."
-	@echo.
+	#@echo.
 	@echo "Compilacao dos testes de unidade finalizada com sucesso."
-	@echo.
+	#@echo.
 
 
 
 ted_tests: compila_tests
-	@echo.
-	@echo.
+	#@echo.
+	#@echo.
 
 	@echo "Executando os testes de unidade para os parametros..."
 	../test/test_params$(EXEC)
 
-	@echo.
-	@echo.
-	@echo.
+	#@echo.
+	#@echo.
+	#@echo.
 	../test/test_hashBin$(EXEC)
 
-	@echo.
-	@echo.
-	@echo.
+	#@echo.
+	#@echo.
+	#@echo.
 	../test/test_geo$(EXEC)
 
-	@echo.
-	@echo.
-	@echo.
+	#@echo.
+	#@echo.
+	#@echo.
 	../test/test_svg$(EXEC)
 
-	@echo.
-	@echo.
-	@echo.
+	#@echo.
+	#@echo.
+	#@echo.
 	../test/test_qry$(EXEC)
 
-	@echo.
-	@echo.
-	@echo.
+	#@echo.
+	#@echo.
+	#@echo.
 	../test/test_grafo$(EXEC)
 
-	@echo.
-	@echo.
-	@echo.
+	#@echo.
+	#@echo.
+	#@echo.
 	../test/test_via$(EXEC)
 
-	@echo.
-	@echo.
-	@echo.
-	@echo.
+	#@echo.
+	#@echo.
+	#@echo.
+	#@echo.
 	@echo "Testes de unidade para os parametros executados com sucesso."
 
-	@echo.
+	#@echo.
 # =============================================================================================== #
 
 
@@ -192,7 +192,7 @@ ted_tests: compila_tests
 # =======================================  CLEAN & PHONY ======================================== #
 # Regra para limpar os arquivos objetos e o executável
 clean:
-	@echo.
+	#@echo.
 
 	@echo Limpando os arquivos de teste...
 	$(RM) "../test/test_params$(EXEC)"
@@ -213,13 +213,13 @@ clean:
 	$(RM) "../saidas/t1-t2.txt"
 	@echo Arquivos de teste limpos com sucesso!
 
-	@echo.
+	#@echo.
 
 	@echo Limpando os arquivos objetos e o executavel...
 	$(RM) $(OBJETOS) $(PROJ_NAME)$(EXEC)
 	@echo Arquivos objetos e executavel limpos com sucesso!
 
-	@echo.
+	#@echo.
 
 .PHONY: all
 .PHONY: clean
