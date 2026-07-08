@@ -1,3 +1,5 @@
+#define _POSIX_C_SOURCE 200809L
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -178,7 +180,7 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param, Grafo* g){
 
         // 2.2: Extrai apenas o primeiro token da linha, que corresponde ao comando do arquivo .qry, para identificar qual comando deve ser processado
         // Cria uma cópia da linha para usar na extração do comando, para não perder a linha original para os próximos comandos
-        char* bufferLinha = strdup(linha);
+        char *bufferLinha = strdup(linha);
         // Buffer para armazenar o comando extraído da linha do arquivo .qry
         char* comando = NULL;
         // Extrai o primeiro token da linha, usando espaço como delimitador. Ex: "mvm 50 10 10 100 100" => "mvm"

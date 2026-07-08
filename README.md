@@ -29,4 +29,4 @@ Abrir Powershell
 Digitar "wsl"
 Digitar "cd OneDrive/Documentos/GitHub/AndreIjiriEDIIT2/src"
 Compilar com o Makefile: "make"
-Executar "valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./ted -f ARQUIVO.geo -q ARQUIVO.qry -o ./"
+Executar "valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./ted -e ../entradas/ -f t1.geo -v t3.via -q consultas/t2.qry -o ../saidas/"
