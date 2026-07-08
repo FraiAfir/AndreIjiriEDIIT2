@@ -718,10 +718,10 @@ int calcularMelhorTrajeto(Grafo* g, char *nomeReg1, char *nomeReg2, char *cc, ch
             char nomeProximaRua[128] = "seu destino";
 
             getCoordenadasPasso(curto, i, &x1, &y1, &x2, &y2);
-            getNomeRuaPasso(curto, i, nomeRuaAtual);
+            strcpy(nomeRuaAtual, getNomeRuaPasso(curto, i));
 
             // Se não for o último passo, obtém o nome da próxima rua para a instrução no TXT
-            if(i < passosCurto - 2) {getNomeRuaPasso(curto, i + 1, nomeProximaRua);}
+            if(i < passosCurto - 2) {strcpy(nomeProximaRua, getNomeRuaPasso(curto, i + 1));}
 
             fprintf(qrySVG, "\t<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"%s\" stroke-width=\"4\" />\n", 
                     x1, y1, x2, y2, cc);
@@ -750,10 +750,10 @@ int calcularMelhorTrajeto(Grafo* g, char *nomeReg1, char *nomeReg2, char *cc, ch
             char nomeProximaRua[128] = "seu destino";
 
             getCoordenadasPasso(rapido, i, &x1, &y1, &x2, &y2);
-            getNomeRuaPasso(rapido, i, nomeRuaAtual);
+            strcpy(nomeRuaAtual, getNomeRuaPasso(rapido, i));
 
             // Se não for o último passo, obtém o nome da próxima rua para a instrução no TXT
-            if(i < passosRapido - 2) {getNomeRuaPasso(rapido, i + 1, nomeProximaRua);}
+            if(i < passosRapido - 2) {strcpy(nomeProximaRua, getNomeRuaPasso(rapido, i + 1));}
 
             fprintf(qrySVG, "\t<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"%s\" stroke-width=\"4\" stroke-dasharray=\"5,5\" />\n", 
                     x1, y1, x2, y2, cr); // Usei dasharray (linha tracejada) para diferenciar visualmente da rota mais curta se elas se sobrepuserem!
