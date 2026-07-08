@@ -171,15 +171,21 @@ int calcularArvoreGeradoraMinima(Grafo* g, char *vl_str, FILE* qrySVG);
  * TXT: descrição textual do percurso. Caso destino inacessível, reportar.
  * SVG: mostrar os percursos pintados e animados. Marcar os extremos do percurso com “placas” com as letras I e F.
  * 
- * @param reg1      Registrador contendo a região de origem
- * @param reg2      Registrador contendo a região de destino
- * @param cc        Cor para o percurso mais curto
- * @param cr        Cor para o percurso mais rápido
- * @param qrySVG    Ponteiro para o arquivo .svg do .qry para desenhar os percursos e marcar os extremos do percurso
- * @param qryTXT    Ponteiro para o arquivo .txt do .qry para reportar
- * @return          0 em caso de sucesso. -1 em caso de erro
+ * QRY: Esta função utiliza um procedimento auxiliar getDirecaoCardeal(); para calcular a direção cardeal entre dois pontos (x1, y1) e (x2, y2), que é utilizado para gerar as instruções textuais do percurso no arquivo .txt do .qry.
+ * GRAFO: 
+ * - Esta função utiliza o algoritmo de Dijkstra para calcular o melhor trajeto entre os vértices de origem e destino no grafo, considerando dois critérios: o caminho mais curto (menor distância) e o caminho mais rápido (menor tempo).
+ * - Utiliza também o procedimento auxiliar DijkstraEncontrarVerticeMaisProximo(); para encontrar os vértices mais próximos das coordenadas de origem e destino no grafo, que são utilizados como pontos de partida e chegada para o cálculo do melhor trajeto.
+ * - Assim como os getters getCoordenadasPasso(); getTamanhoCaminho(); getNomeRuaPasso(); para obter as informações de cada passo do percurso calculado pelo algoritmo de Dijkstra, que são utilizadas para desenhar os percursos no arquivo .svg do .qry e gerar as instruções textuais no arquivo .txt do .qry.
+ *  
+ * @param reg1                  Registrador contendo a região de origem
+ * @param reg2                  Registrador contendo a região de destino
+ * @param cc                    Cor para o percurso mais curto
+ * @param cr                    Cor para o percurso mais rápido
+ * @param qrySVG                Ponteiro para o arquivo .svg do .qry para desenhar os percursos e marcar os extremos do percurso
+ * @param qryTXT                Ponteiro para o arquivo .txt do .qry para reportar
+ * @return                      0 em caso de sucesso. -1 em caso de erro
  */
-int calcularMelhorTrajeto(char *reg1, char *reg2, char *cc, char *cr, FILE* qrySVG, FILE* qryTXT);
+int calcularMelhorTrajeto(Grafo *g, char *reg1, char *reg2, char *cc, char *cr, FILE* qrySVG, FILE* qryTXT);
 /*###############################################################################################*/
 
 #endif

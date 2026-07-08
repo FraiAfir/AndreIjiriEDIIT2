@@ -310,7 +310,7 @@ int readFileQry(FILE* arquivoQry, HashBin* h, Param* param, Grafo* g){
 
                 // Verifica se os parâmetros do comando p? foram lidos corretamente
                 if(reg1[0] != '\0' && reg2[0] != '\0' && cc[0] != '\0' && cr[0] != '\0'){
-                    if(calcularMelhorTrajeto(reg1, reg2, cc, cr, qrySVG, qryTXT) != 0){
+                    if(calcularMelhorTrajeto(g, reg1, reg2, cc, cr, qrySVG, qryTXT) != 0){
                         printf("[ERROR]\n");
                         printf("In qry.c [readFileQry();]: Failed to calculate the best route.\n\n");
                         return -1;
@@ -408,6 +408,26 @@ int calcularCoordenadaEndereco(Quadras* q, char face, int num, double* posX, dou
         printf("In qry.c [calcularCoordenadaEndereco();]: Address face invalid. Must be one of the following: N, S, L, O.\n");
         printf("[face:\t%c]\n\n", face);
         return -1;
+    }
+}
+
+char* getDirecaoCardeal(double x1, double y1, double x2, double y2){
+    // 1: Calcula a diferença entre as coordenadas (x1, y1) e (x2, y2)
+    double dx = x2 - x1;
+    double dy = y2 - y1;
+
+    // 2: Determina a direção cardeal com base na diferença das coordenadas
+    // 2.1: Se a diferença em x for maior que a diferença em y, o movimento é horizontal
+    if(abs((int)dx) > abs((int)dy)){
+        // Se dx for positivo, o movimento é para o Leste; se negativo, para o Oeste
+        if(dx > 0) return "Leste";
+        else       return "Oeste";
+    }
+    // 2.2: Se a diferença em y for maior ou igual à diferença em x, o movimento é vertical    
+    else{
+        // Se dy for positivo, o movimento é para o Sul; se negativo, para o Norte
+        if (dy > 0) return "Sul";
+        else        return "Norte";
     }
 }
 /*###############################################################################################*/
@@ -654,9 +674,100 @@ int calcularArvoreGeradoraMinima(Grafo* g, char *vl_str, FILE* qrySVG){
     return 0;
 }
 
-int calcularMelhorTrajeto(char *reg1, char *reg2, char *cc, char *cr, FILE* qrySVG, FILE* qryTXT){
-    // 1: Implementar a lógica para determinar o melhor trajeto entre a origem (reg1) e o destino (reg2), desenhar os percursos (mais curto, mais rápido) com as cores cc e cr, respectivamente, e reportar a descrição textual do percurso no arquivo .txt do .qry
-    // ...
+int calcularMelhorTrajeto(Grafo* g, char *nomeReg1, char *nomeReg2, char *cc, char *cr, FILE* qrySVG, FILE* qryTXT){
+    // 1: Converte os nomes dos registradores para índices inteiros
+    int indiceR1 = atoi(&nomeReg1[1]);
+    int indiceR2 = atoi(&nomeReg2[1]);
+
+    // 2: Obtém as coordenadas (x, y) dos registradores de origem e destino
+    double xOrigem  = bancoRegistradores[indiceR1].x;
+    double yOrigem  = bancoRegistradores[indiceR1].y;
+    double xDestino = bancoRegistradores[indiceR2].x;
+    double yDestino = bancoRegistradores[indiceR2].y;
+
+    // 3: Encontra os vértices mais próximos no grafo para as coordenadas de origem e destino
+    int idVerticeOrigem  = DijkstraEncontrarVerticeMaisProximo(g, xOrigem, yOrigem);
+    int idVerticeDestino = DijkstraEncontrarVerticeMaisProximo(g, xDestino, yDestino);
+
+    // 4: Verifica se os vértices de origem e destino foram encontrados corretamente
+    if(idVerticeOrigem == -1 || idVerticeDestino == -1){
+        fprintf(qryTXT, "[ERROR]\n");
+        fprintf(qryTXT, "In qry.c [calcularMelhorTrajeto();]: Failed to find the closest vertices for the given coordinates.\n");
+        fprintf(qryTXT, "[Coordinates]: Origin (%.2lf, %.2lf), Destination (%.2lf, %.2lf)\n", xOrigem, yOrigem, xDestino, yDestino);
+        fprintf(qryTXT, "[Vertex IDs]: Origin %d, Destination %d\n\n", idVerticeOrigem, idVerticeDestino);
+        return -1;
+    }
+
+    // 5: Calcula os caminhos mais curto e mais rápido usando o algoritmo de Dijkstra
+    Caminho* curto  = Dijkstra(g, idVerticeOrigem, idVerticeDestino, 'd');
+    Caminho* rapido = Dijkstra(g, idVerticeOrigem, idVerticeDestino, 't');
+
+    // 4: Desenhar no SVG e Escrever no TXT
+    // 4.1: Menor caminho (mais curto)
+    if(curto != NULL){
+        // Obtém o número de passos do caminho mais curto
+        int passosCurto = getTamanhoCaminho(curto);
+        
+        fprintf(qryTXT, "[INFO]: [p?] %s %s %s %s\n", nomeReg1, nomeReg2, cc, cr);
+        fprintf(qryTXT, "TRAJETO MAIS CURTO:\n");
+
+        // Percorre cada passo do caminho mais curto, exceto o último
+        for(int i = 0; i < passosCurto - 1; i++){
+            double x1, y1, x2, y2;
+            char nomeRuaAtual[128]   = "";
+            char nomeProximaRua[128] = "seu destino";
+
+            getCoordenadasPasso(curto, i, &x1, &y1, &x2, &y2);
+            getNomeRuaPasso(curto, i, nomeRuaAtual);
+
+            // Se não for o último passo, obtém o nome da próxima rua para a instrução no TXT
+            if(i < passosCurto - 2) {getNomeRuaPasso(curto, i + 1, nomeProximaRua);}
+
+            fprintf(qrySVG, "\t<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"%s\" stroke-width=\"4\" />\n", 
+                    x1, y1, x2, y2, cc);
+
+            // 3. Escreve a instrução no TXT
+            // Ex: "Siga na direção Leste na Rua Dom Bosco até o cruzamento com a Rua Maringa."
+            char* direcao = getDirecaoCardeal(x1, y1, x2, y2);
+            fprintf(qryTXT, "Passo %d: Siga na direcao %s na %s ate o cruzamento com a %s.\n", 
+                    i + 1, direcao, nomeRuaAtual, nomeProximaRua);
+        }
+        fprintf(qryTXT, "Voce chegou ao seu destino!\n\n");
+    }
+
+    // 4.2: Caminho mais rápido (mais rápido)
+    if(rapido != NULL){
+        // Obtém o número de passos do caminho mais rápido
+        int passosRapido = getTamanhoCaminho(rapido);
+        
+        fprintf(qryTXT, "[INFO]: [p?] %s %s %s %s\n", nomeReg1, nomeReg2, cc, cr);
+        fprintf(qryTXT, "TRAJETO MAIS RAPIDO:\n");
+
+        // Percorre cada passo do caminho mais rápido, exceto o último
+        for(int i = 0; i < passosRapido - 1; i++){
+            double x1, y1, x2, y2;
+            char nomeRuaAtual[128]   = "";
+            char nomeProximaRua[128] = "seu destino";
+
+            getCoordenadasPasso(rapido, i, &x1, &y1, &x2, &y2);
+            getNomeRuaPasso(rapido, i, nomeRuaAtual);
+
+            // Se não for o último passo, obtém o nome da próxima rua para a instrução no TXT
+            if(i < passosRapido - 2) {getNomeRuaPasso(rapido, i + 1, nomeProximaRua);}
+
+            fprintf(qrySVG, "\t<line x1=\"%lf\" y1=\"%lf\" x2=\"%lf\" y2=\"%lf\" stroke=\"%s\" stroke-width=\"4\" stroke-dasharray=\"5,5\" />\n", 
+                    x1, y1, x2, y2, cr); // Usei dasharray (linha tracejada) para diferenciar visualmente da rota mais curta se elas se sobrepuserem!
+
+            char* direcao = getDirecaoCardeal(x1, y1, x2, y2);
+            fprintf(qryTXT, "Passo %d: Siga na direcao %s na %s ate o cruzamento com a %s.\n", 
+                    i + 1, direcao, nomeRuaAtual, nomeProximaRua);
+        }
+        fprintf(qryTXT, "Voce chegou ao seu destino!\n\n");
+    }
+
+    // 5: Libera a memória alocada para os caminhos calculados
+    destruirCaminho(curto);
+    destruirCaminho(rapido);
 
     return 0;
 }

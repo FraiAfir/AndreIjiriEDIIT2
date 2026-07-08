@@ -4,10 +4,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Grafo
 typedef struct grafo Grafo;
 typedef struct boundingbox BoundingBox;
+
+// Kruskal
 typedef struct arestas_kruskal ArestaKruskal;
 typedef struct lista_arestas ListaArestas;
+
+// Dijkstra
+typedef struct caminho Caminho;
+
+
+
 
 
 /** DEFINIÇÃO DO MÓDULO
@@ -24,6 +33,8 @@ typedef struct lista_arestas ListaArestas;
  * A implementação do módulo de Grafo pode utilizar diferentes representações, como listas de adjacência 
  * ou matrizes de adjacência, dependendo das necessidades específicas do problema a ser resolvido.
  */
+
+
 
 
 
@@ -68,6 +79,17 @@ int atualizaVelocidadeRegiaoGrafo(Grafo* g, double x, double y, double w, double
  * @param bb            Ponteiro para o bounding box da ilha
  */
 void DFSIlhas(Grafo* g, int indiceVertice, int idIlhaAtual, double vl, BoundingBox* bb);
+
+/**
+ * Esta é uma função auxiliar ao TAD qry que encontra o vértice mais próximo de uma coordenada geográfica (regX, regY) no grafo.
+ * 
+ * @param g     Ponteiro para o grafo
+ * @param regX  Coordenada x da posição geográfica a ser comparada
+ * @param regY  Coordenada y da posição geográfica a ser comparada
+ * @return      Índice do vértice mais próximo. -1 se nenhum vértice for encontrado
+ */
+int DijkstraEncontrarVerticeMaisProximo(Grafo* g, double regX, double regY);
+
 /**
  * Esta é uma função getter para obter as extremidades de um bounding box.
  * 
@@ -81,9 +103,14 @@ void DFSIlhas(Grafo* g, int indiceVertice, int idIlhaAtual, double vl, BoundingB
  */
 int getExtremidadesBB(BoundingBox* bb, int indice, double* minX, double* minY, double* maxX, double* maxY);
 
-// Funções getter para a lista de arestas
+// Funções getter para o Kruskal
 int getTamanhoListaArestas   (ListaArestas* lista);
 int getCoordenadasArestaLista(ListaArestas* lista, int indice, double* x1, double* y1, double* x2, double* y2);
+
+// Funções getter para o Dijkstra
+int getTamanhoCaminho(Caminho* c);
+int getCoordenadasPasso(Caminho* c, int passo, double* x1, double* y1, double* x2, double* y2);
+char* getNomeRuaPasso(Caminho* c, int passo);
 /*###############################################################################################*/
 
 
@@ -161,6 +188,18 @@ int identificarComponentesConexos(Grafo* g, double vl, BoundingBox** vetorBB);
  */
 ListaArestas* aumentaVMArestas(Grafo* g, double vl);
 /**
+ * Esta função é responsável por implementar o algoritmo de Dijkstra para calcular 
+ * o caminho mais curto ou mais rápido entre dois vértices do grafo,
+ * dependendo do critério especificado (distância ou tempo).
+ * 
+ * @param g                 Ponteiro para o grafo
+ * @param idVerticeOrigem   Índice do vértice de origem no vetor de vértices do grafo
+ * @param idVerticeDestino  Índice do vértice de destino no vetor de vértices do grafo
+ * @param criterio          Critério de otimização do caminho ('d' para distância, 't' para tempo)
+ * @return                  Ponteiro para a estrutura Caminho contendo o trajeto do vértice de origem para o vértice de destino. NULL em caso de erro
+ */
+Caminho* Dijkstra(Grafo* g, int idVerticeOrigem, int idVerticeDestino, char criterio);
+/**
  * Esta função é responsável por liberar a memória alocada para a lista de arestas,
  * incluindo a memória alocada para cada aresta individualmente.
  * 
@@ -168,6 +207,14 @@ ListaArestas* aumentaVMArestas(Grafo* g, double vl);
  * @return      0 em caso de sucesso. -1 em caso de erro
  */
 int destruirListaArestas(ListaArestas* lista);
+/**
+ * Esta função é responsável por liberar a memória alocada para o caminho,
+ * incluindo a memória alocada para cada passo do caminho individualmente.
+ * 
+ * @param c Ponteiro para o caminho a ser liberado
+ * @return  0 em caso de sucesso. -1 em caso de erro
+ */
+int destruirCaminho(Caminho* c);
 /*###############################################################################################*/
 
 #endif

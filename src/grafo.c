@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <float.h> // Dijkstra: Para usar DBL_MAX (Infinito)
 
 #include "grafo.h"
 
@@ -44,10 +45,10 @@ typedef struct boundingbox{
 
 // Estrutura para armazenar as arestas selecionadas pelo algoritmo de Kruskal
 typedef struct arestas_kruskal{
-    int vOrigem;
-    int vDestino;
-    double comprimento;
-    InfoAresta* info;
+    int vOrigem;        // Índice do vértice de origem no vetor de vértices do grafo
+    int vDestino;       // Índice do vértice de destino no vetor de vértices do grafo
+    double comprimento; // Peso para o cálculo do caminho mais curto
+    InfoAresta* info;   // Ponteiro para os atributos da aresta (rua/via) correspondente
 } ArestaKruskal;
 // Estrutura para armazenar a lista de arestas resultante do algoritmo de Kruskal
 typedef struct lista_arestas{
@@ -55,6 +56,15 @@ typedef struct lista_arestas{
     int quantidade;              // Quantidade de arestas na AGM resultante
     Grafo* grafoOriginal;        // Ponteiro para o grafo original (para referência às coordenadas dos vértices)
 } ListaArestas;
+
+
+
+// Estrutura para armazenar o caminho resultante do algoritmo de Dijkstra
+typedef struct caminho{
+    int* vetorVerticesTrajeto;  // Vetor de índices dos vértices do caminho resultante (origem -> destino)
+    int quantidade;             // Quantidade de vértices no caminho resultante
+    Grafo* grafoOriginal;       // Ponteiro para o grafo original (para referência às coordenadas dos vértices)
+} Caminho;
 /*################################################################################################*/
 
 
@@ -203,6 +213,48 @@ void DFSIlhas(Grafo* g, int indiceVertice, int idIlhaAtual, double vl, BoundingB
     }
 }
 
+int DijkstraEncontrarVerticeMaisProximo(Grafo* g, double regX, double regY){
+    // 1: Verifica se o grafo é válido (não é NULL) e se há vértices no grafo
+    if(g == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [DijkstraEncontrarVerticeMaisProximo();]: Invalid Graph (NULL or empty)\n\n");
+        return -1;
+    }
+    if(g->qntdAtual == 0){
+        printf("[ERROR]\n");
+        printf("In grafo.c [DijkstraEncontrarVerticeMaisProximo();]: No vertices in the graph\n");
+        printf("[qntdAtual:\t%d]\n\n", g->qntdAtual);
+        return -1;
+    }
+
+    // 2: Inicializa variáveis para armazenar o índice do vértice mais próximo e a menor distância encontrada
+    int idVerticeMaisProximo      = -1;
+    double menorDistanciaQuadrada = DBL_MAX;
+
+    // 3: Calcula a distância ao quadrado entre o ponto (regX, regY) e cada vértice do grafo para encontrar o vértice mais próximo
+    // 3.1: Percorre todos os vértices do grafo
+    for(int i = 0; i < g->qntdAtual; i++){
+        // 3.1.1: Obtém as coordenadas do vértice atual
+        double vx = g->vetorVertices[i].x;
+        double vy = g->vetorVertices[i].y;
+
+        // 3.1.2: Calcula a distância ao quadrado entre o ponto (regX, regY) e o vértice atual (vx, vy)
+        double dx = vx - regX;
+        double dy = vy - regY;
+        double distanciaQuadrada = (dx * dx) + (dy * dy);
+
+        // 3.1.3: Se a distância ao quadrado for menor que a menor distância encontrada até agora,
+        // atualiza o vértice mais próximo e a menor distância
+        if(distanciaQuadrada < menorDistanciaQuadrada){
+            menorDistanciaQuadrada = distanciaQuadrada;
+            idVerticeMaisProximo   = i;
+        }
+    }
+
+    // 4: Retorna o índice do vértice mais próximo encontrado. Se nenhum vértice foi encontrado, retorna -1
+    return idVerticeMaisProximo;
+}
+
 int getExtremidadesBB(BoundingBox* bb, int indice, double* minX, double* minY, double* maxX, double* maxY){
     // 1: Verifica se o ponteiro do bounding box é válido (não é NULL)
     if(bb == NULL){
@@ -259,22 +311,78 @@ int getCoordenadasArestaLista(ListaArestas* lista, int indice, double* x1, doubl
     return 0;
 }
 
-int destruirListaArestas(ListaArestas* lista){
-    // 1: Verifica se a lista de arestas é válida (não é NULL)
-    if(lista == NULL){
+int getTamanhoCaminho(Caminho* c){
+    // 1: Verifica se o caminho é válido (não é NULL)
+    if(c == NULL){
         printf("[ERROR]\n");
-        printf("In grafo.c [destruirListaArestas();]: Invalid List of Edges (NULL)\n\n");
+        printf("In grafo.c [getTamanhoCaminho();]: Invalid Path (NULL)\n\n");
+        return 0;
+    }
+
+    // 2: Retorna a quantidade de vértices no caminho
+    return c->quantidade;
+}
+
+int getCoordenadasPasso(Caminho* c, int passo, double* x1, double* y1, double* x2, double* y2){
+    // 1: Verifica se o caminho é válido (não é NULL) e se o passo fornecido está dentro do intervalo permitido
+    if(c == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [getCoordenadasPasso();]: Invalid Path (NULL)\n\n");
+        return -1;
+    }
+    if(passo < 0 || passo >= c->quantidade - 1){
+        printf("[ERROR]\n");
+        printf("In grafo.c [getCoordenadasPasso();]: Invalid step index (%d)\n", passo);
+        printf("[passo:\t\t%d]\n[quantidade:\t%d]\n\n", passo, c->quantidade);
         return -1;
     }
 
-    // 2: Verifica se o vetor de arestas é válido (não é NULL) e libera a memória alocada para ele
-    if(lista->vetorArestas != NULL) free(lista->vetorArestas);
+    // 2: Obtém os índices dos vértices de origem e destino do passo no vetor de vértices do caminho
+    int idOrigem  = c->vetorVerticesTrajeto[passo];
+    int idDestino = c->vetorVerticesTrajeto[passo + 1];
 
-    // 3: Libera a memória alocada para a estrutura da lista de arestas
-    free(lista);
+    // 3: Obtém as coordenadas dos vértices de origem e destino do passo usando os índices obtidos
+    *x1 = c->grafoOriginal->vetorVertices[idOrigem].x;
+    *y1 = c->grafoOriginal->vetorVertices[idOrigem].y;
+    *x2 = c->grafoOriginal->vetorVertices[idDestino].x;
+    *y2 = c->grafoOriginal->vetorVertices[idDestino].y;
 
     return 0;
 }
+
+char* getNomeRuaPasso(Caminho* c, int passo){
+    // 1: Verifica se o caminho é válido (não é NULL) e se o passo fornecido está dentro do intervalo permitido
+    if(c == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [getNomeRuaPasso();]: Invalid Path (NULL)\n\n");
+        return NULL;
+    }
+    if(passo < 0 || passo >= c->quantidade - 1){
+        printf("[ERROR]\n");
+        printf("In grafo.c [getNomeRuaPasso();]: Invalid step index (%d)\n", passo);
+        printf("[passo:\t\t%d]\n[quantidade:\t%d]\n\n", passo, c->quantidade);
+        return NULL;
+    }
+
+    // 2: Obtém os índices dos vértices de origem e destino do passo no vetor de vértices do caminho
+    int idOrigem  = c->vetorVerticesTrajeto[passo];
+    int idDestino = c->vetorVerticesTrajeto[passo + 1];
+
+    // 3: Encontra a aresta correspondente ao passo
+    // 3.1: Obtém a cabeça da lista de adjacência do vértice de origem
+    Arco* arcoAtual = c->grafoOriginal->vetorVertices[idOrigem].listaAdj;
+    // 3.2: Percorre a lista de adjacência do vértice de origem enquanto houver arcos (arestas) disponíveis
+    while(arcoAtual != NULL){
+        // 3.2.1: Verifica se o vértice de destino do arco atual corresponde ao vértice de destino do passo
+        if(arcoAtual->vDestino == idDestino) {return arcoAtual->info->nome;}
+        // 3.2.2: Avança para o próximo arco na lista de adjacência do vértice de origem
+        arcoAtual = arcoAtual->proximo;
+    }
+
+    // 4: Se não encontrar a aresta correspondente, retorna NULL (não encontrado)
+    return NULL;
+}
+
 /*################################################################################################*/
 
 /*                                         FUNÇÕES PRINCIPAIS                                     */
@@ -615,5 +723,161 @@ ListaArestas* aumentaVMArestas(Grafo* g, double vl){
 
     // 12: Retorna a estrutura ListaArestas contendo o resultado da AGM obtida pelo algoritmo de Kruskal
     return resultado;
+}
+
+Caminho* Dijkstra(Grafo* g, int origem, int destino, char criterio){
+    // 1: Verifica se o grafo é válido (não é NULL) e se os índices de origem e destino são válidos (não negativos)
+    if(g == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [grafoCalcularDijkstra();]: Invalid Graph (NULL)\n\n");
+        return NULL;
+    }
+    if(origem < 0 || destino < 0){
+        printf("[ERROR]\n");
+        printf("In grafo.c [grafoCalcularDijkstra();]: Invalid vertex indices (negative values)\n");
+        printf("[origem:\t%d]\n[destino:\t%d]\n\n", origem, destino);
+        return NULL;
+    }
+
+    // 2: Inicialização de variáveis e alocação de memória para os atributos necessários ao algoritmo de Dijkstra
+    // 2.1: Inicializa os arrays de distância, pai e visitado para o algoritmo de Dijkstra
+    int n         = g->qntdAtual;                           // Obtém a quantidade atual de vértices no grafo
+    double* dist  = (double*)malloc(n * sizeof(double));    // Aloca o array de distâncias para armazenar as distâncias mínimas do vértice de origem para todos os outros vértices
+    int* pai      = (int*)malloc(n * sizeof(int));          // Aloca o array de pais para reconstruir o caminho posteriormente
+    int* visitado = (int*)calloc(n, sizeof(int));           // Aloca o array de visitados e inicializa todos os elementos como 0 (não visitado)
+    // 2.2: Verifica se a alocação de memória para os arrays foi bem-sucedida
+    if(dist == NULL || pai == NULL || visitado == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [grafoCalcularDijkstra();]: Failed to allocate memory for distance, parent, or visited arrays\n");
+        printf("[dist:\t\t%p]\n[pai:\t\t%p]\n[visitado:\t%p]\n\n", dist, pai, visitado);
+        free(dist); free(pai); free(visitado);
+        return NULL;
+    }
+
+    // 3: Inicialização dos arrays de distância e pai
+    // 3.1: Define a distância inicial e o pai inicial para todos os vértices
+    for(int i = 0; i < n; i++){
+        dist[i] = DBL_MAX;  // Infinito (DBL_MAX) para todos os vértices
+        pai[i] = -1;        // -1 (sem pai) para todos os vértices
+    }
+    // 3.2: Define a distância do vértice de origem para ele mesmo como 0
+    dist[origem] = 0.0;
+
+    // 4: Algoritmo de Dijkstra
+    // 4.1: Itera n-1 vezes para encontrar o caminho mais curto do vértice de origem para todos os outros vértices
+    for(int count = 0; count < n - 1; count++){
+        // 4.1.1: Inicializa a variável min para armazenar a menor distância encontrada
+        // e u para armazenar o índice do vértice correspondente
+        double min = DBL_MAX;
+        int u      = -1;
+
+        // 4.1.2: Percorre todos os vértices para encontrar o vértice com a menor distância não visitado
+        for(int i = 0; i < n; i++){
+            // Verifica se o vértice i não foi visitado e
+            // se sua distância é menor ou igual à menor distância encontrada até agora
+            if(!visitado[i] && dist[i] <= min){
+                min = dist[i];  // Atualiza a menor distância encontrada
+                u   = i;        // Atualiza o índice do vértice correspondente à menor distância
+            }
+        }
+
+        // 4.1.3: Verifica se o vértice escolhido é válido (não é -1) e se é o destino. Caso contrário, interrompe o loop
+        if(u == -1 || u == destino) break;
+
+        // 4.1.4: Se o vértice escolhido for válido e não for o destino, marca-o como visitado
+        visitado[u] = 1;
+
+        // 4.1.5: Atualiza as distâncias dos vértices vizinhos
+        // Obtém a cabeça da lista de adjacência do vértice u
+        Arco* arco = g->vetorVertices[u].listaAdj;
+        // Percorre a lista de adjacência do vértice u enquanto houver arcos (arestas) disponíveis
+        while(arco != NULL){
+            int v       = arco->vDestino;
+            double peso = (criterio == 'd') ? arco->info->comprimento : (arco->info->comprimento / arco->info->velocidadeMedia);
+
+            // Atualiza a distância do vértice v
+            if(!visitado[v] && dist[u] != DBL_MAX && dist[u] + peso < dist[v]){
+                dist[v] = dist[u] + peso;   // Atualiza a distância mínima do vértice v
+                pai[v]  = u;                // Atualiza o pai do vértice v para reconstruir o caminho posteriormente
+            }
+
+            // Avança para o próximo arco na lista de adjacência do vértice u
+            arco = arco->proximo;
+        }
+    }
+
+    // 5: Reconstrói o caminho do vértice de destino para o vértice de origem usando o array de pais
+    // 5.1: Verifica se o destino é alcançável a partir da origem
+    // Se a distância do destino ainda for infinita (DBL_MAX), significa que não há caminho possível
+    if(dist[destino] == DBL_MAX){
+        printf("[INFO]\n");
+        printf("In grafo.c [grafoCalcularDijkstra();]: No path found from vertex %d to vertex %d\n\n", origem, destino);
+        free(dist); free(pai); free(visitado);
+        return NULL;
+    }
+
+    // 5.2: Conta o número de passos no caminho do destino para a origem usando o array de pais
+    int qtdPassos = 0;
+    for(int v = destino; v != -1; v = pai[v]) qtdPassos++;
+
+    // 5.3: Aloca memória para a estrutura Caminho e para o vetor de vértices do trajeto
+    Caminho* rota              = (Caminho*)malloc(sizeof(Caminho));
+    rota->vetorVerticesTrajeto = (int*)malloc(qtdPassos * sizeof(int));
+    if(rota == NULL || rota->vetorVerticesTrajeto == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [grafoCalcularDijkstra();]: Failed to allocate memory for the path structure or the path vertices array\n");
+        printf("[rota:\t\t%p]\n[vetor:\t\t%p]\n\n", rota, rota->vetorVerticesTrajeto);
+        free(dist); free(pai); free(visitado);
+        if(rota != NULL) free(rota);
+        return NULL;
+    }
+
+    // 5.4: Preenche os campos da estrutura Caminho com a quantidade de passos e o ponteiro para o grafo original
+    rota->quantidade = qtdPassos;
+    rota->grafoOriginal = g;
+
+    // 5.5: Preenche o vetor de vértices do trajeto do destino na ordem correta (do destino para a origem) usando o array de pais
+    int idx = qtdPassos - 1;
+    for(int v = destino; v != -1; v = pai[v]) {rota->vetorVerticesTrajeto[idx--] = v;}
+
+    // 6: Libera a memória alocada para os arrays de distância, pai e visitado, pois não são mais necessários
+    free(dist); free(pai); free(visitado);
+
+    // 7: Retorna a estrutura Caminho contendo o trajeto do vértice de origem para o vértice de destino
+    return rota;
+}
+
+int destruirListaArestas(ListaArestas* lista){
+    // 1: Verifica se a lista de arestas é válida (não é NULL)
+    if(lista == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [destruirListaArestas();]: Invalid List of Edges (NULL)\n\n");
+        return -1;
+    }
+
+    // 2: Verifica se o vetor de arestas é válido (não é NULL) e libera a memória alocada para ele
+    if(lista->vetorArestas != NULL) free(lista->vetorArestas);
+
+    // 3: Libera a memória alocada para a estrutura da lista de arestas
+    free(lista);
+
+    return 0;
+}
+
+int destruirCaminho(Caminho* c){
+    // 1: Verifica se o caminho é válido (não é NULL)
+    if(c == NULL){
+        printf("[ERROR]\n");
+        printf("In grafo.c [destruirCaminho();]: Invalid Path (NULL)\n\n");
+        return -1;
+    }
+
+    // 2: Verifica se o vetor de vértices do caminho é válido (não é NULL) e libera a memória alocada para ele
+    if(c->vetorVerticesTrajeto != NULL) free(c->vetorVerticesTrajeto);
+
+    // 3: Libera a memória alocada para a estrutura do caminho
+    free(c);
+
+    return 0;
 }
 /*################################################################################################*/
